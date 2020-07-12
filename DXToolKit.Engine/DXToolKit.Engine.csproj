@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FD5D7967-8D91-41B9-AC5B-8C4C7D6ADADE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DXToolKit.Engine</RootNamespace>
+    <AssemblyName>DXToolKit.Engine</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\DXToolKit.Engine.xml</DocumentationFile>
+    <Prefer32bit>false</Prefer32bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\DXToolKit.Engine.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Middleware\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BasicPipeline.cs" />
+    <Compile Include="Camera3D.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="DXApp.cs" />
+    <Compile Include="EngineConfig.cs" />
+    <Compile Include="FunctionToolBox.cs" />
+    <Compile Include="Graphics.cs" />
+    <Compile Include="GUI\BasicGUIDrawTools.cs" />
+    <Compile Include="GUI\Controls\ActiveElement.cs" />
+    <Compile Include="GUI\Controls\ArrowButton.cs" />
+    <Compile Include="GUI\Controls\Button.cs" />
+    <Compile Include="GUI\Controls\CloseButton.cs" />
+    <Compile Include="GUI\Controls\GraphicButton.cs" />
+    <Compile Include="GUI\Controls\GUIPanel.cs" />
+    <Compile Include="GUI\Controls\Scrollbar.cs" />
+    <Compile Include="GUI\Controls\Window.cs" />
+    <Compile Include="GUI\GUIElement.cs" />
+    <Compile Include="GUI\GUIColorPaletteDescription.cs" />
+    <Compile Include="GUI\GUIBrightness.cs" />
+    <Compile Include="GUI\GUIColor.cs" />
+    <Compile Include="GUI\GUIColorPalette.cs" />
+    <Compile Include="GUI\GUIDrawTools.cs" />
+    <Compile Include="GUI\GUIGrid.cs" />
+    <Compile Include="GUI\GUIPadding.cs" />
+    <Compile Include="GUI\IGUIGriddable.cs" />
+    <Compile Include="Input.cs" />
+    <Compile Include="IRenderPipeline.cs" />
+    <Compile Include="Profiler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuietRenderForm.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="SceneManager.cs" />
+    <Compile Include="Sketch\Sketch.cs" />
+    <Compile Include="Sketch\SketchApp.cs" />
+    <Compile Include="Sketch\SketchPipeline.cs" />
+    <Compile Include="Time.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DXToolKit.GUI\DXToolKit.GUI.csproj">
+      <Project>{5a68f7fd-7ea3-46d4-be32-40e29ea1e49c}</Project>
+      <Name>DXToolKit.GUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DXToolKit\DXToolKit.csproj">
+      <Project>{414e80e7-4613-467f-9dda-1d274ecf6ac8}</Project>
+      <Name>DXToolKit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>

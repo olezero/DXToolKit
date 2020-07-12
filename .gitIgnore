@@ -1,0 +1,8 @@
+packages
+Middleware
+.idea
+*/bin/*
+*/obj/*
+*.DotSettings
+*.DotSettings.user
+DXToolKit.Engine.Sandbox
