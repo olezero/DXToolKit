@@ -1,163 +1,190 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="..\packages\ILMerge.3.0.29\build\ILMerge.props" Condition="Exists('..\packages\ILMerge.3.0.29\build\ILMerge.props')" />
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{414E80E7-4613-467F-9DDA-1D274ECF6AC8}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>DXToolKit</RootNamespace>
-        <AssemblyName>DXToolKit</AssemblyName>
-        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE;FORCEINT32;FULLDOTNET</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <DocumentationFile>bin\Debug\DXToolKit.xml</DocumentationFile>
-        <Prefer32bit>false</Prefer32bit>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>TRACE;FORCEINT32;FULLDOTNET</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <DocumentationFile>bin\Release\DXToolKit.xml</DocumentationFile>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\Middleware\SharpDX.dll</HintPath>
-        </Reference>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Drawing" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="System.Xml" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Buffers\ArrayBuffer.cs" />
-        <Compile Include="Buffers\ConstantBuffer.cs" />
-        <Compile Include="Buffers\DXBuffer.cs" />
-        <Compile Include="Buffers\IndexBuffer.cs" />
-        <Compile Include="Buffers\StructuredBuffer.cs" />
-        <Compile Include="Buffers\VertexBuffer.cs" />
-        <Compile Include="DXCamera.cs" />
-        <Compile Include="ClipboardHandler.cs" />
-        <Compile Include="EntitySystem\Aspect.cs" />
-        <Compile Include="EntitySystem\Attributes\ComponentCreateAttribute.cs" />
-        <Compile Include="EntitySystem\Attributes\ComponentPoolAttribute.cs" />
-        <Compile Include="EntitySystem\Attributes\EntitySystemAttribute.cs" />
-        <Compile Include="EntitySystem\Attributes\EntityTemplateAttribute.cs" />
-        <Compile Include="EntitySystem\Attributes\AttributesProcessor.cs" />
-        <Compile Include="EntitySystem\Blackboard\BlackBoard.cs" />
-        <Compile Include="EntitySystem\Blackboard\SimpleTrigger.cs" />
-        <Compile Include="EntitySystem\Blackboard\Trigger.cs" />
-        <Compile Include="EntitySystem\Blackboard\TriggerMultiCondition.cs" />
-        <Compile Include="EntitySystem\Blackboard\TriggerStateType.cs" />
-        <Compile Include="EntitySystem\ComponentMapper.cs" />
-        <Compile Include="EntitySystem\ComponentPool.cs" />
-        <Compile Include="EntitySystem\ComponentPoolable.cs" />
-        <Compile Include="EntitySystem\ComponentPoolMultiThread.cs" />
-        <Compile Include="EntitySystem\ComponentType.cs" />
-        <Compile Include="EntitySystem\Entity.cs" />
-        <Compile Include="EntitySystem\EntityWorld.cs" />
-        <Compile Include="EntitySystem\Exceptions\MissingEntityTemplateException.cs" />
-        <Compile Include="EntitySystem\Interface\IComponent.cs" />
-        <Compile Include="EntitySystem\Interface\IComponentPool.cs" />
-        <Compile Include="EntitySystem\Interface\IEntityTemplate.cs" />
-        <Compile Include="EntitySystem\Manager\AddedComponentHandler.cs" />
-        <Compile Include="EntitySystem\Manager\AddedEntityHandler.cs" />
-        <Compile Include="EntitySystem\Manager\ComponentTypeManager.cs" />
-        <Compile Include="EntitySystem\Manager\EntityManager.cs" />
-        <Compile Include="EntitySystem\Manager\ExecutionType.cs" />
-        <Compile Include="EntitySystem\Manager\GameLoopType.cs" />
-        <Compile Include="EntitySystem\Manager\GroupManager.cs" />
-        <Compile Include="EntitySystem\Manager\QueueManager.cs" />
-        <Compile Include="EntitySystem\Manager\RemovedComponentHandler.cs" />
-        <Compile Include="EntitySystem\Manager\RemovedEntityHandler.cs" />
-        <Compile Include="EntitySystem\Manager\SystemBitManager.cs" />
-        <Compile Include="EntitySystem\Manager\SystemManager.cs" />
-        <Compile Include="EntitySystem\Manager\TagManager.cs" />
-        <Compile Include="EntitySystem\System\DelayedEntityProcessingSystem.cs" />
-        <Compile Include="EntitySystem\System\DelayedEntitySystem.cs" />
-        <Compile Include="EntitySystem\System\EntityComponentProcessingSystem.cs" />
-        <Compile Include="EntitySystem\System\EntityProcessingSystem.cs" />
-        <Compile Include="EntitySystem\System\EntitySystem.cs" />
-        <Compile Include="EntitySystem\System\HybridQueueSystemProcessing.cs" />
-        <Compile Include="EntitySystem\System\IntervalEntityProcessingSystem.cs" />
-        <Compile Include="EntitySystem\System\IntervalEntitySystem.cs" />
-        <Compile Include="EntitySystem\System\IntervalTagSystem.cs" />
-        <Compile Include="EntitySystem\System\ParallelEntityProcessingSystem.cs" />
-        <Compile Include="EntitySystem\System\ProcessingSystem.cs" />
-        <Compile Include="EntitySystem\System\QueueSystemProcessing.cs" />
-        <Compile Include="EntitySystem\System\QueueSystemProcessingThreadSafe.cs" />
-        <Compile Include="EntitySystem\System\TagSystem.cs" />
-        <Compile Include="EntitySystem\Utils\Bag.cs" />
-        <Compile Include="EntitySystem\Utils\BagEnumerator.cs" />
-        <Compile Include="EntitySystem\Utils\FastDateTime.cs" />
-        <Compile Include="EntitySystem\Utils\MetroCompatibilityExtensions.cs" />
-        <Compile Include="EntitySystem\Utils\Timer.cs" />
-        <Compile Include="FactoryCollection.cs" />
-        <Compile Include="DeviceComponent.cs" />
-        <Compile Include="FullscreenQuad.cs" />
-        <Compile Include="GraphicsDevice.cs" />
-        <Compile Include="LineRenderer.cs" />
-        <Compile Include="Mathf.cs" />
-        <Compile Include="Noise.cs" />
-        <Compile Include="PrimitiveFactory.cs" />
-        <Compile Include="PrimitiveRenderer.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Shaders\EffectCompiler.cs" />
-        <Compile Include="Shaders\FXInclueHandler.cs" />
-        <Compile Include="Shaders\LiveReload.cs" />
-        <Compile Include="Shaders\ShaderCompilationResult.cs" />
-        <Compile Include="Shaders\ShaderCompiler.cs" />
-        <Compile Include="SimplexNoise.cs" />
-        <Compile Include="SpriteBatch.cs" />
-        <Compile Include="TextureHelper.cs" />
-        <Compile Include="TextureLoader.cs" />
-        <Compile Include="TextureRenderer.cs" />
-        <Compile Include="UnmanagedDll\UnmanagedDLLManager.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="UnmanagedDll\sharpdx_direct3d11_1_effects_x64.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="UnmanagedDll\sharpdx_direct3d11_1_effects_x86.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <Content Include="EntitySystem\LICENSE.txt" />
-      <Content Include="EntitySystem\README" />
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-      <PropertyGroup>
-        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-      </PropertyGroup>
-    </Target>
-    
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <Import Project="..\packages\ILMerge.3.0.29\build\ILMerge.props" Condition="Exists('..\packages\ILMerge.3.0.29\build\ILMerge.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{414E80E7-4613-467F-9DDA-1D274ECF6AC8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DXToolKit</RootNamespace>
+    <AssemblyName>DXToolKit</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;FORCEINT32;FULLDOTNET</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\DXToolKit.xml</DocumentationFile>
+    <Prefer32bit>false</Prefer32bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;FORCEINT32;FULLDOTNET</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\DXToolKit.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Direct3D11.Effects.4.2.0\lib\net45\SharpDX.Direct3D11.Effects.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.DirectInput.4.2.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Buffers\ArrayBuffer.cs" />
+    <Compile Include="Buffers\ConstantBuffer.cs" />
+    <Compile Include="Buffers\DXBuffer.cs" />
+    <Compile Include="Buffers\IndexBuffer.cs" />
+    <Compile Include="Buffers\StructuredBuffer.cs" />
+    <Compile Include="Buffers\VertexBuffer.cs" />
+    <Compile Include="DXCamera.cs" />
+    <Compile Include="ClipboardHandler.cs" />
+    <Compile Include="EntitySystem\Aspect.cs" />
+    <Compile Include="EntitySystem\Attributes\ComponentCreateAttribute.cs" />
+    <Compile Include="EntitySystem\Attributes\ComponentPoolAttribute.cs" />
+    <Compile Include="EntitySystem\Attributes\EntitySystemAttribute.cs" />
+    <Compile Include="EntitySystem\Attributes\EntityTemplateAttribute.cs" />
+    <Compile Include="EntitySystem\Attributes\AttributesProcessor.cs" />
+    <Compile Include="EntitySystem\Blackboard\BlackBoard.cs" />
+    <Compile Include="EntitySystem\Blackboard\SimpleTrigger.cs" />
+    <Compile Include="EntitySystem\Blackboard\Trigger.cs" />
+    <Compile Include="EntitySystem\Blackboard\TriggerMultiCondition.cs" />
+    <Compile Include="EntitySystem\Blackboard\TriggerStateType.cs" />
+    <Compile Include="EntitySystem\ComponentMapper.cs" />
+    <Compile Include="EntitySystem\ComponentPool.cs" />
+    <Compile Include="EntitySystem\ComponentPoolable.cs" />
+    <Compile Include="EntitySystem\ComponentPoolMultiThread.cs" />
+    <Compile Include="EntitySystem\ComponentType.cs" />
+    <Compile Include="EntitySystem\Entity.cs" />
+    <Compile Include="EntitySystem\EntityWorld.cs" />
+    <Compile Include="EntitySystem\Exceptions\MissingEntityTemplateException.cs" />
+    <Compile Include="EntitySystem\Interface\IComponent.cs" />
+    <Compile Include="EntitySystem\Interface\IComponentPool.cs" />
+    <Compile Include="EntitySystem\Interface\IEntityTemplate.cs" />
+    <Compile Include="EntitySystem\Manager\AddedComponentHandler.cs" />
+    <Compile Include="EntitySystem\Manager\AddedEntityHandler.cs" />
+    <Compile Include="EntitySystem\Manager\ComponentTypeManager.cs" />
+    <Compile Include="EntitySystem\Manager\EntityManager.cs" />
+    <Compile Include="EntitySystem\Manager\ExecutionType.cs" />
+    <Compile Include="EntitySystem\Manager\GameLoopType.cs" />
+    <Compile Include="EntitySystem\Manager\GroupManager.cs" />
+    <Compile Include="EntitySystem\Manager\QueueManager.cs" />
+    <Compile Include="EntitySystem\Manager\RemovedComponentHandler.cs" />
+    <Compile Include="EntitySystem\Manager\RemovedEntityHandler.cs" />
+    <Compile Include="EntitySystem\Manager\SystemBitManager.cs" />
+    <Compile Include="EntitySystem\Manager\SystemManager.cs" />
+    <Compile Include="EntitySystem\Manager\TagManager.cs" />
+    <Compile Include="EntitySystem\System\DelayedEntityProcessingSystem.cs" />
+    <Compile Include="EntitySystem\System\DelayedEntitySystem.cs" />
+    <Compile Include="EntitySystem\System\EntityComponentProcessingSystem.cs" />
+    <Compile Include="EntitySystem\System\EntityProcessingSystem.cs" />
+    <Compile Include="EntitySystem\System\EntitySystem.cs" />
+    <Compile Include="EntitySystem\System\HybridQueueSystemProcessing.cs" />
+    <Compile Include="EntitySystem\System\IntervalEntityProcessingSystem.cs" />
+    <Compile Include="EntitySystem\System\IntervalEntitySystem.cs" />
+    <Compile Include="EntitySystem\System\IntervalTagSystem.cs" />
+    <Compile Include="EntitySystem\System\ParallelEntityProcessingSystem.cs" />
+    <Compile Include="EntitySystem\System\ProcessingSystem.cs" />
+    <Compile Include="EntitySystem\System\QueueSystemProcessing.cs" />
+    <Compile Include="EntitySystem\System\QueueSystemProcessingThreadSafe.cs" />
+    <Compile Include="EntitySystem\System\TagSystem.cs" />
+    <Compile Include="EntitySystem\Utils\Bag.cs" />
+    <Compile Include="EntitySystem\Utils\BagEnumerator.cs" />
+    <Compile Include="EntitySystem\Utils\FastDateTime.cs" />
+    <Compile Include="EntitySystem\Utils\MetroCompatibilityExtensions.cs" />
+    <Compile Include="EntitySystem\Utils\Timer.cs" />
+    <Compile Include="FactoryCollection.cs" />
+    <Compile Include="DeviceComponent.cs" />
+    <Compile Include="FullscreenQuad.cs" />
+    <Compile Include="GraphicsDevice.cs" />
+    <Compile Include="LineRenderer.cs" />
+    <Compile Include="Mathf.cs" />
+    <Compile Include="Noise.cs" />
+    <Compile Include="PrimitiveFactory.cs" />
+    <Compile Include="PrimitiveRenderer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shaders\EffectCompiler.cs" />
+    <Compile Include="Shaders\FXInclueHandler.cs" />
+    <Compile Include="Shaders\LiveReload.cs" />
+    <Compile Include="Shaders\ShaderCompilationResult.cs" />
+    <Compile Include="Shaders\ShaderCompiler.cs" />
+    <Compile Include="SimplexNoise.cs" />
+    <Compile Include="SpriteBatch.cs" />
+    <Compile Include="TextureHelper.cs" />
+    <Compile Include="TextureLoader.cs" />
+    <Compile Include="TextureRenderer.cs" />
+    <Compile Include="UnmanagedDll\UnmanagedDLLManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UnmanagedDll\sharpdx_direct3d11_1_effects_x64.dll" />
+    <EmbeddedResource Include="UnmanagedDll\sharpdx_direct3d11_1_effects_x86.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="EntitySystem\LICENSE.txt" />
+    <Content Include="EntitySystem\README" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
     </Target>
     -->
-    
-    <!--
+  <!--
     <Target Name="AfterBuild">
         <Exec Command="$(ILMergeConsolePath) Bin\Debug\DXToolKit.dll /out:bin\Debug\DXToolKit2.dll bin\Debug\SharpDX.dll" />
     </Target>
