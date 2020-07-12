@@ -95,6 +95,7 @@
     <Compile Include="GUI\Controls\Button.cs" />
     <Compile Include="GUI\Controls\CloseButton.cs" />
     <Compile Include="GUI\Controls\GraphicButton.cs" />
+    <Compile Include="GUI\Controls\GUIDirection.cs" />
     <Compile Include="GUI\Controls\GUIPanel.cs" />
     <Compile Include="GUI\Controls\Scrollbar.cs" />
     <Compile Include="GUI\Controls\Window.cs" />

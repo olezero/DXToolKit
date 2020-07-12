@@ -45,6 +45,9 @@ namespace DXToolKit {
 			OnDispose();
 		}
 
+		/// <summary>
+		/// Called when the component is disposed, use to release all unmanaged memory
+		/// </summary>
 		protected abstract void OnDispose();
 	}
 }

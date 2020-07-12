@@ -9,9 +9,24 @@ namespace DXToolKit {
 	/// </summary>
 	/// <typeparam name="T">Sequential aligned structure to send to the GPU</typeparam>
 	public abstract class DXBuffer<T> : DeviceComponent where T : struct {
+		/// <summary>
+		/// Buffer object used by DirectX
+		/// </summary>
 		protected Buffer m_buffer;
+
+		/// <summary>
+		/// Buffer description used by DirectX
+		/// </summary>
 		protected BufferDescription m_bufferDescription;
+
+		/// <summary>
+		/// Event fired when buffer is created
+		/// </summary>
 		protected event Action OnBufferCreated;
+
+		/// <summary>
+		/// Data stream for writing to the buffer, useful so it does not need to be recreated every time the buffer is updated
+		/// </summary>
 		private DataStream m_stream;
 
 		/// <summary>
@@ -71,6 +86,11 @@ namespace DXToolKit {
 			CreateBuffer(data, description);
 		}
 
+		/// <summary>
+		/// Creates a new buffer based on input description
+		/// If description is omitted the stored buffer description will be used
+		/// </summary>
+		/// <param name="description">BufferDescription to define the buffer</param>
 		protected void CreateBuffer(BufferDescription? description = null) {
 			// Set the description.
 			SetDescription(description);
@@ -82,6 +102,12 @@ namespace DXToolKit {
 			OnBufferCreated?.Invoke();
 		}
 
+		/// <summary>
+		/// Creates a new buffer based on input description and initializes it with the input data struct
+		/// If description is omitted the stored buffer description will be used
+		/// </summary>
+		/// <param name="data">The data to initialize the buffer with</param>
+		/// <param name="description">BufferDescription to define the buffer</param>
 		protected void CreateBuffer(T data, BufferDescription? description = null) {
 			// Copy description if its not null
 			SetDescription(description);
@@ -96,6 +122,12 @@ namespace DXToolKit {
 			OnBufferCreated?.Invoke();
 		}
 
+		/// <summary>
+		/// Creates a new buffer based on input description and initializes it with the input data struct
+		/// If description is omitted the stored buffer description will be used
+		/// </summary>
+		/// <param name="data">The data to initialize the buffer with</param>
+		/// <param name="description">BufferDescription to define the buffer</param>
 		protected void CreateBuffer(T[] data, BufferDescription? description = null) {
 			// Copy description if its not null
 			SetDescription(description);
@@ -149,6 +181,9 @@ namespace DXToolKit {
 			m_stream = null;
 		}
 
+		/// <summary>
+		/// Releases all unmanaged resources held by the buffer
+		/// </summary>
 		protected override void OnDispose() {
 			m_buffer?.Dispose();
 			m_stream?.Dispose();

@@ -139,7 +139,7 @@ namespace DXToolKit {
 		}
 
 		public static Primitive Plane(float length = 1.0F, float width = 1.0F, int resX = 2, int resZ = 2) {
-			#region Vertices		
+			#region Vertices
 
 			var vertices = new Vector3[resX * resZ];
 			for (int z = 0; z < resZ; z++) {
@@ -162,7 +162,7 @@ namespace DXToolKit {
 
 			#endregion
 
-			#region UVs		
+			#region UVs
 
 			var uvs = new Vector2[vertices.Length];
 			for (int v = 0; v < resZ; v++) {
@@ -207,7 +207,7 @@ namespace DXToolKit {
 			// bottom + top + sides
 			var vertices = new Vector3[nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2];
 			int vert = 0;
-			float _2pi = Mathf.PI * 2f;
+			float _2pi = Mathf.Pi * 2f;
 
 			// Bottom cap
 			vertices[vert++] = new Vector3(0f, 0f, 0f);
@@ -386,7 +386,7 @@ namespace DXToolKit {
 			// bottom + top + sides
 			var vertices = new Vector3[nbVerticesCap * 2 + nbVerticesSides * 2];
 			int vert = 0;
-			float _2pi = Mathf.PI * 2f;
+			float _2pi = Mathf.Pi * 2f;
 
 			// Bottom cap
 			int sideCounter = 0;
@@ -616,7 +616,7 @@ namespace DXToolKit {
 			#region Vertices
 
 			var vertices = new Vector3[(nbLong + 1) * nbLat + 2];
-			float _pi = Mathf.PI;
+			float _pi = Mathf.Pi;
 			float _2pi = _pi * 2f;
 
 			vertices[0] = Vector3.Up * radius;
@@ -638,7 +638,7 @@ namespace DXToolKit {
 
 			#endregion
 
-			#region Normales		
+			#region Normales
 
 			var normales = new Vector3[vertices.Length];
 			for (int n = 0; n < vertices.Length; n++)

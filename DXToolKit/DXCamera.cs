@@ -2,6 +2,11 @@ using System.IO;
 using SharpDX;
 
 namespace DXToolKit {
+	/// <summary>
+	/// Camera used by many helper functions of the toolkit
+	/// Can be used to render in 2D and 3D.
+	/// Supports normal FPS with Field of view, Orbit and Orthographic projection matrix calculations 
+	/// </summary>
 	public class DXCamera {
 		private Matrix m_uprotationMatrix = Matrix.Identity;
 
@@ -188,6 +193,9 @@ namespace DXToolKit {
 		}
 
 
+		/// <summary>
+		/// Gets or sets the UP vector of the camera
+		/// </summary>
 		public Vector3 UpVector {
 			get => m_uprotationMatrix.Up;
 			set {
@@ -240,6 +248,9 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Gets a Matrix3x2 for 2D transformation
+		/// </summary>
 		public Matrix3x2 D2DTransformMatrix {
 			get {
 				var halfWidth = m_orthoWidth / 2.0F;
@@ -266,9 +277,13 @@ namespace DXToolKit {
 		/// </summary>
 		public Matrix ViewProjectionTransposed => Matrix.Transpose(ViewProjection);
 
-		public bool m_hasFustrumChanged = true;
+
+		private bool m_hasFustrumChanged = true;
 		private BoundingFrustum m_boundingFrustum;
 
+		/// <summary>
+		/// Gets the bounding frustum of the camera
+		/// </summary>
 		public BoundingFrustum CameraFrustum {
 			get {
 				if (m_hasFustrumChanged) {
@@ -286,6 +301,9 @@ namespace DXToolKit {
 		private float m_orthoHeight = 1.0F;
 		private float m_orthoScaling = 1.0F;
 
+		/// <summary>
+		/// Gets or sets a value indicating if the cameras projection matrix should be a Orthographic projection
+		/// </summary>
 		public bool IsOrthographic {
 			get => m_isOrthographic;
 			set {
@@ -294,6 +312,9 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the Orthographic width (usually screen width) of the projection matrix
+		/// </summary>
 		public float OrthoWidth {
 			get => m_orthoWidth;
 			set {
@@ -303,6 +324,9 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the Orthographic height (usually screen height) of the projection matrix
+		/// </summary>
 		public float OrthoHeight {
 			get => m_orthoHeight;
 			set {
@@ -312,6 +336,9 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value that scales the orthographic projection matrix
+		/// </summary>
 		public float OrthoScaling {
 			get => m_orthoScaling;
 			set {
@@ -321,6 +348,9 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Gets a RectangleF representing the view bounds of the Orthographic camera
+		/// </summary>
 		public RectangleF OrthoCameraBounds {
 			get {
 				var halfWidth = m_orthoWidth / 2.0F / m_orthoScaling;
@@ -504,15 +534,38 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Converts a screen position into a ray in 3D space
+		/// Useful for making a "Mouse Picker" ray
+		/// </summary>
+		/// <param name="screen">Screen position to convert into 3D space</param>
+		/// <param name="screenWidth">Screen width</param>
+		/// <param name="screenHeight">Screen height</param>
+		/// <returns>A new ray that starts at the camera position and goes towards the input screen coordinate</returns>
 		public virtual Ray ScreenToWorld(Vector2 screen, float screenWidth, float screenHeight) {
 			return Ray.GetPickRay((int) screen.X, (int) screen.Y, new ViewportF(0, 0, screenWidth, screenHeight, 0, 1), ViewProjection);
 		}
 
+		/// <summary>
+		/// Converts a screen position into a position in 3D space
+		/// </summary>
+		/// <param name="screen">Screen position to convert into 3D space</param>
+		/// <param name="screenWidth">Screen width</param>
+		/// <param name="screenHeight">Screen height</param>
+		/// <param name="distance">The distance from the camera of the desired position</param>
+		/// <returns>A position in 3D space based on input screen position, with a distance from the camera based on input distance</returns>
 		public virtual Vector3 ScreenToWorld(Vector2 screen, float screenWidth, float screenHeight, float distance) {
 			var ray = ScreenToWorld(screen, screenWidth, screenHeight);
 			return ray.Position + ray.Direction * distance;
 		}
 
+		/// <summary>
+		/// Converts a world in 3D space into screen space
+		/// </summary>
+		/// <param name="world">World position</param>
+		/// <param name="screenWidth">Screen width</param>
+		/// <param name="screenHeight">Screen height</param>
+		/// <returns>Screen coordinates of the point in space</returns>
 		public Vector2 WorldToScreen(Vector3 world, float screenWidth, float screenHeight) {
 			var result = Vector3.Project(world, 0, 0, screenWidth, screenHeight, 0, 1, ViewProjection);
 			return new Vector2(result.X, result.Y);

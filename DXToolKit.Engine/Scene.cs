@@ -150,6 +150,7 @@ namespace DXToolKit.Engine {
 
 		private void UpdateGUIEventArgs() {
 			m_guiMouseEventArgs.MousePosition = Input.MousePosition;
+			m_guiMouseEventArgs.MouseMove = Input.MouseMove;
 
 			m_guiMouseEventArgs.LeftMouseDown = Input.MouseDown(MouseButton.Left);
 			m_guiMouseEventArgs.RightMouseDown = Input.MouseDown(MouseButton.Right);

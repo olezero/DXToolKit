@@ -4,11 +4,6 @@ using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 
 namespace DXToolKit.Engine {
-	public enum GUIDirection {
-		Vertical,
-		Horizontal
-	}
-
 	public class Scrollbar : ActiveElement {
 		private class ScrollElement : Button { }
 
@@ -33,8 +28,10 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/*
 		private float m_minValue;
 		private float m_maxValue;
+		*/
 
 		public float Value { get; set; }
 
@@ -56,7 +53,9 @@ namespace DXToolKit.Engine {
 
 			float dragStartOffset = 0;
 
-			m_scrollElement.DragStart += () => { dragStartOffset = m_scrollElement.ScreenToLocal(Input.MousePosition).Y; };
+			m_scrollElement.DragStart += () => {
+				dragStartOffset = m_scrollElement.ScreenToLocal(Input.MousePosition).Y;
+			};
 
 			m_scrollElement.Drag += () => {
 				// Need to offset by draw start position

@@ -142,6 +142,9 @@ namespace DXToolKit {
 			OnResizeEnd?.Invoke();
 		}
 
+		/// <summary>
+		/// Unpacks embedded DirectX.Effect dll files.
+		/// </summary>
 		public void UnpackUnmanagedEffectFiles() {
 			// Unpack DLL files
 			UnmanagedDll.UnmanagedDLLManager.Unpack();
@@ -169,11 +172,37 @@ namespace DXToolKit {
 			m_renderTarget?.Dispose();
 		}
 
+		/// <summary>
+		/// Device implicit overload
+		/// </summary>
+		/// <param name="device">GraphicsDevice</param>
+		/// <returns>SharpDX.Direct3D11.Device</returns>
 		public static implicit operator Device(GraphicsDevice device) => device.m_comDevice;
+
+		/// <summary>
+		/// DeviceContext implicit overload
+		/// </summary>
+		/// <param name="device">GraphicsDevice</param>
+		/// <returns>SharpDX.Direct3D11.DeviceContext</returns>
 		public static implicit operator DeviceContext(GraphicsDevice device) => device.m_deviceContext;
+
+		/// <summary>
+		/// SwapChain implicit overload
+		/// </summary>
+		/// <param name="device">GraphicsDevice</param>
+		/// <returns>SharpDX.DXGI.SwapChain</returns>
 		public static implicit operator SwapChain(GraphicsDevice device) => device.m_swapchain;
+
+		/// <summary>
+		/// RenderTarget implicit overload
+		/// </summary>
+		/// <param name="device">GraphicsDevice</param>
+		/// <returns>SharpDX.Direct2D.RenderTarget</returns>
 		public static implicit operator RenderTarget(GraphicsDevice device) => device.m_renderTarget;
 
+		/// <summary>
+		/// Disposes of all unmanaged memory
+		/// </summary>
 		public void Dispose() {
 			m_comDevice?.Dispose();
 			m_deviceContext?.Dispose();

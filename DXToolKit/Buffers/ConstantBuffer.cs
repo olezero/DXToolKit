@@ -2,6 +2,10 @@ using SharpDX;
 using SharpDX.Direct3D11;
 
 namespace DXToolKit {
+	/// <summary>
+	/// Constant buffer used by the GPU
+	/// </summary>
+	/// <typeparam name="T">Struct type the constant buffer should use</typeparam>
 	public class ConstantBuffer<T> : DXBuffer<T> where T : struct {
 		/// <summary>
 		/// Creates a new dynamic and writable constant buffer with the size of T

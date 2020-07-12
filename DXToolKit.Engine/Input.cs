@@ -181,7 +181,9 @@ namespace DXToolKit {
 
 
 			WindowsFormRectangle = renderForm.RectangleToScreen(renderForm.ClientRectangle);
-			renderForm.LocationChanged += (sender, args) => { WindowsFormRectangle = renderForm.RectangleToScreen(renderForm.ClientRectangle); };
+			renderForm.LocationChanged += (sender, args) => {
+				WindowsFormRectangle = renderForm.RectangleToScreen(renderForm.ClientRectangle);
+			};
 		}
 
 		internal static void Frame(RenderForm renderForm) {
@@ -267,7 +269,7 @@ namespace DXToolKit {
 			if (UseHardwareMouse) {
 				// TODO - fix this. After changing from a renderform.mousemove to cursor.position this broke, since we cant save mouseposition. Although "hardware" mouse seams more sluggish then a direct from windows mouse position
 				throw new NotImplementedException();
-				MouseMove = new Vector2(state.X, state.Y);
+				//MouseMove = new Vector2(state.X, state.Y);
 				//MousePosition += MouseMove;
 			} else {
 				//MousePosition = m_windowMousePosition;

@@ -2,6 +2,10 @@ using SharpDX;
 using SharpDX.Direct3D11;
 
 namespace DXToolKit {
+	/// <summary>
+	/// Vertex buffer used by DirectX. Based on ArrayBuffer of type T
+	/// </summary>
+	/// <typeparam name="T">Data type the buffer should hold</typeparam>
 	public class VertexBuffer<T> : ArrayBuffer<T> where T : struct {
 		/// <summary>
 		/// Vertex buffer binding used by the input assembler.

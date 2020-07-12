@@ -2,6 +2,9 @@ using SharpDX;
 using SharpDX.Direct3D11;
 
 namespace DXToolKit {
+	/// <summary>
+	/// Index buffer used by DirectX. Based on ArrayBuffer of type Int
+	/// </summary>
 	public class IndexBuffer : ArrayBuffer<int> {
 		/// <summary>
 		/// Creates a new index buffer with input data.

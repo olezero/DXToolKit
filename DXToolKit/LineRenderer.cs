@@ -445,8 +445,8 @@ namespace DXToolKit {
 
 			// Standard 3d circle calculation
 			for (int i = 0; i < sides; i++) {
-				var a1 = (Mathf.PI * 2 / sides) * (i + 0);
-				var a2 = (Mathf.PI * 2 / sides) * (i + 1);
+				var a1 = (Mathf.Pi * 2 / sides) * (i + 0);
+				var a2 = (Mathf.Pi * 2 / sides) * (i + 1);
 
 				var a1x = Mathf.Cos(a1) * p1.X + Mathf.Sin(a1) * p2.X;
 				var a1y = Mathf.Cos(a1) * p1.Y + Mathf.Sin(a1) * p2.Y;
@@ -484,8 +484,8 @@ namespace DXToolKit {
 				for (int j = 0; j < lon; j++) {
 					var points = new Vector3[2];
 					for (int k = 0; k < 2; k++) {
-						var theta = i / (float) len * Mathf.PI * 2;
-						var arpha = (j + k) / (float) lon * Mathf.PI;
+						var theta = i / (float) len * Mathf.Pi * 2;
+						var arpha = (j + k) / (float) lon * Mathf.Pi;
 
 						var x = radius * Mathf.Cos(theta) * Mathf.Sin(arpha);
 						var y = radius * Mathf.Sin(theta) * Mathf.Sin(arpha);
@@ -504,8 +504,8 @@ namespace DXToolKit {
 				for (int j = 0; j < lon; j++) {
 					var points = new Vector3[2];
 					for (int k = 0; k < 2; k++) {
-						var theta = i / (float) len * Mathf.PI;
-						var arpha = (j + k) / (float) lon * Mathf.PI * 2;
+						var theta = i / (float) len * Mathf.Pi;
+						var arpha = (j + k) / (float) lon * Mathf.Pi * 2;
 
 						var x = radius * Mathf.Cos(arpha) * Mathf.Sin(theta);
 						var y = radius * Mathf.Sin(arpha) * Mathf.Sin(theta);
@@ -544,8 +544,8 @@ namespace DXToolKit {
 				for (int j = 0; j < lon; j++) {
 					var points = new Vector3[2];
 					for (int k = 0; k < 2; k++) {
-						var theta = i / (float) len * Mathf.PI * 2;
-						var arpha = (j + k) / (float) lon * Mathf.PI;
+						var theta = i / (float) len * Mathf.Pi * 2;
+						var arpha = (j + k) / (float) lon * Mathf.Pi;
 						var x = radius * Mathf.Cos(theta) * Mathf.Sin(arpha);
 						var y = radius * Mathf.Sin(theta) * Mathf.Sin(arpha);
 						var z = radius * Mathf.Cos(arpha);
@@ -574,8 +574,8 @@ namespace DXToolKit {
 				for (int j = 0; j < lon; j++) {
 					var points = new Vector3[2];
 					for (int k = 0; k < 2; k++) {
-						var theta = i / (float) len * Mathf.PI;
-						var arpha = (j + k) / (float) lon * Mathf.PI * 2;
+						var theta = i / (float) len * Mathf.Pi;
+						var arpha = (j + k) / (float) lon * Mathf.Pi * 2;
 						var x = radius * Mathf.Cos(arpha) * Mathf.Sin(theta);
 						var y = radius * Mathf.Sin(arpha) * Mathf.Sin(theta);
 						var z = radius * Mathf.Cos(theta);
@@ -612,7 +612,7 @@ namespace DXToolKit {
 				for (int i = 0; i < len; i++) {
 					var points = new Vector3[2];
 					for (int k = 0; k < 2; k++) {
-						var theta = (i + k) / (float) len * Mathf.PI * 2;
+						var theta = (i + k) / (float) len * Mathf.Pi * 2;
 						var x = radius * Mathf.Cos(theta);
 						var z = radius * Mathf.Sin(theta);
 						// var y = 0;

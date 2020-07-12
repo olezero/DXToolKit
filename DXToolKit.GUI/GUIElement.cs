@@ -410,6 +410,39 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		protected virtual bool UseClippingBounds => false;
 
+
+		/// <summary>
+		/// Gets or sets the left of the control
+		/// </summary>
+		public float Left {
+			get => X;
+			set => X = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the top of the control
+		/// </summary>
+		public float Top {
+			get => Y;
+			set => Y = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the right of the control (this does not rescale the control)
+		/// </summary>
+		public float Right {
+			get => X + Width;
+			set => X = value - Width;
+		}
+
+		/// <summary>
+		/// Gets or sets the bottom of the control (this does not rescale the control)
+		/// </summary>
+		public float Bottom {
+			get => Y + Height;
+			set => Y = value - Height;
+		}
+
 		#endregion
 
 		#region Events

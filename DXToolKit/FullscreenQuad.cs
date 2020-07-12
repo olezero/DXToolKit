@@ -3,12 +3,19 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 
 namespace DXToolKit {
+	/// <summary>
+	/// Represents a renderable Polygon that stretches over the whole screen
+	/// </summary>
 	public class FullscreenQuad : DeviceComponent {
 		private static RasterizerState m_rasterizer;
 		private static DepthStencilState m_depthStencilState;
 
 		private VertexShader m_vertexShader;
 
+		/// <summary>
+		/// Creates a new instance of the FullscreenQuad
+		/// </summary>
+		/// <param name="device">Graphics device to use when creating the quad</param>
 		public FullscreenQuad(GraphicsDevice device) : base(device) {
 			var vsByteCode = ShaderBytecode.Compile(ShaderSource, "main", "vs_5_0");
 			m_vertexShader = new VertexShader(m_device, vsByteCode);
@@ -27,6 +34,9 @@ namespace DXToolKit {
 			}
 		}
 
+		/// <summary>
+		/// Renders the quad to the screen
+		/// </summary>
 		public void Render() {
 			var tempRasterizerState = m_context.Rasterizer.State;
 			var tempDepthState = m_context.OutputMerger.DepthStencilState;
@@ -44,6 +54,9 @@ namespace DXToolKit {
 			m_context.OutputMerger.DepthStencilState = tempDepthState;
 		}
 
+		/// <summary>
+		/// Disposes of all unmanaged memory
+		/// </summary>
 		protected override void OnDispose() {
 			m_vertexShader?.Dispose();
 		}

@@ -103,7 +103,7 @@ namespace DXToolKit.Engine {
 
 		public void Update() {
 			// Get transformed mouse movement
-			var mouseMove = Input.MouseMove * (Mathf.PI / 180.0F) * m_mouseSensitivity;
+			var mouseMove = Input.MouseMove * (Mathf.Pi / 180.0F) * m_mouseSensitivity;
 
 			if (m_keybindings.Rotate()) {
 				Rotate(m_flipHorizontalRotation ? -mouseMove.X : mouseMove.X,

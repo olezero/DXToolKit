@@ -43,8 +43,25 @@ namespace DXToolKit {
 			m_dwFactory?.Dispose();
 		}
 
+		/// <summary>
+		/// Gets the DXGI factory
+		/// </summary>
+		/// <param name="collection">The current factory collection</param>
+		/// <returns>SharpDX.DXGI.Factory</returns>
 		public static implicit operator SharpDX.DXGI.Factory(FactoryCollection collection) => collection.m_dxgiFactory;
+
+		/// <summary>
+		/// Gets the Direct2D Factory
+		/// </summary>
+		/// <param name="collection">The current factory collection</param>
+		/// <returns>SharpDX.Direct2D.Factory</returns>
 		public static implicit operator SharpDX.Direct2D1.Factory(FactoryCollection collection) => collection.m_d2dFactory;
+
+		/// <summary>
+		/// Gets the DirectWrite Factory
+		/// </summary>
+		/// <param name="collection">The current factory collection</param>
+		/// <returns>SharpDX.DirectWrite.Factory</returns>
 		public static implicit operator SharpDX.DirectWrite.Factory(FactoryCollection collection) => collection.m_dwFactory;
 	}
 }
