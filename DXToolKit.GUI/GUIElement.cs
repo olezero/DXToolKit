@@ -189,7 +189,7 @@ namespace DXToolKit.GUI {
 		/// <summary>
 		/// Gets a value indicating if the element contains focus, meaning if this element or any of its children has focus
 		/// </summary>
-		public bool ContainsFocus => m_containsFocus || m_isFocused;
+		public bool ContainsFocus => m_containsFocus;
 
 		/// <summary>
 		/// Gets or sets the local bounds of the element
@@ -809,41 +809,13 @@ namespace DXToolKit.GUI {
 			MouseHovering = guiSystem.DragTarget == this;
 			IsDragged = guiSystem.DragTarget == this;
 			m_isFocused = guiSystem.FocusTarget == this;
+			// m_isFocused = false;
 			m_isMousePressed = false;
 			m_containsMouse = false;
 
 			if (m_isNewFocusTarget) {
-				m_isFocused = true;
 				SetFocusTarget(this, guiSystem);
 				m_isNewFocusTarget = false;
-			}
-
-			// If we have focus
-			if (m_containsFocus) {
-				// Get current focus target
-				var focusTarget = guiSystem.FocusTarget;
-				var stillContainsFocus = false;
-
-				// Now if focus target is a child of this element (recursively), we still have focus, if not we dont
-				var focusParent = focusTarget.m_parentElement;
-				while (focusParent != null) {
-					if (focusParent == this) {
-						// Still have focus
-						stillContainsFocus = true;
-						break;
-					}
-
-					focusParent = focusParent.m_parentElement;
-				}
-
-				// If we still have a child that is the focus target, dont do anything, else we lost it
-				if (stillContainsFocus == false) {
-					if (m_containsFocus) {
-						OnContainFocusLost();
-					}
-
-					m_containsFocus = false;
-				}
 			}
 
 
@@ -1115,58 +1087,81 @@ namespace DXToolKit.GUI {
 		private bool m_isNewFocusTarget;
 
 		private void SetFocusTarget(GUIElement target, GUISystem guiSystem) {
-			// Check that target is not null
+			// If input target is null, all focus should be lost
 			if (target == null) {
-				// If null is passed, unset focus from current target
-				if (guiSystem.FocusTarget != null && guiSystem.FocusTarget.CanReceiveFocus) {
-					guiSystem.FocusTarget.OnFocusLost();
-					guiSystem.FocusTarget.OnContainFocusLost();
-
-					var focusParent = guiSystem.FocusTarget.Parent;
-					while (focusParent != null) {
-						if (focusParent.m_containsFocus) {
-							focusParent.OnContainFocusLost();
-							focusParent.m_containsFocus = false;
+				if (guiSystem.FocusTarget != null) {
+					// Need to reset all of focus target's parents that contain focus
+					var parent = guiSystem.FocusTarget.Parent;
+					// Recurse up through the tree to find all parents of the current focus target
+					while (parent != null) {
+						// If parent knows it contains focus, run disable contains focus and run events
+						if (parent.m_containsFocus) {
+							parent.m_containsFocus = false;
+							parent.OnContainFocusLost();
 						}
 
-						focusParent = focusParent.Parent;
+						parent = parent.Parent;
 					}
 
+					guiSystem.FocusTarget.m_isFocused = false;
+					guiSystem.FocusTarget.OnFocusLost();
 					guiSystem.FocusTarget = null;
 				}
+			} else {
+				// Only switch if new target can receive focus
+				if (target.CanReceiveFocus) {
+					// If target exists, lose focus
+					guiSystem.FocusTarget?.OnFocusLost();
+					var currentFocusTarget = guiSystem.FocusTarget;
+					guiSystem.FocusTarget = target;
+					guiSystem.FocusTarget.OnFocusGained();
+					CalculateContainsFocus(target, currentFocusTarget);
+				}
+			}
+		}
 
-				return;
+		private static void CalculateContainsFocus(GUIElement newTarget, GUIElement oldTarget) {
+			foreach (var el in newTarget.Lineage()) {
+				if (el.m_containsFocus == false) {
+					el.OnContainFocusGained();
+				}
+
+				el.m_containsFocus = true;
 			}
 
-			// Check that target can actually receive focus, and that its not already set
-			if (target.CanReceiveFocus && target != guiSystem.FocusTarget) {
-				// Here we know the new focus target wants to be changed to a new
-
-
-				if (guiSystem.FocusTarget != null && guiSystem.FocusTarget.CanReceiveFocus) {
-					guiSystem.FocusTarget.OnFocusLost();
-
-					// TODO - This might be wrong, what if the new target is a child of guiSystem.FocusTarget ?
-					guiSystem.FocusTarget.OnContainFocusLost();
-				}
-
-				// Set new focus target
-				guiSystem.FocusTarget = target;
-				// Call event
-				guiSystem.FocusTarget.OnFocusGained();
-				guiSystem.FocusTarget.OnContainFocusGained();
-
-				// Run focus contained
-				var parent = m_parentElement;
-				while (parent != null) {
-					// If parent contains focus now, dont call events
-					if (parent.m_containsFocus == false) {
-						parent.OnContainFocusGained();
-						parent.m_containsFocus = true;
+			if (oldTarget != null) {
+				foreach (var el in oldTarget.Lineage()) {
+					var stillContains = false;
+					foreach (var ch in el.AllChildren()) {
+						if (ch == newTarget) {
+							stillContains = true;
+						}
 					}
 
-					parent = parent.m_parentElement;
+					if (el == newTarget) {
+						stillContains = true;
+					}
+
+					if (!stillContains) {
+						el.m_containsFocus = false;
+						el.OnContainFocusLost();
+					} else {
+						// Can break if we found a element in the lineage that still should contain focus
+						break;
+					}
 				}
+			}
+		}
+
+		public IEnumerable<GUIElement> Lineage(bool includeSelf = true) {
+			var target = this;
+			if (includeSelf == false) {
+				target = Parent;
+			}
+
+			while (target != null) {
+				yield return target;
+				target = target.Parent;
 			}
 		}
 
