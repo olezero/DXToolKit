@@ -98,6 +98,8 @@
     <Compile Include="GUI\Controls\GUIDirection.cs" />
     <Compile Include="GUI\Controls\GUIPanel.cs" />
     <Compile Include="GUI\Controls\Scrollbar.cs" />
+    <Compile Include="GUI\Controls\Slider.cs" />
+    <Compile Include="GUI\Controls\TextBox.cs" />
     <Compile Include="GUI\Controls\Window.cs" />
     <Compile Include="GUI\GUIElement.cs" />
     <Compile Include="GUI\GUIColorPaletteDescription.cs" />
