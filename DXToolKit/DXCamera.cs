@@ -466,6 +466,10 @@ namespace DXToolKit {
 					distance = Vector3.Distance(m_position, m_target);
 				}
 
+				if (distance < Mathf.ZeroTolerance) {
+					distance = 1;
+				}
+
 				m_position = m_target + (dir * (float) distance);
 				m_hasViewChanged = true;
 			}

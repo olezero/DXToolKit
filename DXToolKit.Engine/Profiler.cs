@@ -88,9 +88,13 @@ namespace DXToolKit.Engine {
 			}
 		}
 
-		public static void StopProfiler(object index) {
+		public static void StopProfiler(object index, bool debugLog = false, float displayTime = -1F) {
 			if (m_profilers.ContainsKey(index)) {
 				m_profilers[index].End();
+			}
+
+			if (debugLog) {
+				DebugLog(index, displayTime);
 			}
 		}
 

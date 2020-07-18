@@ -140,6 +140,14 @@ namespace DXToolKit.GUI {
 				return result;
 			}
 
+			public TextLayout GetCachedTextLayout() {
+				return m_textLayout;
+			}
+
+			public TextFormat GetCachedTextFormat() {
+				return m_textFormat;
+			}
+
 			private void DisposeText() {
 				Utilities.Dispose(ref m_textFormat);
 				Utilities.Dispose(ref m_textLayout);

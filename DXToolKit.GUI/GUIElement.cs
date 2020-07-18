@@ -10,6 +10,8 @@ using TextAlignment = SharpDX.DirectWrite.TextAlignment;
 
 namespace DXToolKit.GUI {
 	public abstract partial class GUIElement : IDisposable {
+		// TODO - FIX OnContainedFocusLost ( seams to be called even if a child element is focused )
+
 		// TODO - Need a layering system, for instance to allow windows to always be drawn on top of everything else. Like a z-index
 		// TODO - Variable for "move to front on focus gained", to allow for toggling that functionality
 
@@ -147,6 +149,11 @@ namespace DXToolKit.GUI {
 		/// Controller for if this element or any of its children has focus
 		/// </summary>
 		private bool m_containsFocus;
+
+		/// <summary>
+		/// Controller for if this control contains the mouse in screen coordinates
+		/// </summary>
+		private bool m_containsMouse;
 
 		#endregion
 
@@ -394,6 +401,9 @@ namespace DXToolKit.GUI {
 			set => m_guiText.FontSize = value;
 		}
 
+		public TextLayout TextLayout => m_guiText.GetCachedTextLayout();
+		public TextFormat TextFormat => m_guiText.GetCachedTextFormat();
+
 		/// <summary>
 		/// Defaults to return this.ScreenBounds, but can be adjusted as desired
 		/// </summary>
@@ -442,6 +452,11 @@ namespace DXToolKit.GUI {
 			get => Y + Height;
 			set => Y = value - Height;
 		}
+
+		/// <summary>
+		/// Gets a value indicating if this control contains the mouse
+		/// </summary>
+		public bool ContainsMouse => m_containsMouse;
 
 		#endregion
 
@@ -576,6 +591,8 @@ namespace DXToolKit.GUI {
 		/// Raised when this or a child looses focus
 		/// </summary>
 		public event Action ContainFocusLost;
+
+		public event Action Updated;
 
 
 		public delegate void ParentChangeHandler(GUIElement newParent, GUIElement oldParent);
@@ -779,6 +796,7 @@ namespace DXToolKit.GUI {
 
 		#endregion
 
+
 		#region Update
 
 		/// <summary>
@@ -792,8 +810,10 @@ namespace DXToolKit.GUI {
 			IsDragged = guiSystem.DragTarget == this;
 			m_isFocused = guiSystem.FocusTarget == this;
 			m_isMousePressed = false;
+			m_containsMouse = false;
 
 			if (m_isNewFocusTarget) {
+				m_isFocused = true;
 				SetFocusTarget(this, guiSystem);
 				m_isNewFocusTarget = false;
 			}
@@ -805,7 +825,6 @@ namespace DXToolKit.GUI {
 				var stillContainsFocus = false;
 
 				// Now if focus target is a child of this element (recursively), we still have focus, if not we dont
-
 				var focusParent = focusTarget.m_parentElement;
 				while (focusParent != null) {
 					if (focusParent == this) {
@@ -819,8 +838,11 @@ namespace DXToolKit.GUI {
 
 				// If we still have a child that is the focus target, dont do anything, else we lost it
 				if (stillContainsFocus == false) {
+					if (m_containsFocus) {
+						OnContainFocusLost();
+					}
+
 					m_containsFocus = false;
-					OnContainFocusLost();
 				}
 			}
 
@@ -912,8 +934,14 @@ namespace DXToolKit.GUI {
 		/// Handles mouse input, returns a value indicating if the control has grabbed the mouse input
 		/// </summary>
 		internal bool HandleMouse(GUIMouseEventArgs args, GUISystem guiSystem) {
+			// Get out of here if element is not enabled
+			if (m_enabled == false) return false;
+			// Might not want to handle mouse events if the element is not visible
+			if (m_visible == false) return false;
+
 			bool isMouseHandled = false;
-			bool containsMouse = MouseScreenBounds.Contains(args.MousePosition);
+			//bool containsMouse = MouseScreenBounds.Contains(args.MousePosition);
+			m_containsMouse = MouseScreenBounds.Contains(args.MousePosition);
 
 			// If drag target is currently set but left mouse button is not pressed, release the drag target
 			if (guiSystem.DragTarget != null && args.LeftMousePressed == false) {
@@ -932,7 +960,7 @@ namespace DXToolKit.GUI {
 			}
 
 			// Should only propagate mouse checking, if this control actually contains the mouse position
-			if (containsMouse) {
+			if (m_containsMouse) {
 				// Running in reverse because the last added child should be the first to receive update check
 				for (int i = m_childElements.Count - 1; i >= 0; i--) {
 					var childElement = m_childElements[i];
@@ -951,7 +979,7 @@ namespace DXToolKit.GUI {
 			}
 
 			// If mouse is not yet handled, and current element contains mouse, set hover target
-			if (!isMouseHandled && containsMouse) {
+			if (!isMouseHandled && m_containsMouse) {
 				// TODO - This will set hover target to utmost child first, before setting it to the correct one if "CanReceiveMouseInput" on the child is false
 				// TODO - It works, but is that a good idea?
 				// TODO - This causes underlying elements to call Mouse Enter and Mouse Leave each frame since hover target switches to child element, then switches back to parent element even if it should never switch to the child element
@@ -969,7 +997,7 @@ namespace DXToolKit.GUI {
 			// If mouse has not yet been handled by a child element, try to handle it here
 			if (!isMouseHandled && CanReceiveMouseInput) {
 				// If element contains mouse, set hover to true
-				if (containsMouse) {
+				if (m_containsMouse) {
 					// Set variable to indicate that mouse is hovering to true
 					MouseHovering = true;
 					// Call events
@@ -1093,6 +1121,17 @@ namespace DXToolKit.GUI {
 				if (guiSystem.FocusTarget != null && guiSystem.FocusTarget.CanReceiveFocus) {
 					guiSystem.FocusTarget.OnFocusLost();
 					guiSystem.FocusTarget.OnContainFocusLost();
+
+					var focusParent = guiSystem.FocusTarget.Parent;
+					while (focusParent != null) {
+						if (focusParent.m_containsFocus) {
+							focusParent.OnContainFocusLost();
+							focusParent.m_containsFocus = false;
+						}
+
+						focusParent = focusParent.Parent;
+					}
+
 					guiSystem.FocusTarget = null;
 				}
 
@@ -1101,17 +1140,20 @@ namespace DXToolKit.GUI {
 
 			// Check that target can actually receive focus, and that its not already set
 			if (target.CanReceiveFocus && target != guiSystem.FocusTarget) {
+				// Here we know the new focus target wants to be changed to a new
+
+
 				if (guiSystem.FocusTarget != null && guiSystem.FocusTarget.CanReceiveFocus) {
 					guiSystem.FocusTarget.OnFocusLost();
+
+					// TODO - This might be wrong, what if the new target is a child of guiSystem.FocusTarget ?
 					guiSystem.FocusTarget.OnContainFocusLost();
 				}
 
 				// Set new focus target
 				guiSystem.FocusTarget = target;
-
 				// Call event
 				guiSystem.FocusTarget.OnFocusGained();
-				// Run contains focus
 				guiSystem.FocusTarget.OnContainFocusGained();
 
 				// Run focus contained
@@ -1241,7 +1283,7 @@ namespace DXToolKit.GUI {
 		#region Virtuals
 
 		protected virtual void OnPreUpdate() { }
-		protected virtual void OnUpdate() { }
+		protected virtual void OnUpdate() => Updated?.Invoke();
 		protected virtual void OnLateUpdate() { }
 		protected virtual void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout) { }
 		protected virtual void OnDispose() { }

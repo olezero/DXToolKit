@@ -1,3 +1,4 @@
+using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -70,10 +71,10 @@ namespace DXToolKit.Engine {
 		}
 
 		private void DisposeTargets() {
-			m_backbuffer?.Dispose();
-			m_depthbuffer?.Dispose();
-			m_renderTargetView?.Dispose();
-			m_depthStencilView?.Dispose();
+			Utilities.Dispose(ref m_backbuffer);
+			Utilities.Dispose(ref m_depthbuffer);
+			Utilities.Dispose(ref m_renderTargetView);
+			Utilities.Dispose(ref m_depthStencilView);
 		}
 	}
 }

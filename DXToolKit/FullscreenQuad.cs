@@ -1,3 +1,4 @@
+using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
@@ -7,8 +8,8 @@ namespace DXToolKit {
 	/// Represents a renderable Polygon that stretches over the whole screen
 	/// </summary>
 	public class FullscreenQuad : DeviceComponent {
-		private static RasterizerState m_rasterizer;
-		private static DepthStencilState m_depthStencilState;
+		private RasterizerState m_rasterizer;
+		private DepthStencilState m_depthStencilState;
 
 		private VertexShader m_vertexShader;
 
@@ -19,19 +20,12 @@ namespace DXToolKit {
 		public FullscreenQuad(GraphicsDevice device) : base(device) {
 			var vsByteCode = ShaderBytecode.Compile(ShaderSource, "main", "vs_5_0");
 			m_vertexShader = new VertexShader(m_device, vsByteCode);
-			vsByteCode?.Dispose();
+			Utilities.Dispose(ref vsByteCode);
 
-
-			if (m_rasterizer == null) {
-				var desc = RasterizerStateDescription.Default();
-				m_rasterizer = new RasterizerState(m_device, desc);
-			}
-
-			if (m_depthStencilState == null) {
-				var desc = DepthStencilStateDescription.Default();
-				desc.IsDepthEnabled = false;
-				m_depthStencilState = new DepthStencilState(m_device, desc);
-			}
+			m_rasterizer = new RasterizerState(m_device, RasterizerStateDescription.Default());
+			var desc = DepthStencilStateDescription.Default();
+			desc.IsDepthEnabled = false;
+			m_depthStencilState = new DepthStencilState(m_device, desc);
 		}
 
 		/// <summary>
@@ -58,7 +52,9 @@ namespace DXToolKit {
 		/// Disposes of all unmanaged memory
 		/// </summary>
 		protected override void OnDispose() {
-			m_vertexShader?.Dispose();
+			Utilities.Dispose(ref m_vertexShader);
+			Utilities.Dispose(ref m_rasterizer);
+			Utilities.Dispose(ref m_depthStencilState);
 		}
 
 

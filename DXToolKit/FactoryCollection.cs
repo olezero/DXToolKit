@@ -1,3 +1,5 @@
+using SharpDX;
+
 namespace DXToolKit {
 	/// <summary>
 	/// Holds a collection of different factory's used by DirectX
@@ -38,9 +40,9 @@ namespace DXToolKit {
 		/// Disposes of the FactoryCollection. Probably not a good idea to do this mid runtime, should only be done before closing the application.
 		/// </summary>
 		public void Dispose() {
-			m_dxgiFactory?.Dispose();
-			m_d2dFactory?.Dispose();
-			m_dwFactory?.Dispose();
+			Utilities.Dispose(ref m_dxgiFactory);
+			Utilities.Dispose(ref m_d2dFactory);
+			Utilities.Dispose(ref m_dwFactory);
 		}
 
 		/// <summary>

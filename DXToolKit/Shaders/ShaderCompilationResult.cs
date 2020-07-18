@@ -1,5 +1,6 @@
 using System;
 using SharpDX.D3DCompiler;
+using SharpDX;
 
 namespace DXToolKit {
 	/// <summary>
@@ -25,7 +26,7 @@ namespace DXToolKit {
 		/// Disposes of the result.
 		/// </summary>
 		public void Dispose() {
-			Bytecode?.Dispose();
+			Utilities.Dispose(ref Bytecode);
 		}
 	}
 }

@@ -6,10 +6,11 @@ namespace DXToolKit.Engine {
 		private SketchApp m_app;
 		protected SketchPipeline Pipeline => (SketchPipeline) m_app.RenderPipeline;
 
-		public void Run(string[] args) {
+		public int Run(string[] args) {
 			m_app = new SketchApp(this);
-			m_app.Run(args);
+			var ret = m_app.Run(args);
 			m_app?.Dispose();
+			return ret;
 		}
 
 		protected void ToggleWireframe() {

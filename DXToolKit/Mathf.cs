@@ -120,6 +120,15 @@ namespace DXToolKit {
 		/// <param name="min">The min.</param>
 		/// <param name="max">The max.</param>
 		/// <returns>The result of clamping a value between min and max</returns>
+		public static int Clamp(int value, int min, int max) {
+			return MathUtil.Clamp(value, min, max);
+		}
+		
+		/// <summary>Clamps the specified value.</summary>
+		/// <param name="value">The value.</param>
+		/// <param name="min">The min.</param>
+		/// <param name="max">The max.</param>
+		/// <returns>The result of clamping a value between min and max</returns>
 		public static float Clamp(float value, float min, float max) {
 			return MathUtil.Clamp(value, min, max);
 		}

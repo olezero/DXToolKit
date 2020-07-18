@@ -185,8 +185,8 @@ namespace DXToolKit {
 		/// Releases all unmanaged resources held by the buffer
 		/// </summary>
 		protected override void OnDispose() {
-			m_buffer?.Dispose();
-			m_stream?.Dispose();
+			Utilities.Dispose(ref m_buffer);
+			Utilities.Dispose(ref m_stream);
 		}
 
 		private void SetDescription(BufferDescription? description) {

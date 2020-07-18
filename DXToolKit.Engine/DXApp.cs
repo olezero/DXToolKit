@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using SharpDX;
 using SharpDX.DXGI;
@@ -8,6 +9,7 @@ using SharpDX.Windows;
 namespace DXToolKit.Engine {
 	public abstract class DXApp : FunctionToolBox, IDisposable {
 		public static DXApp Current;
+
 
 		protected RenderForm m_renderform => Graphics.Renderform;
 		protected GraphicsDevice m_device => Graphics.Device;
@@ -52,21 +54,44 @@ namespace DXToolKit.Engine {
 			set => m_fixedFrameRate = value;
 		}
 
-		public void Run(string[] args) {
-			m_cmdArgs = args;
-			Current = this;
-			Graphics.Setup(m_cmdArgs);
-			Graphics.Device.EarlyResizeBegin += (mode, fullscreen) => {
-				EngineConfig.SetConfig(mode, new Rational(165, 1), fullscreen, false);
-				// Silly formatter
-			};
-			Input.Initialize(Graphics.Renderform);
-			Time.Initialize();
-			Debug.Initialize(Graphics.Device);
-			m_renderPipeline = CreateRenderPipeline();
-			Initialize();
-			m_updateTimer = Stopwatch.StartNew();
-			RenderLoop.Run(Graphics.Renderform, Frame);
+		public int Run(string[] args) {
+			bool logExceptions = false;
+			foreach (var arg in args) {
+				if (arg.Contains("hidden")) {
+					logExceptions = true;
+				}
+			}
+
+			var runAction = new Action(() => {
+				m_cmdArgs = args;
+				Current = this;
+				Graphics.Setup(m_cmdArgs);
+				Graphics.Device.EarlyResizeBegin += (mode, fullscreen) => {
+					EngineConfig.SetConfig(mode, new Rational(165, 1), fullscreen, false);
+				};
+				Input.Initialize(Graphics.Renderform);
+				Time.Initialize();
+				Debug.Initialize(Graphics.Device);
+				m_renderPipeline = CreateRenderPipeline();
+				Initialize();
+				m_updateTimer = Stopwatch.StartNew();
+				RenderLoop.Run(Graphics.Renderform, Frame);
+			});
+
+			if (logExceptions) {
+				try {
+					runAction();
+				}
+				catch (Exception e) {
+					File.WriteAllText("exception.log", e.ToString());
+					Exit();
+					return 1;
+				}
+			} else {
+				runAction();
+			}
+
+			return 0;
 		}
 
 

@@ -49,7 +49,7 @@ namespace DXToolKit {
 				Color = clr;
 			}
 		}
-		
+
 		[StructLayout(LayoutKind.Sequential)]
 		private struct MatrixBufferType {
 			public Matrix WorldMatrix;
@@ -127,7 +127,7 @@ namespace DXToolKit {
 				new InputElement("POSITION", 0, Format.R32G32B32_Float, InputElement.AppendAligned, 0),
 				new InputElement("COLOR", 0, Format.R32G32B32A32_Float, InputElement.AppendAligned, 0),
 			});
-			
+
 			// Create empty matrix buffer
 			m_matrices = new MatrixBufferType();
 		}
@@ -136,11 +136,11 @@ namespace DXToolKit {
 		/// Disposes of the line renderer
 		/// </summary>
 		protected override void OnDispose() {
-			m_vertexBuffer?.Dispose();
-			m_matrixBuffer?.Dispose();
-			m_inputLayout?.Dispose();
-			m_vertexShader?.Dispose();
-			m_pixelShader?.Dispose();
+			Utilities.Dispose(ref m_vertexBuffer);
+			Utilities.Dispose(ref m_matrixBuffer);
+			Utilities.Dispose(ref m_inputLayout);
+			Utilities.Dispose(ref m_vertexShader);
+			Utilities.Dispose(ref m_pixelShader);
 
 			m_vertices.Clear();
 			m_vertices = null;

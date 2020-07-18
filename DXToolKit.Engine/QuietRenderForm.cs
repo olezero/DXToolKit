@@ -8,7 +8,7 @@ namespace DXToolKit.Engine {
 		[DllImport("user32.dll")]
 		static extern bool SetForegroundWindow(IntPtr hWnd);
 
-		public QuietRenderForm() {
+		public QuietRenderForm(string title) : base(title) {
 			WindowState = FormWindowState.Minimized;
 			FormBorderStyle = FormBorderStyle.None;
 			MouseDown += (sender, args) => {

@@ -157,8 +157,8 @@ namespace DXToolKit {
 			};
 
 			renderForm.KeyPress += (sender, args) => {
-				// Should only handle letters, numbers and whitespace (space and return)
-				if (char.IsLetter(args.KeyChar) || char.IsNumber(args.KeyChar) || char.IsWhiteSpace(args.KeyChar)) {
+				// Should only handle letters, numbers and whitespace (space and return) aaaaand some more....
+				if (char.IsLetter(args.KeyChar) || char.IsNumber(args.KeyChar) || char.IsWhiteSpace(args.KeyChar) || char.IsPunctuation(args.KeyChar) || char.IsSeparator(args.KeyChar) || char.IsSymbol(args.KeyChar)) {
 					m_textInputBuffer += args.KeyChar;
 					args.Handled = true;
 				}
@@ -193,6 +193,14 @@ namespace DXToolKit {
 			}
 			*/
 			if (renderForm.Focused == false) {
+				// Clear all buffers if we dont have focus
+				m_pressedKeys.Clear();
+				m_keysUp.Clear();
+				m_keysDown.Clear();
+				m_mouseButtonsDown.Clear();
+				m_mouseButtonsPressed.Clear();
+				m_mouseButtonsUp.Clear();
+				m_textInputBuffer = "";
 				return;
 			}
 
@@ -210,7 +218,6 @@ namespace DXToolKit {
 			HandleKeyboard(m_keyboardState);
 			HandleMouse(m_mouseState);
 
-			/*
 			switch (m_cursorStyle) {
 				case CursorStyle.Default:
 					renderForm.Cursor = Cursors.Default;
@@ -223,7 +230,6 @@ namespace DXToolKit {
 			}
 
 			m_cursorStyle = CursorStyle.Default;
-			*/
 		}
 
 		private static void HandleKeyboard(KeyboardState state) {
@@ -338,6 +344,11 @@ namespace DXToolKit {
 				m_repeatKeyRepeatTimer = 0;
 				m_toggleRepeatKey = false;
 			}
+		}
+
+		public static void SimulateKeyPress(Key key) {
+			m_keysDown.Add(key);
+			m_pressedKeys.Add(key);
 		}
 
 		internal static void Shutdown() {

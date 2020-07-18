@@ -39,6 +39,8 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		public Vector2 LocalMousePosition => ScreenToLocal(Input.MousePosition);
+
 		protected sealed override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout) {
 			// Might not be needed, since clipping bounds will clip away padding
 			// Padding.ResizeRectangle(ref bounds);

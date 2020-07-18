@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D;
@@ -128,7 +129,7 @@ namespace DXToolKit {
 					}
 
 					// Dispose of the output interface
-					output?.Dispose();
+					Utilities.Dispose(ref output);
 				} else {
 					// If setting to windowed, just pass null for the output.
 					m_swapchain.SetFullscreenState(false, null);
@@ -163,13 +164,13 @@ namespace DXToolKit {
 				},
 			});
 			// Dispose references to the backbuffer
-			surface?.Dispose();
-			backbuffer?.Dispose();
+			Utilities.Dispose(ref surface);
+			Utilities.Dispose(ref backbuffer);
 		}
 
 		private void DisposeRenderTarget() {
 			// Dispose of the rendertarget
-			m_renderTarget?.Dispose();
+			Utilities.Dispose(ref m_renderTarget);
 		}
 
 		/// <summary>
@@ -204,10 +205,10 @@ namespace DXToolKit {
 		/// Disposes of all unmanaged memory
 		/// </summary>
 		public void Dispose() {
-			m_comDevice?.Dispose();
-			m_deviceContext?.Dispose();
-			m_swapchain?.Dispose();
-			m_renderTarget?.Dispose();
+			Utilities.Dispose(ref m_comDevice);
+			Utilities.Dispose(ref m_deviceContext);
+			Utilities.Dispose(ref m_swapchain);
+			Utilities.Dispose(ref m_renderTarget);
 		}
 	}
 }

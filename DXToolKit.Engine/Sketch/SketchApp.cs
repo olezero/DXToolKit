@@ -21,8 +21,8 @@ namespace DXToolKit.Engine {
 
 
 		protected override void Update() {
-			if (KeyDown(Key.Escape)) {
-				//Exit();
+			if (Input.KeyDown(Key.Escape)) {
+				Exit();
 			}
 		}
 

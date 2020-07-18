@@ -59,6 +59,7 @@ namespace DXToolKit {
 		protected override void OnDispose() {
 			Utilities.Dispose(ref m_pixelShader);
 			Utilities.Dispose(ref m_quad);
+			Utilities.Dispose(ref m_samplerState);
 		}
 
 		private const string SHADER_SOURCE = @"

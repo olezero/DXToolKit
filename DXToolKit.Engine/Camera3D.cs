@@ -43,7 +43,9 @@ namespace DXToolKit.Engine {
 		private const float TARGET_ZOOM_SPEED_FACTOR = 20.0F;
 
 		public Camera3D() {
-			Graphics.Device.OnResizeEnd += () => { AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight; };
+			Graphics.Device.OnResizeEnd += () => {
+				AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
+			};
 		}
 
 		/// <summary>
@@ -74,7 +76,7 @@ namespace DXToolKit.Engine {
 		private bool m_flipHorizontalRotation = false;
 		private bool m_flipVerticalRotation = false;
 
-		private float m_targetZoom;
+		private float m_targetZoom = 10;
 
 		/// <summary>
 		/// Controls key bindings used by the camera
@@ -91,8 +93,7 @@ namespace DXToolKit.Engine {
 
 				// Toggle orbit camera with new target
 				ToggleOrbitCamera(Target);
-			}
-			else {
+			} else {
 				// If toggling orbit camera for the first time, snap directly to new target.
 				m_newTarget = target;
 				ToggleOrbitCamera(target);
@@ -124,8 +125,7 @@ namespace DXToolKit.Engine {
 					if (m_rotationVelocity.LengthSquared() < 0.000000001F) {
 						m_rotationVelocity.X = 0;
 						m_rotationVelocity.Y = 0;
-					}
-					else {
+					} else {
 						m_rotationVelocity /= 1 + Time.DeltaTime * ROTATION_SLOWDOWN_FACTOR;
 					}
 
@@ -133,26 +133,27 @@ namespace DXToolKit.Engine {
 				}
 
 				if (m_smoothTransitionOrbitCam) {
-					Target = Vector3.Lerp(Target, m_newTarget, Time.DeltaTime * TARGET_LERP_SPEED_FACTOR);
+					if (Vector3.NearEqual(Target, m_newTarget, new Vector3(Mathf.ZeroTolerance))) {
+						Target = m_newTarget;
+					} else {
+						Target = Vector3.Lerp(Target, m_newTarget, Time.DeltaTime * TARGET_LERP_SPEED_FACTOR);
+					}
 				}
 
 				if (Mathf.Abs(Input.MouseWheelDelta) > 0) {
 					if (Input.MouseWheelDelta > 0) {
-						m_targetZoom /= 1.2F;
-					}
-					else {
-						m_targetZoom *= 1.2F;
+						m_targetZoom -= 0.1F * m_targetZoom;
+					} else {
+						m_targetZoom += 0.1F * m_targetZoom;
 					}
 				}
 
 				if (m_smoothOrbitZoom) {
 					TargetDistance = Mathf.Lerp(TargetDistance, m_targetZoom, Time.DeltaTime * TARGET_ZOOM_SPEED_FACTOR);
-				}
-				else {
+				} else {
 					TargetDistance = m_targetZoom;
 				}
-			}
-			else {
+			} else {
 				var moveAmount = m_moveSpeed * Time.DeltaTime;
 				if (m_keybindings.Sprint()) {
 					moveAmount *= 10.0F;
@@ -184,5 +185,4 @@ namespace DXToolKit.Engine {
 			}
 		}
 	}
-
 }

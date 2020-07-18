@@ -323,13 +323,14 @@ namespace DXToolKit {
 		}
 
 		protected override void OnDispose() {
-			m_inputLayout?.Dispose();
-			m_vertexShader?.Dispose();
-			m_pixelShader?.Dispose();
-			m_matrixBuffer?.Dispose();
-			m_lightBuffer?.Dispose();
-			m_cubeBatch?.Dispose();
-			m_sphereBatch?.Dispose();
+			Utilities.Dispose(ref m_inputLayout);
+			Utilities.Dispose(ref m_vertexShader);
+			Utilities.Dispose(ref m_pixelShader);
+			Utilities.Dispose(ref m_matrixBuffer);
+			Utilities.Dispose(ref m_lightBuffer);
+			Utilities.Dispose(ref m_cubeBatch);
+			Utilities.Dispose(ref m_sphereBatch);
+			Utilities.Dispose(ref m_planeBatch);
 		}
 
 		/// <summary>

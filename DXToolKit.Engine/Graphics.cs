@@ -18,6 +18,7 @@ namespace DXToolKit.Engine {
 			var hidden = false;
 			var targetWidth = -1;
 			var targetHeight = -1;
+			var title = "SharpDX";
 
 			if (cmdArgs != null) {
 				foreach (var arg in cmdArgs) {
@@ -38,10 +39,14 @@ namespace DXToolKit.Engine {
 							targetHeight = height;
 						}
 					}
+
+					if (arg.Contains("windowTitle")) {
+						title = arg.Substring(arg.LastIndexOf('=') + 1);
+					}
 				}
 			}
 
-			m_renderForm = hidden ? new QuietRenderForm() : new RenderForm();
+			m_renderForm = hidden ? new QuietRenderForm(title) : new RenderForm(title);
 			m_renderForm.BackColor = Color.Black;
 
 			if (targetWidth != -1 && targetHeight != -1) {
