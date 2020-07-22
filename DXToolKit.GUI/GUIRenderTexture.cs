@@ -1,8 +1,10 @@
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
+using SharpDX.DirectWrite;
 using SharpDX.DXGI;
 using AlphaMode = SharpDX.Direct2D1.AlphaMode;
+using TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode;
 
 namespace DXToolKit.GUI {
 	public class GUIRenderTexture : DeviceComponent {
@@ -57,6 +59,7 @@ namespace DXToolKit.GUI {
 			m_bitmap = new Bitmap(m_device, m_surface, new BitmapProperties() {
 				PixelFormat = new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Premultiplied)
 			});
+			m_renderTarget.TextAntialiasMode = TextAntialiasMode.Cleartype;
 			m_renderTargetView = new RenderTargetView(m_device, m_texture);
 		}
 

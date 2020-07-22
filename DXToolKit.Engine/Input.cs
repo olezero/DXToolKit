@@ -19,6 +19,9 @@ namespace DXToolKit {
 	public enum CursorStyle {
 		Default,
 		IBeam,
+		Cross,
+		HSplit,
+		VSplit
 	}
 
 	public static class Input {
@@ -218,12 +221,22 @@ namespace DXToolKit {
 			HandleKeyboard(m_keyboardState);
 			HandleMouse(m_mouseState);
 
+
 			switch (m_cursorStyle) {
 				case CursorStyle.Default:
 					renderForm.Cursor = Cursors.Default;
 					break;
 				case CursorStyle.IBeam:
 					renderForm.Cursor = Cursors.IBeam;
+					break;
+				case CursorStyle.Cross:
+					renderForm.Cursor = Cursors.Cross;
+					break;
+				case CursorStyle.VSplit:
+					renderForm.Cursor = Cursors.VSplit;
+					break;
+				case CursorStyle.HSplit:
+					renderForm.Cursor = Cursors.HSplit;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();

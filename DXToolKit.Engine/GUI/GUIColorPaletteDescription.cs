@@ -11,6 +11,8 @@ namespace DXToolKit.Engine {
 		public Color Warning;
 		public Color Info;
 		public Color Text;
+		public Color Dark;
+		public Color Light;
 
 		public static GUIColorPaletteDescription Cyborg => FromHex("#505050", "#2A9FD6", "#77B300", "#CC0000", "#FF8800", "#9933CC", "#F0F0F0");
 
@@ -23,6 +25,8 @@ namespace DXToolKit.Engine {
 				Warning = FromHex(warningColor),
 				Info = FromHex(infoColor),
 				Text = FromHex(textColor),
+				Dark = new Color(20, 20, 20),
+				Light = new Color(200, 200, 200),
 			};
 		}
 
@@ -50,6 +54,10 @@ namespace DXToolKit.Engine {
 						return Info;
 					case GUIColor.Text:
 						return Text;
+					case GUIColor.Dark:
+						return Dark;
+					case GUIColor.Light:
+						return Light;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(index), index, null);
 				}

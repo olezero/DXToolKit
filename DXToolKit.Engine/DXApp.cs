@@ -210,6 +210,9 @@ namespace DXToolKit.Engine {
 		protected virtual void Update() { }
 		protected virtual void FixedUpdate() { }
 		protected virtual void Render() { }
-		protected abstract IRenderPipeline CreateRenderPipeline();
+
+		protected virtual IRenderPipeline CreateRenderPipeline() {
+			return new BasicPipeline(m_device);
+		}
 	}
 }

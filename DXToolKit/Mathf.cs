@@ -65,7 +65,12 @@ namespace DXToolKit {
 		/// <param name="outputMax">Maximum desired output</param>
 		/// <returns>The value mapped to the new range</returns>
 		public static float Map(float input, float inputMin, float inputMax, float outputMin, float outputMax) {
-			return (input - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
+			var result = (input - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
+			if (float.IsNaN(result) || float.IsInfinity(result)) {
+				return 0;
+			}
+
+			return result;
 		}
 
 		/// <summary>Returns the cosine of the specified angle.</summary>
@@ -123,7 +128,7 @@ namespace DXToolKit {
 		public static int Clamp(int value, int min, int max) {
 			return MathUtil.Clamp(value, min, max);
 		}
-		
+
 		/// <summary>Clamps the specified value.</summary>
 		/// <param name="value">The value.</param>
 		/// <param name="min">The min.</param>
@@ -181,6 +186,53 @@ namespace DXToolKit {
 			}
 
 			return m_random.NextFloat(min, max);
+		}
+
+		/// <summary>Returns the largest integral value less than or equal to the specified double-precision floating-point number.</summary>
+		/// <param name="value">A double-precision floating-point number.</param>
+		/// <returns>The largest integral value less than or equal to <paramref name="value" />. If <paramref name="value" /> is equal to <see cref="F:System.Single.NaN" />, <see cref="F:System.Single.NegativeInfinity" />, or <see cref="F:System.Single.PositiveInfinity" />, that value is returned.</returns>
+		public static int Floor(float value) {
+			return (int) Math.Floor(value);
+		}
+
+		/// <summary>Rounds a double-precision floating-point value to the nearest integral value, and rounds midpoint values to the nearest even number.</summary>
+		/// <param name="value">A double-precision floating-point number to be rounded.</param>
+		/// <returns>The integer nearest <paramref name="value" />. If the fractional component of <paramref name="value" /> is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+		public static int Round(float value) {
+			return (int) Math.Round(value);
+		}
+
+		/// <summary>Rounds a double-precision floating-point value to a specified number of fractional digits, and rounds midpoint values to the nearest even number.</summary>
+		/// <param name="value">A double-precision floating-point number to be rounded.</param>
+		/// <param name="digits">The number of fractional digits in the return value.</param>
+		/// <returns>The number nearest to <paramref name="value" /> that contains a number of fractional digits equal to <paramref name="digits" />.</returns>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// <paramref name="digits" /> is less than 0 or greater than 15.</exception>
+		public static float Round(float value, int digits) {
+			return (float) Math.Round(value, digits);
+		}
+
+		/// <summary>Rounds a double-precision floating-point value to the nearest integer, and uses the specified rounding convention for midpoint values.</summary>
+		/// <param name="value">A double-precision floating-point number to be rounded.</param>
+		/// <param name="mode">Specification for how to round <paramref name="value" /> if it is midway between two other numbers.</param>
+		/// <returns>The integer nearest <paramref name="value" />. If <paramref name="value" /> is halfway between two integers, one of which is even and the other odd, then <paramref name="mode" /> determines which of the two is returned. Note that this method returns a <see cref="T:System.Double" /> instead of an integral type.</returns>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="mode" /> is not a valid value of <see cref="T:System.MidpointRounding" />.</exception>
+		public static float Round(float value, MidpointRounding mode) {
+			return (float) Math.Round(value, mode);
+		}
+
+		/// <summary>Rounds a double-precision floating-point value to a specified number of fractional digits, and uses the specified rounding convention for midpoint values.</summary>
+		/// <param name="value">A double-precision floating-point number to be rounded.</param>
+		/// <param name="digits">The number of fractional digits in the return value.</param>
+		/// <param name="mode">Specification for how to round <paramref name="value" /> if it is midway between two other numbers.</param>
+		/// <returns>The number nearest to <paramref name="value" /> that has a number of fractional digits equal to <paramref name="digits" />. If <paramref name="value" /> has fewer fractional digits than <paramref name="digits" />, <paramref name="value" /> is returned unchanged.</returns>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// <paramref name="digits" /> is less than 0 or greater than 15.</exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="mode" /> is not a valid value of <see cref="T:System.MidpointRounding" />.</exception>
+		public static float Round(float value, int digits, MidpointRounding mode) {
+			return (float) Math.Round(value, digits, mode);
 		}
 	}
 }

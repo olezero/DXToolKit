@@ -101,6 +101,12 @@ namespace DXToolKit.Engine {
 				// Run gui late update
 				m_guiSystem.LateUpdate();
 			}
+
+			/*
+			if (m_guiSystem.FocusElement != null) {
+				Debug.Log(m_guiSystem.FocusElement + " " + m_guiSystem.FocusElement.Text);
+			}
+			*/
 		}
 
 		public void RunFixedUpdate() {
@@ -163,6 +169,8 @@ namespace DXToolKit.Engine {
 
 			m_guiMouseEventArgs.LeftDoubleClick = Input.MouseDoubleClick(MouseButton.Left);
 			m_guiMouseEventArgs.RightDoubleClick = Input.MouseDoubleClick(MouseButton.Right);
+
+			m_guiMouseEventArgs.MouseWheelDelta = Input.MouseWheelDelta;
 
 			m_guiKeyboardArgs.KeysDown = Input.KeysDown;
 			m_guiKeyboardArgs.KeysUp = Input.KeysUp;

@@ -7,5 +7,7 @@ namespace DXToolKit.Engine {
 		Warning,
 		Info,
 		Text,
+		Dark,
+		Light,
 	}
 }

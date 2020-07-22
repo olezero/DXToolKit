@@ -10,20 +10,27 @@ namespace DXToolKit.Engine {
 	/// Overriding and hiding base GUIElement with a bit more handy dandy stuff
 	/// </summary>
 	public abstract class GUIElement : DXToolKit.GUI.GUIElement, IGUIGriddable {
-		public GUIColor GUIColor = GUIColor.Default;
+		public GUIColor ForegroundColor = GUIColor.Primary;
+		public GUIColor BackgroundColor = GUIColor.Default;
+		public GUIColor TextColor = GUIColor.Text;
 		public GUIBrightness Brightness = GUIBrightness.Normal;
 		public GUIBrightness TextBrightness = GUIBrightness.Normal;
-		public GUIPadding Padding = new GUIPadding(0);
+		private GUIPadding m_padding = new GUIPadding(0);
 		public bool MouseIgnoresPadding = true;
-		
+
+		public virtual GUIPadding Padding {
+			get => m_padding;
+			set => m_padding = value;
+		}
+
 		// TODO - add a screen bounds offset type thing on base GUIElement to allow for padding to set child element.X and Y to 0
 		// TODO - at the moment padding does not position child elements correctly at 0, 0 etc.
 
 		protected sealed override RectangleF MouseScreenBounds {
 			get {
 				if (MouseIgnoresPadding == false) return ScreenBounds;
-				if (Padding.Top > 0 || Padding.Bottom > 0 || Padding.Left > 0 || Padding.Right > 0) {
-					return Padding.ResizeRectangle(ScreenBounds);
+				if (m_padding.Top > 0 || m_padding.Bottom > 0 || m_padding.Left > 0 || m_padding.Right > 0) {
+					return m_padding.ResizeRectangle(ScreenBounds);
 				}
 
 				return ScreenBounds;
@@ -34,7 +41,7 @@ namespace DXToolKit.Engine {
 
 		protected sealed override RectangleF ClippedRenderBounds {
 			get {
-				var clipbounds = Padding.ResizeRectangle(Bounds);
+				var clipbounds = m_padding.ResizeRectangle(Bounds);
 				return clipbounds;
 			}
 		}

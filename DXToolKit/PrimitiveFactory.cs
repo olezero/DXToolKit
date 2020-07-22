@@ -7,6 +7,64 @@ namespace DXToolKit {
 		public int[] Indices;
 		public Vector2[] UVs;
 		public Vector3[] Normals;
+
+
+		private BoundingBox m_bounds;
+		private bool m_isBoundsCreated;
+
+		public BoundingBox GetBoundingBox() {
+			if (!m_isBoundsCreated) {
+				m_bounds = BoundingBox.FromPoints(Positions);
+				m_isBoundsCreated = true;
+			}
+
+			return m_bounds;
+		}
+
+		/// <summary>
+		/// Performs a geometry intersection check against this primitive, based on a screen position
+		/// </summary>
+		/// <param name="screenX">Screen X position</param>
+		/// <param name="screenY">Screen Y position</param>
+		/// <param name="screenWidth">Screen width</param>
+		/// <param name="screenHeight">Screen height</param>
+		/// <param name="world">World matrix of the primitive</param>
+		/// <param name="view">View matrix</param>
+		/// <param name="proj">Projection matrix</param>
+		/// <param name="point">Point of intersection (closest)</param>
+		/// <param name="distance">Distance to intersection (closest)</param>
+		/// <returns>True on intersect</returns>
+		public bool Intersects(float screenX, float screenY, float screenWidth, float screenHeight, Matrix world, Matrix view, Matrix proj, out Vector3 point, out float distance) {
+			point = default;
+			distance = float.MaxValue;
+			var mouseray = Ray.GetPickRay((int)screenX, (int)screenY, new ViewportF(0, 0, screenWidth, screenHeight), world * view * proj);
+			var closest = float.MaxValue;
+			var collision = false;
+
+			if (mouseray.Intersects(GetBoundingBox())) {
+				for (int i = 0; i < Indices.Length; i += 3) {
+					var i1 = Indices[i + 0];
+					var i2 = Indices[i + 1];
+					var i3 = Indices[i + 2];
+
+					var v1 = Positions[i1];
+					var v2 = Positions[i2];
+					var v3 = Positions[i3];
+
+					if (mouseray.Intersects(ref v1, ref v2, ref v3, out Vector3 p)) {
+						collision = true;
+						var dist = Vector3.DistanceSquared(p, mouseray.Position);
+						if (dist < closest) {
+							closest = dist;
+							distance = dist;
+							point = p;
+						}
+					}
+				}
+			}
+
+			return collision;
+		}
 	}
 
 	public static class PrimitiveFactory {

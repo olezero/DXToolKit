@@ -27,20 +27,21 @@ namespace DXToolKit.Engine {
 
 		public float Value {
 			get => Mathf.Map(m_value, 0, 1, m_minValue, m_maxValue);
-			set => SetValue(Mathf.Map(value, m_minValue, m_maxValue, 0, 1));
+			set => SetValue(Mathf.Map(value, m_minValue, m_maxValue, 0, 1), false);
 		}
 
 		public Slider() {
 			Draggable = true;
 			Drag += HandleDrag;
-			GUIColor = GUIColor.Primary;
+			ForegroundColor = GUIColor.Primary;
 		}
 
 		private void HandleDrag() {
 			var local = ScreenToLocal(Input.MousePosition);
-			var targetX = local.X - m_nobRadius;
+			var targetX = local.X;
 			var clamped = Mathf.Clamp(targetX, m_nobMin, m_nobMax);
-			var mapped = Mathf.Map(clamped, m_nobMin, m_nobMax, 0, 1);
+			// +1 and -1 are just for some padding to not draw the nob outside bounds
+			var mapped = Mathf.Map(clamped, m_nobMin + m_nobRadius + 1, m_nobMax - m_nobRadius - 1, 0, 1);
 			SetValue(mapped);
 		}
 
@@ -49,16 +50,24 @@ namespace DXToolKit.Engine {
 			m_maxValue = max;
 		}
 
+		public Slider(float min, float max, float current) : this() {
+			m_minValue = min;
+			m_maxValue = max;
+			Value = current;
+		}
+
 		public Slider(Action<float> onValueChanged) : this() {
 			OnValueChanged += onValueChanged;
 		}
 
+		/// <inheritdoc />
 		protected override void OnBoundsChangedDirect() {
 			base.OnBoundsChangedDirect();
-			m_nobMin = 10;
-			m_nobMax = Width - m_nobMin * 2;
+			m_nobMin = 0;
+			m_nobMax = Width;
 		}
 
+		/// <inheritdoc />
 		protected override void OnBoundsChanged() {
 			base.OnBoundsChanged();
 			m_grooveBounds = Bounds;
@@ -72,24 +81,33 @@ namespace DXToolKit.Engine {
 		/// Sets value from 0.0 to 1.0
 		/// </summary>
 		/// <param name="value">Float from 0 to 1 (percent along the way)</param>
-		private void SetValue(float value) {
+		private void SetValue(float value, bool invokeEvents = true) {
 			value = Mathf.Clamp(value, 0, 1);
 			if (MathUtil.NearEqual(m_value, value) == false) {
 				m_value = value;
-				OnValueChanged?.Invoke(Value);
+				if (invokeEvents) {
+					OnValueChanged?.Invoke(Value);
+				}
+
 				ToggleRedraw();
 			}
 		}
 
+		/// <inheritdoc />
 		protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {
-			m_nobPosition.X = Mathf.Map(m_value, 0, 1, m_nobMin, m_nobMax) + m_nobRadius;
+			// +1 and -1 are just for some padding to not draw the nob outside bounds
+			m_nobPosition.X = Mathf.Map(m_value, 0, 1, m_nobMin + m_nobRadius + 1, m_nobMax - m_nobRadius - 1);
 			m_nobPosition.Y = Height / 2.0F;
 
 			drawTools.Rectangle(renderTarget, m_grooveBounds, palette, GUIColor.Default, GUIBrightness.Darkest);
 			var brightness = MouseHovering ? GUIBrightness.Brightest : GUIBrightness.Normal;
 			var ellipse = new Ellipse(m_nobPosition, m_nobRadius, m_nobRadius);
-			renderTarget.FillEllipse(ellipse, palette.GetBrush(GUIColor, brightness));
-			renderTarget.DrawEllipse(ellipse, palette.GetBrush(GUIColor.Default, GUIBrightness.Darkest), 2);
+			renderTarget.FillEllipse(ellipse, palette.GetBrush(ForegroundColor, brightness));
+			renderTarget.DrawEllipse(ellipse, palette.GetBrush(BackgroundColor, GUIBrightness.Darkest), 2);
+		}
+
+		public void InvokeValueChanged() {
+			OnValueChanged?.Invoke(Value);
 		}
 	}
 }

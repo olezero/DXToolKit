@@ -158,11 +158,12 @@ namespace DXToolKit {
 			// Create rendertarget using the backbuffer surface
 			m_renderTarget = new RenderTarget(m_factory, surface, new RenderTargetProperties() {
 				Type = RenderTargetType.Hardware,
-				PixelFormat = new PixelFormat() {
+				PixelFormat = new PixelFormat {
 					Format = Format.R8G8B8A8_UNorm,
 					AlphaMode = AlphaMode.Premultiplied,
 				},
 			});
+			m_renderTarget.TextAntialiasMode = TextAntialiasMode.Cleartype;
 			// Dispose references to the backbuffer
 			Utilities.Dispose(ref surface);
 			Utilities.Dispose(ref backbuffer);

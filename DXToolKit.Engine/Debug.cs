@@ -103,6 +103,7 @@ namespace DXToolKit {
 			foreach (var d2dOp in m_d2dOperations) {
 				d2dOp?.Invoke(device.RenderTarget, m_brush);
 			}
+
 			m_d2dOperations.Clear();
 
 			m_brush.Color = Color.White;
@@ -171,6 +172,16 @@ namespace DXToolKit {
 
 		public static void Draw2D(Action<RenderTarget, SolidColorBrush> renderAction) {
 			m_d2dOperations.Add(renderAction);
+		}
+
+		public static void Transform(Matrix transformMatrix, Color? color = null) {
+			CheckCameraSet();
+			m_lineRenderer.Transform(transformMatrix, color);
+		}
+
+		public static void Line(Vector3 p1, Vector3 p2, Color color) {
+			CheckCameraSet();
+			m_lineRenderer.Line(ref p1, ref p2, ref color);
 		}
 
 

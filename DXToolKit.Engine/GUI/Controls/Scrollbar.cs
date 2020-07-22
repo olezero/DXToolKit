@@ -9,10 +9,12 @@ namespace DXToolKit.Engine {
 		private RectangleF m_scollElement;
 		private ArrowButton m_increaseButton;
 		private ArrowButton m_decreaseButton;
-		public GUIColor BackgroundColor = GUIColor.Default;
 		private float m_minValue = 0.0F;
 		private float m_maxValue = 1.0F;
 		private float m_scrollElementRadius = -1;
+		private bool m_useArrows = false;
+
+		public bool DisplayGroove = true;
 
 		public float ScrollElementRadius {
 			get => m_scrollElementRadius;
@@ -57,46 +59,53 @@ namespace DXToolKit.Engine {
 		private float m_value;
 
 
-		public Scrollbar(GUIDirection orientation) {
+		public Scrollbar(GUIDirection orientation, bool useArrows = false) {
 			m_orientation = orientation;
-			if (m_orientation == GUIDirection.Horizontal) {
-				m_increaseButton = Append(new ArrowButton(90));
-				m_decreaseButton = Append(new ArrowButton(270));
+			m_useArrows = useArrows;
+
+			if (m_useArrows) {
+				if (m_orientation == GUIDirection.Horizontal) {
+					m_increaseButton = Append(new ArrowButton(90));
+					m_decreaseButton = Append(new ArrowButton(270));
+				} else {
+					m_increaseButton = Append(new ArrowButton(180));
+					m_decreaseButton = Append(new ArrowButton(0));
+				}
+
+				m_increaseButton.MousePressed += args => {
+					SetValue(m_value + Time.DeltaTime, true);
+				};
+				m_decreaseButton.MousePressed += args => {
+					SetValue(m_value - Time.DeltaTime, true);
+				};
+			}
+
+			if (orientation == GUIDirection.Horizontal) {
+				Width = 100;
+				Height = 20;
 			} else {
-				m_increaseButton = Append(new ArrowButton(180));
-				m_decreaseButton = Append(new ArrowButton(0));
+				Width = 20;
+				Height = 100;
 			}
 
 			RescaleAndPositionChildren();
-			GUIColor = GUIColor.Primary;
+			ForegroundColor = GUIColor.Primary;
 			Draggable = true;
-
-			m_increaseButton.MousePressed += args => {
-				SetValue(m_value + Time.DeltaTime, true);
-			};
-
-			m_decreaseButton.MousePressed += args => {
-				SetValue(m_value - Time.DeltaTime, true);
-			};
 		}
 
 
+		/// <inheritdoc />
 		protected override void OnResize() {
 			var max = Mathf.Max(Width, Height);
 			m_scrollElementRadius = max / 10.0F;
-
 			RescaleAndPositionChildren();
 		}
 
-		protected override void OnUpdate() {
-			if (ContainsMouse) {
-				if (Mathf.Abs(Input.MouseWheelDelta) > 0) {
-					var mwDelta = (Input.MouseWheelDelta > 0 ? 1 : -1) / 10.0F;
-					SetValue(m_orientation == GUIDirection.Horizontal ? m_value + mwDelta : m_value - mwDelta);
-				}
-			}
-
-			base.OnUpdate();
+		/// <inheritdoc />
+		protected override void OnMouseWheel(float delta) {
+			var mwDelta = (Input.MouseWheelDelta > 0 ? 1 : -1) / 10.0F;
+			SetValue(m_orientation == GUIDirection.Horizontal ? m_value + mwDelta : m_value - mwDelta);
+			base.OnMouseWheel(delta);
 		}
 
 		private void RescaleAndPositionChildren() {
@@ -104,28 +113,50 @@ namespace DXToolKit.Engine {
 			var max = Mathf.Max(Width, Height);
 			m_scrollElementRadius = Mathf.Clamp(m_scrollElementRadius, min / 2.0F, (max - min - min) / 2.0F);
 			m_scollElement = new RectangleF(0, 0, m_scrollElementRadius * 2, m_scrollElementRadius * 2);
-			m_increaseButton.Width = min;
-			m_increaseButton.Height = min;
-			m_decreaseButton.Width = min;
-			m_decreaseButton.Height = min;
-			if (m_orientation == GUIDirection.Horizontal) {
-				m_increaseButton.Left = Width - min;
-				m_decreaseButton.Left = 0;
-			} else {
-				m_increaseButton.Top = Height - min;
-				m_decreaseButton.Top = 0;
-			}
 
-			m_increaseButton.GUIColor = GUIColor;
-			m_decreaseButton.GUIColor = GUIColor;
+			if (m_useArrows) {
+				m_increaseButton.Width = min;
+				m_increaseButton.Height = min;
+				m_decreaseButton.Width = min;
+				m_decreaseButton.Height = min;
+				if (m_orientation == GUIDirection.Horizontal) {
+					m_increaseButton.Left = Width - min;
+					m_decreaseButton.Left = 0;
+				} else {
+					m_increaseButton.Top = Height - min;
+					m_decreaseButton.Top = 0;
+				}
+
+				m_increaseButton.ForegroundColor = ForegroundColor;
+				m_decreaseButton.ForegroundColor = ForegroundColor;
+			}
 
 			// Force a update call, so that when initialized a OnValueChange event is invoked
 			SetValue(m_value, true);
 		}
 
+		private float m_scrollOffset = 0;
+
+		/// <inheritdoc />
+		protected override void OnDragStart() {
+			// Need a local "offset" based on if the cursor actually pressed the scroll element, so that the element does not snap directly to center of the mouse, but instead scrolls from the current location
+			var local = m_orientation == GUIDirection.Horizontal ? ScreenToLocal(Input.MousePosition).X : ScreenToLocal(Input.MousePosition).Y;
+			var elPosition = m_orientation == GUIDirection.Horizontal ? m_scollElement.X : m_scollElement.Y;
+			if (local > elPosition && local < elPosition + m_scrollElementRadius * 2) {
+				var offset = local - (elPosition + m_scrollElementRadius);
+				m_scrollOffset = -offset;
+			} else {
+				m_scrollOffset = 0;
+			}
+
+			base.OnDragStart();
+		}
+
+		/// <inheritdoc />
 		protected override void OnDrag() {
 			var (min, max) = GetRange();
 			var local = m_orientation == GUIDirection.Horizontal ? ScreenToLocal(Input.MousePosition).X : ScreenToLocal(Input.MousePosition).Y;
+			local += m_scrollOffset;
 			var scrollValue = Mathf.Map(local - m_scrollElementRadius, min, max, 0, 1);
 			SetValue(scrollValue);
 			base.OnDrag();
@@ -155,14 +186,29 @@ namespace DXToolKit.Engine {
 		private (float min, float max) GetRange() {
 			var min = Mathf.Min(Width, Height);
 			var max = Mathf.Max(Width, Height);
-			var rangeMin = min;
-			var rangeMax = max - m_scrollElementRadius * 2 - min;
-			return (rangeMin, rangeMax);
+
+			if (m_useArrows) {
+				var rangeMin = min;
+				var rangeMax = max - m_scrollElementRadius * 2 - min;
+				return (rangeMin, rangeMax);
+			} else {
+				var rangeMin = 0;
+				var rangeMax = max - m_scrollElementRadius * 2;
+				return (rangeMin, rangeMax);
+			}
 		}
 
+		/// <inheritdoc />
 		protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {
-			drawTools.Rectangle(renderTarget, bounds, palette, BackgroundColor, Brightness);
-			drawTools.Rectangle(renderTarget, m_scollElement, palette, GUIColor, MouseHovering ? GUIBrightness.Bright : Brightness);
+			if (DisplayGroove) {
+				drawTools.Rectangle(renderTarget, bounds, palette, BackgroundColor, GUIBrightness.Darkest);
+			}
+
+			drawTools.Rectangle(renderTarget, m_scollElement, palette, ForegroundColor, MouseHovering ? GUIBrightness.Bright : Brightness);
+		}
+
+		public void InvokeValueChanged() {
+			OnValueChanged(Mathf.Map(m_value, 0, 1, MinValue, MaxValue));
 		}
 	}
 }

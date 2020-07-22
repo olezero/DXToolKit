@@ -52,5 +52,15 @@ namespace DXToolKit.Engine {
 			base.OnFocusLost();
 			ToggleRedraw();
 		}
+
+		protected override void OnContainFocusGained() {
+			base.OnContainFocusGained();
+			ToggleRedraw();
+		}
+
+		protected override void OnContainFocusLost() {
+			base.OnContainFocusLost();
+			ToggleRedraw();
+		}
 	}
 }

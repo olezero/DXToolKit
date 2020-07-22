@@ -46,6 +46,7 @@ namespace DXToolKit.Engine {
 			Graphics.Device.OnResizeEnd += () => {
 				AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
 			};
+			AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
 		}
 
 		/// <summary>

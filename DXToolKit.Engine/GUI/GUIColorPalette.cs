@@ -8,10 +8,16 @@ namespace DXToolKit.Engine {
 		public static GUIColorPalette Current;
 
 		private Dictionary<GUIColor, Dictionary<GUIBrightness, SolidColorBrush>> m_brushes;
+		private Dictionary<DashStyle, StrokeStyle> m_strokeStyles;
+
+		public Dictionary<DashStyle, StrokeStyle> StrokeStyles => m_strokeStyles;
 
 		public GUIColorPalette(GraphicsDevice device, GUIColorPaletteDescription description) : base(device) {
 			// Create brushes
 			CreateBrushes(description);
+
+			// Create stroke styles
+			CreateStrokeStyles();
 
 			// Set current to the first created palette
 			if (Current == null) {
@@ -20,7 +26,22 @@ namespace DXToolKit.Engine {
 		}
 
 		protected override void OnDispose() {
+			ReleaseStrokeStyles();
 			ReleaseBrushes();
+		}
+
+		private void CreateStrokeStyles() {
+			ReleaseStrokeStyles();
+			m_strokeStyles = new Dictionary<DashStyle, StrokeStyle>();
+			foreach (DashStyle dash in Enum.GetValues(typeof(DashStyle))) {
+				if (dash == DashStyle.Custom) {
+					continue;
+				}
+
+				m_strokeStyles.Add(dash, new StrokeStyle(m_device.Factory, new StrokeStyleProperties() {
+					DashStyle = dash,
+				}));
+			}
 		}
 
 		public SolidColorBrush this[GUIColor color, GUIBrightness brightness] => m_brushes[color][brightness];
@@ -65,6 +86,17 @@ namespace DXToolKit.Engine {
 
 				m_brushes?.Clear();
 			}
+		}
+
+		private void ReleaseStrokeStyles() {
+			if (m_strokeStyles != null) {
+				foreach (var strokeStyle in m_strokeStyles) {
+					strokeStyle.Value?.Dispose();
+				}
+			}
+
+			m_strokeStyles?.Clear();
+			m_strokeStyles = null;
 		}
 
 		public void DebugRender(RenderTarget renderTarget, RectangleF destination) {

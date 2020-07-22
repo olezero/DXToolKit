@@ -15,7 +15,7 @@ namespace DXToolKit.Engine {
 		public Button(string text, GUIColor color, Action<GUIMouseEventArgs> onclick) {
 			if (text != null) Text = text;
 			if (onclick != null) Click += onclick;
-			GUIColor = color;
+			ForegroundColor = color;
 			TextAlignment = TextAlignment.Center;
 			ParagraphAlignment = ParagraphAlignment.Center;
 			WordWrapping = WordWrapping.NoWrap;
@@ -28,14 +28,14 @@ namespace DXToolKit.Engine {
 
 			if (MouseHovering) {
 				if (IsMousePressed) {
-					drawTools.Rectangle(renderTarget, bounds, palette, GUIColor, GUIBrightness.Brightest);
+					drawTools.Rectangle(renderTarget, bounds, palette, ForegroundColor, GUIBrightness.Brightest);
 					textOffset.X += 1;
 					textOffset.Y += 1;
 				} else {
-					drawTools.Rectangle(renderTarget, bounds, palette, GUIColor, GUIBrightness.Bright);
+					drawTools.Rectangle(renderTarget, bounds, palette, ForegroundColor, GUIBrightness.Bright);
 				}
 			} else {
-				drawTools.Rectangle(renderTarget, bounds, palette, GUIColor, Brightness);
+				drawTools.Rectangle(renderTarget, bounds, palette, ForegroundColor, Brightness);
 			}
 
 			drawTools.Text(renderTarget, textOffset, textLayout, palette, GUIColor.Text, TextBrightness);

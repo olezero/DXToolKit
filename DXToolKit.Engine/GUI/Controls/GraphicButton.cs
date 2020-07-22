@@ -64,7 +64,7 @@ namespace DXToolKit.Engine {
 			}
 
 
-			drawTools.Rectangle(renderTarget, bounds, palette, GUIColor, targetBrightness);
+			drawTools.Rectangle(renderTarget, bounds, palette, ForegroundColor, targetBrightness);
 			bounds.Location += iconOffset;
 			renderTarget.DrawBitmap(graphics, bounds, 1.0F, BitmapInterpolationMode.Linear);
 		}

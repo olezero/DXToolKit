@@ -26,6 +26,10 @@ namespace DXToolKit.GUI {
 		internal GUIElement FocusTarget;
 		internal GUIElement DragTarget;
 
+		public GUIElement FocusElement => FocusTarget;
+		public GUIElement HoverElement => HoverTarget;
+		public GUIElement DragElement => DragTarget;
+
 		public GUIElement BaseElement => m_baseElement;
 		public GraphicsDevice GraphicsDevice => m_device;
 

@@ -13,7 +13,7 @@ namespace DXToolKit.Engine {
 				Draggable = true;
 
 				m_closeButton = Append(new CloseButton {
-					GUIColor = m_parentWindow.HeaderColor,
+					ForegroundColor = m_parentWindow.HeaderColor,
 				});
 				ResizeChildren();
 			}
@@ -101,12 +101,12 @@ namespace DXToolKit.Engine {
 			base.OnBoundsChangedDirect();
 		}
 
-		protected override void OnTextChanged() {
+		protected override void OnTextChanged(string text) {
 			Header.Text = Text;
 			Header.TextAlignment = TextAlignment;
 			Header.ParagraphAlignment = ParagraphAlignment;
 
-			base.OnTextChanged();
+			base.OnTextChanged(text);
 		}
 
 		protected override void OnContainFocusGained() {

@@ -14,7 +14,7 @@ namespace DXToolKit.Engine {
 
 		public ArrowButton(float rotationDegrees, GUIColor color, Action<GUIMouseEventArgs> onClick = null, bool open = false, bool filled = false) {
 			m_rotation = rotationDegrees;
-			GUIColor = color;
+			ForegroundColor = color;
 			if (onClick != null) Click += onClick;
 			m_open = open;
 			m_filled = filled;

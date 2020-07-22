@@ -188,6 +188,12 @@ namespace DXToolKit {
 		private PrimitiveBatch m_planeBatch;
 
 		/// <summary>
+		/// Container for all custom primitives to render
+		/// </summary>
+		private Dictionary<Primitive, PrimitiveBatch> m_customBatches;
+
+
+		/// <summary>
 		/// Creates a new instance of a primitive renderer
 		/// </summary>
 		/// <param name="device">Base device used for rendering</param>
@@ -224,6 +230,7 @@ namespace DXToolKit {
 			m_cubeBatch = new PrimitiveBatch(m_device, PrimitiveFactory.Cube());
 			m_sphereBatch = new PrimitiveBatch(m_device, PrimitiveFactory.Sphere(0.5F));
 			m_planeBatch = new PrimitiveBatch(m_device, PrimitiveFactory.Plane());
+			m_customBatches = new Dictionary<Primitive, PrimitiveBatch>();
 
 			// Setup matrix buffer
 			m_matrixBuffer = new ConstantBuffer<MatrixBufferType>(m_device);
@@ -265,6 +272,10 @@ namespace DXToolKit {
 			m_cubeBatch.RenderAndClear();
 			m_sphereBatch.RenderAndClear();
 			m_planeBatch.RenderAndClear();
+
+			foreach (var customBatch in m_customBatches) {
+				customBatch.Value.RenderAndClear();
+			}
 		}
 
 		/// <summary>
@@ -322,6 +333,22 @@ namespace DXToolKit {
 			m_planeBatch.AddInstance(ref transform, ref color);
 		}
 
+
+		/// <summary>
+		/// Adds a custom primitive to the render queue
+		/// </summary>
+		/// <param name="primitive">The primitive to create</param>
+		/// <param name="transform">The primitives transform</param>
+		/// <param name="color">The color of the primitive</param>
+		public void CustomPrimitive(Primitive primitive, Matrix transform, Color color) {
+			if (!m_customBatches.ContainsKey(primitive)) {
+				m_customBatches.Add(primitive, new PrimitiveBatch(m_device, primitive));
+			}
+
+			m_customBatches[primitive].AddInstance(ref transform, ref color);
+		}
+
+
 		protected override void OnDispose() {
 			Utilities.Dispose(ref m_inputLayout);
 			Utilities.Dispose(ref m_vertexShader);
@@ -331,6 +358,12 @@ namespace DXToolKit {
 			Utilities.Dispose(ref m_cubeBatch);
 			Utilities.Dispose(ref m_sphereBatch);
 			Utilities.Dispose(ref m_planeBatch);
+
+			foreach (var customBatch in m_customBatches) {
+				customBatch.Value?.Dispose();
+			}
+
+			m_customBatches.Clear();
 		}
 
 		/// <summary>

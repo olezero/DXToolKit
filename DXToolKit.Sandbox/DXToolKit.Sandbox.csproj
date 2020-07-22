@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{CB3A8DF3-776C-4495-A27E-FCE08111D407}</ProjectGuid>
+        <OutputType>WinExe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>DXToolKit.Sandbox</RootNamespace>
+        <AssemblyName>DXToolKit.Sandbox</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.D3DCompiler.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.Desktop.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.Direct2D1.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.Direct3D11.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Direct3D11.Effects, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.Direct3D11.Effects.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.DirectInput.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.DXGI.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+          <HintPath>..\DXToolKit.Engine\bin\Debug\SharpDX.Mathematics.dll</HintPath>
+        </Reference>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Program.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\DXToolKit.Engine\DXToolKit.Engine.csproj">
+        <Project>{fd5d7967-8d91-41b9-ac5b-8c4c7d6adade}</Project>
+        <Name>DXToolKit.Engine</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\DXToolKit.GUI\DXToolKit.GUI.csproj">
+        <Project>{5a68f7fd-7ea3-46d4-be32-40e29ea1e49c}</Project>
+        <Name>DXToolKit.GUI</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\DXToolKit\DXToolKit.csproj">
+        <Project>{414e80e7-4613-467f-9dda-1d274ecf6ac8}</Project>
+        <Name>DXToolKit</Name>
+      </ProjectReference>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>

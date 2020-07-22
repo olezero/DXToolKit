@@ -16,5 +16,7 @@ namespace DXToolKit.GUI {
 
 		public bool LeftDoubleClick;
 		public bool RightDoubleClick;
+
+		public float MouseWheelDelta;
 	}
 }

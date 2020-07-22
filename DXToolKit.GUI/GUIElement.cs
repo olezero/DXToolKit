@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using SharpDX;
 using SharpDX.Direct2D1;
@@ -10,8 +11,10 @@ using TextAlignment = SharpDX.DirectWrite.TextAlignment;
 
 namespace DXToolKit.GUI {
 	public abstract partial class GUIElement : IDisposable {
-		// TODO - FIX OnContainedFocusLost ( seams to be called even if a child element is focused )
+		// TODO - fix Focused variable (does not seem to update correctly on focus lost for the next render frame)
 
+
+		// TODO - FIX OnContainedFocusLost ( seams to be called even if a child element is focused )
 		// TODO - Need a layering system, for instance to allow windows to always be drawn on top of everything else. Like a z-index
 		// TODO - Variable for "move to front on focus gained", to allow for toggling that functionality
 
@@ -155,6 +158,11 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		private bool m_containsMouse;
 
+		/// <summary>
+		/// Controller for if OnMouseWheel events should be fired even if this control does not have focus
+		/// </summary>
+		private bool m_mouseWheelNeedsFocus = false;
+
 		#endregion
 
 		#region Properties
@@ -166,10 +174,33 @@ namespace DXToolKit.GUI {
 		public GUIElement Parent => m_parentElement;
 
 		/// <summary>
+		/// Gets the root gui element
+		/// </summary>
+		public GUIElement Root {
+			get {
+				var target = Parent;
+
+				// Keep recursing until target.parent is null
+				while (target != null) {
+					// if target parent is null, return the target, since we've reached the root
+					if (target.Parent == null) {
+						return target;
+					}
+
+					// Keep recursing
+					target = target.Parent;
+				}
+
+				// Case if we're already on the root node
+				return this;
+			}
+		}
+
+		/// <summary>
 		/// Gets the child elements of this element
 		/// This is read only, use Append or Remove to add/remove child elements
 		/// </summary>
-		public IReadOnlyCollection<GUIElement> ChildElements => m_childElements;
+		public List<GUIElement> ChildElements => m_childElements;
 
 		/// <summary>
 		/// Gets a value indicating if the element is currently being dragged
@@ -458,6 +489,15 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public bool ContainsMouse => m_containsMouse;
 
+		/// <summary>
+		/// Gets or sets a value indicating if OnMouseWheel events should be raised even if the control does not contain focus
+		/// Default: false
+		/// </summary>
+		public bool MouseWheelNeedsFocus {
+			get => m_mouseWheelNeedsFocus;
+			set => m_mouseWheelNeedsFocus = value;
+		}
+
 		#endregion
 
 		#region Events
@@ -553,6 +593,11 @@ namespace DXToolKit.GUI {
 		public event Action<GUIMouseEventArgs> DoubleClick;
 
 		/// <summary>
+		/// Raised if the mousewheel is scrolled while mouse is hovering over this control
+		/// </summary>
+		public event Action<float> MosueWheel;
+
+		/// <summary>
 		/// Raised when a key is pressed down this frame
 		/// </summary>
 		public event Action<List<Key>> KeyDown;
@@ -580,7 +625,7 @@ namespace DXToolKit.GUI {
 		/// <summary>
 		/// Raised if text has changed since the last frame
 		/// </summary>
-		public event Action TextChanged;
+		public event Action<string> TextChanged;
 
 		/// <summary>
 		/// Raised when this or a child receives focus
@@ -626,6 +671,8 @@ namespace DXToolKit.GUI {
 		protected virtual void OnMousePressed(GUIMouseEventArgs args) => MousePressed?.Invoke(args);
 		protected virtual void OnClick(GUIMouseEventArgs args) => Click?.Invoke(args);
 		protected virtual void OnDoubleClick(GUIMouseEventArgs args) => DoubleClick?.Invoke(args);
+		protected virtual void OnMouseWheel(float delta) => MosueWheel?.Invoke(delta);
+
 
 		protected virtual void OnKeyDown(List<Key> keys) => KeyDown?.Invoke(keys);
 		protected virtual void OnKeyUp(List<Key> keys) => KeyUp?.Invoke(keys);
@@ -633,7 +680,7 @@ namespace DXToolKit.GUI {
 		protected virtual void OnTextInput(string text) => TextInput?.Invoke(text);
 		protected virtual void OnRepeatKey(Key key) => RepeatKey?.Invoke(key);
 
-		protected virtual void OnTextChanged() => TextChanged?.Invoke();
+		protected virtual void OnTextChanged(string text) => TextChanged?.Invoke(text);
 
 		protected virtual void OnContainFocusGained() => ContainFocusGained?.Invoke();
 		protected virtual void OnContainFocusLost() => ContainFocusLost?.Invoke();
@@ -647,6 +694,8 @@ namespace DXToolKit.GUI {
 		#endregion
 
 		#region Hierarchy
+
+		private int m_tabOffset = 0;
 
 		/// <summary>
 		/// Appends a element to this element
@@ -664,6 +713,11 @@ namespace DXToolKit.GUI {
 			// Add to child elements
 			if (m_childElements.Contains(element) == false) {
 				m_childElements.Add(element);
+
+				if (element.m_tabbable && element.m_tabIndex == -1) {
+					element.m_tabIndex = m_tabOffset++;
+				}
+
 				// Invoke events
 				OnChildAppended(this, element);
 			}
@@ -678,6 +732,9 @@ namespace DXToolKit.GUI {
 				// Invoke event on child. Run after element.m_parentElement = this; so Parent property is correctly set
 				element.OnParentSet(this, element);
 			}
+
+			// Toggle redraw on element after its appended
+			element.ToggleRedraw();
 
 			return element;
 		}
@@ -699,6 +756,9 @@ namespace DXToolKit.GUI {
 
 			// Set parent to null
 			element.m_parentElement = null;
+
+			// Toggle a redraw after element is removed
+			ToggleRedraw();
 		}
 
 
@@ -889,7 +949,7 @@ namespace DXToolKit.GUI {
 				// Toggle a redraw
 				ToggleRedraw();
 				// Call event
-				OnTextChanged();
+				OnTextChanged(Text);
 			}
 
 			// Start with parent late update
@@ -911,9 +971,27 @@ namespace DXToolKit.GUI {
 			// Might not want to handle mouse events if the element is not visible
 			if (m_visible == false) return false;
 
+
 			bool isMouseHandled = false;
 			//bool containsMouse = MouseScreenBounds.Contains(args.MousePosition);
 			m_containsMouse = MouseScreenBounds.Contains(args.MousePosition);
+
+			// Early handle of scrolling, since its kinda on top of everything else
+			// Just dont run it if drag target is set
+			// Reason for it being early is that usually renderoffset is set by mousewheel, and hover etc on child elements should reflect that in the same frame
+			if (CanReceiveMouseInput && m_containsMouse && guiSystem.DragTarget == null) {
+				if (m_mouseWheelNeedsFocus) {
+					if (m_containsFocus) {
+						if (Mathf.Abs(args.MouseWheelDelta) > 0) {
+							OnMouseWheel(args.MouseWheelDelta);
+						}
+					}
+				} else {
+					if (Mathf.Abs(args.MouseWheelDelta) > 0) {
+						OnMouseWheel(args.MouseWheelDelta);
+					}
+				}
+			}
 
 			// If drag target is currently set but left mouse button is not pressed, release the drag target
 			if (guiSystem.DragTarget != null && args.LeftMousePressed == false) {
@@ -980,6 +1058,7 @@ namespace DXToolKit.GUI {
 					HandleMouseInput(args, guiSystem);
 				}
 			}
+
 
 			// Return a status indicating if this element has handled mouse input (Usually true for the outer most child that contains the mouse position)
 			return isMouseHandled;
@@ -1052,10 +1131,162 @@ namespace DXToolKit.GUI {
 					OnRepeatKey((Key) args.RepeatKey);
 					result = true;
 				}
+
+				// Handle tabbing here
+				if (args.RepeatKey == Key.Tab) {
+					if (args.KeysPressed.Contains(Key.LeftShift) || args.KeysPressed.Contains(Key.LeftShift)) {
+						// Prev
+						TabPrevious();
+					} else {
+						// Next
+						TabNext();
+					}
+				}
 			}
 
 			// Return true if this control can capture input and result is true
 			return CanCaptureKeyboardInput && result;
+		}
+
+		private int m_tabIndex = -1;
+		private bool m_tabbable = false;
+
+		/// <summary>
+		/// Gets or sets a value indicating if this control should stop any tab recurse through the lineage
+		/// Useful for a "parent" element that wants to contain all tabbing within itself
+		/// Default false
+		/// </summary>
+		public bool stopTabRecurse = false;
+
+		/// <summary>
+		/// Sets the tab index of the element. If 0 or lower this element will not be "tabbable"
+		/// </summary>
+		public int TabIndex {
+			get => m_tabIndex;
+			set {
+				m_tabIndex = value;
+				m_tabbable = value >= 0;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating if this element is tabbable
+		/// </summary>
+		public bool Tabbable {
+			get => m_tabbable;
+			set => m_tabbable = value;
+		}
+
+		/// <summary>
+		/// Sets focus to the next neighbour child
+		/// </summary>
+		/// <param name="ignoreChildren">If child controls should not be checked if they tabbable</param>
+		/// <returns>True if new element received focus, false if not</returns>
+		public bool TabNext(bool ignoreChildren = false) {
+			if (stopTabRecurse) {
+				return false;
+			}
+
+			// If we have children, should maybe tab into those?
+			if (!ignoreChildren && m_childElements.Count > 0) {
+				var firstChild = m_childElements.OrderBy(element => element.m_tabIndex).FirstOrDefault(element => element.m_tabbable && element.m_tabIndex >= 0);
+				if (firstChild != null) {
+					firstChild.Focus();
+					firstChild.OnTabFocus();
+					return true;
+				}
+			}
+
+			// Tabbable check should be handled after child element tabbing, since children could still be tabbable
+			if (!m_tabbable) {
+				return false;
+			}
+
+			if (m_parentElement != null) {
+				var nextElement = m_parentElement.m_childElements.OrderBy(element => element.m_tabIndex).FirstOrDefault(element => element.m_tabIndex >= m_tabIndex && element != this && element.m_tabbable);
+				if (nextElement == null) {
+					if (m_parentElement.TabNext(true)) {
+						return true;
+					}
+
+					// Go back to start? 
+					nextElement = m_parentElement.m_childElements.OrderBy(element => element.m_tabIndex).FirstOrDefault(element => element.m_tabbable);
+
+					if (nextElement != null) {
+						nextElement.Focus();
+						nextElement.OnTabFocus();
+						return true;
+					}
+
+					return false;
+				}
+
+				nextElement.Focus();
+				nextElement.OnTabFocus();
+				return true;
+			}
+
+			return false;
+		}
+
+		public event Action TabFocus;
+		protected virtual void OnTabFocus() => TabFocus?.Invoke();
+
+		/// <summary>
+		/// Sets focus to the previous neighbour child
+		/// </summary>
+		/// <param name="onlyChildren">If to only check child elements</param>
+		/// <returns>True if new element received focus, false if not</returns>
+		public bool TabPrevious(bool onlyChildren = false) {
+			if (onlyChildren) {
+				var firstChild = m_childElements.OrderBy(element => -element.m_tabIndex).FirstOrDefault(element => element.m_tabbable);
+				if (firstChild != null) {
+					firstChild.Focus();
+					firstChild.OnTabFocus();
+					return true;
+				}
+
+				return false;
+			}
+
+			if (stopTabRecurse) {
+				return false;
+			}
+
+			if (!m_tabbable) {
+				return false;
+			}
+
+			if (m_parentElement != null) {
+				var prevElement = m_parentElement.m_childElements.OrderBy(element => -element.m_tabIndex).FirstOrDefault(element => element.m_tabIndex <= m_tabIndex && element != this && element.m_tabbable);
+				if (prevElement != null) {
+					if (prevElement.TabPrevious(true)) {
+						return true;
+					}
+
+					prevElement.Focus();
+					prevElement.OnTabFocus();
+					return true;
+				}
+
+				// Blocked, back to last
+				if (m_parentElement.stopTabRecurse) {
+					var lastElement = m_parentElement.m_childElements.OrderBy(element => -element.m_tabIndex).FirstOrDefault(element => element.m_tabbable);
+					if (lastElement != null) {
+						if (lastElement.TabPrevious(true)) {
+							return true;
+						}
+					}
+
+					return false;
+				}
+
+				m_parentElement.Focus();
+				m_parentElement.OnTabFocus();
+				return true;
+			}
+
+			return false;
 		}
 
 
@@ -1086,7 +1317,12 @@ namespace DXToolKit.GUI {
 
 		private bool m_isNewFocusTarget;
 
-		private void SetFocusTarget(GUIElement target, GUISystem guiSystem) {
+		private static void SetFocusTarget(GUIElement target, GUISystem guiSystem) {
+			// Get out if focus target has not changed
+			if (target == guiSystem.FocusTarget) {
+				return;
+			}
+
 			// If input target is null, all focus should be lost
 			if (target == null) {
 				if (guiSystem.FocusTarget != null) {
@@ -1261,12 +1497,12 @@ namespace DXToolKit.GUI {
 
 
 		public void ToggleRedraw() {
-			// Should not need to toggle redraw if its already been toggled
-			if (m_redraw) return; // TODO - Figure out if this check breaks anything
-			// Set redraw to true
-			m_redraw = true;
 			// If this element needs a redraw, all parents also need to redraw.
 			m_parentElement?.ToggleRedraw();
+			// Should not need to toggle redraw if its already been toggled
+			// if (m_redraw) return; // TODO - Figure out if this check breaks anything
+			// Set redraw to true
+			m_redraw = true;
 		}
 
 		public void ToggleResize() {
@@ -1316,8 +1552,8 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		/// <param name="amount">Amount as a Vector2</param>
 		public void Move(Vector2 amount) {
-			this.X += amount.X;
-			this.Y += amount.Y;
+			X += amount.X;
+			Y += amount.Y;
 		}
 
 		/// <summary>
@@ -1326,8 +1562,56 @@ namespace DXToolKit.GUI {
 		/// <param name="x">Amount of pixels to move in the X direction</param>
 		/// <param name="y">Amount of pixels to move in the Y direction</param>
 		public void Move(float x, float y) {
-			this.X += x;
-			this.Y += y;
+			X += x;
+			Y += y;
+		}
+
+		/// <summary>
+		/// Gets the first child of a given type
+		/// NULL if none are found
+		/// </summary>
+		/// <typeparam name="T">The type to look for</typeparam>
+		/// <returns>First GUIElement of type T or NULL</returns>
+		public T GetFirstChildOfType<T>(bool recurse = true) where T : GUIElement {
+			if (m_childElements != null) {
+				if (recurse) {
+					foreach (var el in AllChildren()) {
+						if (el is T target) {
+							return target;
+						}
+					}
+				} else {
+					foreach (var el in m_childElements) {
+						if (el is T target) {
+							return target;
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Returns all children of a given type
+		/// </summary>
+		/// <param name="recurse">If search should recurse down the hierarchy</param>
+		/// <typeparam name="T">The GUIElement type to look for</typeparam>
+		/// <returns>IEnumerable of GUIElements that matches the specified type</returns>
+		public IEnumerable<T> GetChildrenOfType<T>(bool recurse = false) where T : GUIElement {
+			if (m_childElements != null) {
+				foreach (var el in m_childElements) {
+					if (recurse) {
+						foreach (var childEl in el.GetChildrenOfType<T>(true)) {
+							yield return childEl;
+						}
+					}
+
+					if (el is T target) {
+						yield return target;
+					}
+				}
+			}
 		}
 
 		#endregion
