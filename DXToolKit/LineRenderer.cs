@@ -698,7 +698,21 @@ namespace DXToolKit {
 			const float HEAD = 0.1F;
 
 			var n1 = Vector3.Normalize(direction);
-			var temp = new Vector3(n1.Y, n1.Z, n1.X);
+			// Not good at extremes
+			// var temp = new Vector3(n1.Y, n1.Z, n1.X);
+
+			// Try to cross against up
+			var temp = Vector3.Up;
+			if (n1 == Vector3.Up || n1 == Vector3.Down) {
+				temp = Vector3.Left;
+			} else {
+				// Flip "up" normal if its facing is less then 90 degrees of
+				if (Vector3.Dot(n1, temp) < 0F) {
+					temp = Vector3.Down;
+				}
+			}
+
+
 			var p1 = Vector3.Normalize(Vector3.Cross(n1, temp)) * HEAD * size;
 			var p2 = Vector3.Normalize(Vector3.Cross(n1, p1)) * HEAD * size;
 
@@ -712,7 +726,6 @@ namespace DXToolKit {
 
 			if (transform != null) {
 				var tr = (Matrix) transform;
-
 				Vector3.TransformCoordinate(ref start, ref tr, out start);
 				Vector3.TransformCoordinate(ref end, ref tr, out end);
 
