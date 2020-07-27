@@ -1,6 +1,4 @@
-﻿using DXToolKit.Engine;
-
-namespace DXToolKit.Sandbox {
+﻿namespace DXToolKit.Sandbox {
 	internal class Program {
 		public static int Main(string[] args) {
 			using (var sketch = new GizmoTestingSketch()) {
@@ -8,7 +6,4 @@ namespace DXToolKit.Sandbox {
 			}
 		}
 	}
-
-
-	class GizmoTestingSketch : Sketch { }
 }
