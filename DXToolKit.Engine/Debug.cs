@@ -134,7 +134,11 @@ namespace DXToolKit {
 			CheckCameraSet();
 			m_primitiveRenderer.Plane(ref transform, ref color);
 		}
-
+		
+		public static void Plane(Vector3 normal, Vector3 position, float scale, Color color, Matrix? transform = null) {
+			CheckCameraSet();
+			m_primitiveRenderer.Plane(normal, position, scale, color, transform ?? Matrix.Identity);
+		}
 
 		public static void Box(Vector3 min, Vector3 max, Color color, Matrix? transform = null) {
 			CheckCameraSet();
