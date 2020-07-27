@@ -54,6 +54,11 @@ namespace DXToolKit {
 			private List<InstanceBufferType> m_instanceList;
 
 			/// <summary>
+			/// Controller for if the instance list has changed
+			/// </summary>
+			private bool m_hasInstancesChanged = false;
+
+			/// <summary>
 			/// Creates a new primitive batch used for organizing and rendering a primitive.
 			/// </summary>
 			/// <param name="device">Base device used for rendering</param>
@@ -92,6 +97,9 @@ namespace DXToolKit {
 					WorldMatrix = transform,
 					Color = color.ToVector4(),
 				});
+
+				// Trigger upload to GPU
+				m_hasInstancesChanged = true;
 			}
 
 			/// <summary>
@@ -112,6 +120,26 @@ namespace DXToolKit {
 
 				// Clear instance list
 				m_instanceList.Clear();
+			}
+
+
+			public void Render() {
+				// Check if there is any instances to render
+				if (m_instanceList.Count > 0) {
+					if (m_hasInstancesChanged) {
+						// Copy from the dynamic instance list to the GPU buffer
+						m_instanceBuffer.WriteRange(m_instanceList.ToArray());
+						// Trigger upload
+						m_hasInstancesChanged = false;
+					}
+
+					// Set vertex buffers to the input assembler
+					m_context.InputAssembler.SetVertexBuffers(0, m_vertexBuffer, m_instanceBuffer);
+					// Set index buffer to the input assembler
+					m_context.InputAssembler.SetIndexBuffer(m_indexBuffer, Format.R32_UInt, 0);
+					// Draw all the instances
+					m_context.DrawIndexedInstanced(m_indexBuffer.ElementCount, m_instanceList.Count, 0, 0, 0);
+				}
 			}
 
 			protected override void OnDispose() {
@@ -250,7 +278,7 @@ namespace DXToolKit {
 		/// <param name="dxCamera">Camera object used for view and projection</param>
 		/// <param name="world">Optional world transform for all objects</param>
 		/// <param name="pixelshader">Custom pixel shader</param>
-		public void Render(DXCamera dxCamera, Matrix? world = null, PixelShader pixelshader = null) {
+		public void Render(DXCamera dxCamera, Matrix? world = null, PixelShader pixelshader = null, bool clearBatches = true) {
 			// Update matrix buffer with input camera matrices.
 			m_matrices.WorldMatrix = Matrix.Transpose(world ?? Matrix.Identity);
 			m_matrices.ViewMatrix = Matrix.Transpose(dxCamera.ViewMatrix);
@@ -268,13 +296,24 @@ namespace DXToolKit {
 			m_context.PixelShader.SetConstantBuffer(0, m_lightBuffer);
 			m_context.GeometryShader.Set(null);
 
-			// Render all batches and clear buffers
-			m_cubeBatch.RenderAndClear();
-			m_sphereBatch.RenderAndClear();
-			m_planeBatch.RenderAndClear();
+			if (clearBatches) {
+				// Render all batches and clear buffers
+				m_cubeBatch.RenderAndClear();
+				m_sphereBatch.RenderAndClear();
+				m_planeBatch.RenderAndClear();
 
-			foreach (var customBatch in m_customBatches) {
-				customBatch.Value.RenderAndClear();
+				foreach (var customBatch in m_customBatches) {
+					customBatch.Value.RenderAndClear();
+				}
+			} else {
+				// Render all batches and clear buffers
+				m_cubeBatch.Render();
+				m_sphereBatch.Render();
+				m_planeBatch.Render();
+
+				foreach (var customBatch in m_customBatches) {
+					customBatch.Value.Render();
+				}
 			}
 		}
 
@@ -331,6 +370,35 @@ namespace DXToolKit {
 		/// <param name="color">The color of the plane</param>
 		public void Plane(ref Matrix transform, ref Color color) {
 			m_planeBatch.AddInstance(ref transform, ref color);
+		}
+
+		public void Plane(Vector3 normal, Vector3 position, float scale, Color color, Matrix transform) {
+			// Crossing vector
+			var upVec = Vector3.Up;
+
+			// If normal is exactly up or down, set crossing vector to direct left
+			if (normal == Vector3.Up || normal == Vector3.Down) {
+				upVec = Vector3.Left;
+			} else {
+				// If normal is facing mostly up, reverse up vector
+				if (Vector3.Dot(normal, upVec) < 0.0F) {
+					upVec = Vector3.Down;
+				}
+			}
+
+			var left = Vector3.Cross(normal, upVec);
+			var forward = Vector3.Cross(normal, left);
+			var matrix = Matrix.Identity;
+
+			// Set matrix rotation
+			matrix.Up = normal;
+			matrix.Left = -left;
+			matrix.Forward = forward;
+
+			// Normalize matrix
+			matrix.Orthonormalize();
+
+			Plane(Matrix.Scaling(scale) * matrix * Matrix.Translation(position) * transform, color);
 		}
 
 
