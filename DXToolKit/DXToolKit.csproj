@@ -152,6 +152,12 @@
     <Compile Include="LineRenderer.cs" />
     <Compile Include="Mathf.cs" />
     <Compile Include="Noise.cs" />
+    <Compile Include="Octree\IOctreeAware.cs" />
+    <Compile Include="Octree\IOctreeBounds.cs" />
+    <Compile Include="Octree\IOctreeData.cs" />
+    <Compile Include="Octree\IOctreePoint.cs" />
+    <Compile Include="Octree\Octree.cs" />
+    <Compile Include="Octree\WorldToScreenParams.cs" />
     <Compile Include="PrimitiveFactory.cs" />
     <Compile Include="PrimitiveRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

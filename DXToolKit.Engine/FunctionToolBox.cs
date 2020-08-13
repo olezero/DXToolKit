@@ -64,6 +64,16 @@ namespace DXToolKit.Engine {
 		protected float NormalizedMouseWheel => Abs(Input.MouseWheelDelta) > 0 ? Input.MouseWheelDelta > 0 ? 1 : -1 : 0;
 
 		/// <summary>
+		/// Gets the width of the screen
+		/// </summary>
+		protected float ScreenWidth => EngineConfig.ScreenWidth;
+
+		/// <summary>
+		/// Gets the height of the screen
+		/// </summary>
+		protected float ScreenHeight => EngineConfig.ScreenHeight;
+
+		/// <summary>
 		/// Transforms an input range to an output range
 		/// </summary>
 		/// <param name="input">The input value</param>
@@ -72,7 +82,6 @@ namespace DXToolKit.Engine {
 		/// <param name="outMin">The minimum value of the output</param>
 		/// <param name="outMax">The maximum value of the output</param>
 		protected float Map(float input, float inputMin, float inputMax, float outMin, float outMax) => Mathf.Map(input, inputMin, inputMax, outMin, outMax);
-
 		protected float Sin(float val) => Mathf.Sin(val);
 		protected float Cos(float val) => Mathf.Cos(val);
 		protected float Lerp(float from, float to, float amount) => Mathf.Lerp(from, to, amount);

@@ -19,7 +19,7 @@ namespace DXToolKit.Engine {
 		private float m_minimumFrameRate = 100.0F;
 		private double m_lastUpdateTime;
 		private Stopwatch m_updateTimer;
-		private bool m_useDynamicUpdates = true;
+		private bool m_useDynamicUpdates = false;
 
 		private float m_fixedFrameRate = 100.0F;
 		private float m_fixedUpdateTimer;
@@ -40,6 +40,7 @@ namespace DXToolKit.Engine {
 
 		/// <summary>
 		/// If game should use dynamic updates, meaning that if the frame time is higher then a given amount, multiple updates will be called each frame
+		/// ! EXPERIMENTAL !
 		/// </summary>
 		public bool UseDynamicUpdates {
 			get => m_useDynamicUpdates;
@@ -110,6 +111,7 @@ namespace DXToolKit.Engine {
 
 			Time.DeltaTime = tempDeltaTime;
 
+			// TODO - This makes the frame rate flutter really badly for some odd reason. Although that might just be because of the FPS counter is not updated correctly
 			if (m_useDynamicUpdates) {
 				// Function for handling if Update is slower then Fixed Frame Rate
 				// Basically checks the last frames update time, and if its greater then target, it lowers fixed frame rate by dividing that frame rate by an amount so that the last frame would be completed within the time

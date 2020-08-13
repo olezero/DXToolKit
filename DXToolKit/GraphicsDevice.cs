@@ -35,6 +35,8 @@ namespace DXToolKit {
 		private DeviceContext m_deviceContext;
 		private SwapChain m_swapchain;
 		private RenderTarget m_renderTarget;
+		private int m_backbufferWidth;
+		private int m_backbufferHeight;
 
 		/// <summary>
 		/// Gets a reference to the factory collection used by the graphics device.
@@ -63,6 +65,17 @@ namespace DXToolKit {
 		public RenderTarget RenderTarget => m_renderTarget;
 
 		/// <summary>
+		/// Gets the width of the backbuffer
+		/// </summary>
+		public int BackbufferWidth => m_backbufferWidth;
+
+		/// <summary>
+		/// Gets the height of the backbuffer
+		/// </summary>
+		public int BackbufferHeight => m_backbufferHeight;
+
+
+		/// <summary>
 		/// Creates a new graphics device
 		/// </summary>
 		/// <param name="factory">Factory collection used for creation</param>
@@ -80,13 +93,16 @@ namespace DXToolKit {
 				BufferCount = 1,
 				IsWindowed = true,
 				OutputHandle = window.Handle,
-				SampleDescription = new SampleDescription(4, 0),
+				SampleDescription = new SampleDescription(2, 0),
 				SwapEffect = SwapEffect.Discard,
 			});
 			m_swapchain.ResizeTarget(ref modeDescription);
 			CreateRenderTarget();
 			OnResizeBegin += DisposeRenderTarget;
 			OnResizeEnd += CreateRenderTarget;
+
+			m_backbufferWidth = modeDescription.Width;
+			m_backbufferHeight = modeDescription.Height;
 		}
 
 		/// <summary>
@@ -116,6 +132,10 @@ namespace DXToolKit {
 				modeDescription.Format,
 				SwapChainFlags.AllowModeSwitch
 			);
+
+			// Set internal variables
+			m_backbufferWidth = modeDescription.Width;
+			m_backbufferHeight = modeDescription.Height;
 
 			// Only change fullscreen mode if fullscreen has changed.
 			if (m_swapchain.IsFullScreen != fullscreen) {

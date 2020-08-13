@@ -67,6 +67,14 @@ namespace DXToolKit {
 					}
 				}
 			}
+
+			lock (m_d2dOperations) {
+				m_d2dOperations.Clear();
+			}
+
+			lock (m_primitiveRenderer) {
+				m_primitiveRenderer.Clear();
+			}
 		}
 
 		private static string m_toPrint = "";
@@ -105,9 +113,7 @@ namespace DXToolKit {
 			}
 
 			m_d2dOperations.Clear();
-
 			m_brush.Color = Color.White;
-
 			device.RenderTarget.DrawText(m_toPrint, m_textFormat, new RectangleF(2, 2, EngineConfig.ScreenWidth - 2, EngineConfig.ScreenHeight - 2), m_brush);
 			device.RenderTarget.EndDraw();
 		}
@@ -134,7 +140,7 @@ namespace DXToolKit {
 			CheckCameraSet();
 			m_primitiveRenderer.Plane(ref transform, ref color);
 		}
-		
+
 		public static void Plane(Vector3 normal, Vector3 position, float scale, Color color, Matrix? transform = null) {
 			CheckCameraSet();
 			m_primitiveRenderer.Plane(normal, position, scale, color, transform ?? Matrix.Identity);

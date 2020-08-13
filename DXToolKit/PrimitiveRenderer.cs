@@ -103,6 +103,14 @@ namespace DXToolKit {
 			}
 
 			/// <summary>
+			/// Clears the batch of instances
+			/// </summary>
+			public void Clear() {
+				m_instanceList.Clear();
+				m_hasInstancesChanged = true;
+			}
+
+			/// <summary>
 			/// Renders and clears the primitive batch
 			/// </summary>
 			public void RenderAndClear() {
@@ -314,6 +322,18 @@ namespace DXToolKit {
 				foreach (var customBatch in m_customBatches) {
 					customBatch.Value.Render();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Clears all instances in the primitive renderer
+		/// </summary>
+		public void Clear() {
+			m_cubeBatch.Clear();
+			m_sphereBatch.Clear();
+			m_planeBatch.Clear();
+			foreach (var customBatch in m_customBatches) {
+				customBatch.Value.Clear();
 			}
 		}
 

@@ -37,7 +37,7 @@ namespace DXToolKit {
 		public bool Intersects(float screenX, float screenY, float screenWidth, float screenHeight, Matrix world, Matrix view, Matrix proj, out Vector3 point, out float distance) {
 			point = default;
 			distance = float.MaxValue;
-			var mouseray = Ray.GetPickRay((int)screenX, (int)screenY, new ViewportF(0, 0, screenWidth, screenHeight), world * view * proj);
+			var mouseray = Ray.GetPickRay((int) screenX, (int) screenY, new ViewportF(0, 0, screenWidth, screenHeight), world * view * proj);
 			var closest = float.MaxValue;
 			var collision = false;
 
@@ -433,8 +433,21 @@ namespace DXToolKit {
 			return result;
 		}
 
-		public static Primitive Tube(float height = 1.0F, float bottomRadius1 = 1.0F,
-			float bottomRadius2 = 0.5F, float topRadius1 = 1.0F, float topRadius2 = 0.5F, int nbSides = 24) {
+
+		public static Primitive Tube(float height = 1.0F, float topOuterRadius = 1.0F, float bottomOuterRadius = 1.0F, float topInnerRadius = 0.5F, float bottomInnerRadius = 0.5F, int sides = 24) {
+			var bR2 = bottomOuterRadius - bottomInnerRadius;
+			var bR1 = bottomOuterRadius - bR2 / 2.0F;
+			
+			var tR2 = topOuterRadius - topInnerRadius;
+			var tR1 = topOuterRadius - tR2 / 2.0F;
+			return _Tube(height, bR1, bR2, tR1, tR2, sides);
+		}
+
+		private static Primitive _Tube(float height = 1.0F, float bottomR1 = 1.0F,
+			float bottomR2 = 0.5F, float topR1 = 1.0F, float topR2 = 0.5F, int nbSides = 24) {
+			// Kinda want outer radius and inner radius
+
+
 			// Outer shell is at radius1 + radius2 / 2, inner shell at radius1 - radius2 / 2
 			int nbVerticesCap = nbSides * 2 + 2;
 			int nbVerticesSides = nbSides * 2 + 2;
@@ -454,10 +467,10 @@ namespace DXToolKit {
 				float r1 = (float) (sideCounter++) / nbSides * _2pi;
 				float cos = Mathf.Cos(r1);
 				float sin = Mathf.Sin(r1);
-				vertices[vert] = new Vector3(cos * (bottomRadius1 - bottomRadius2 * .5f), -height / 2.0F,
-					sin * (bottomRadius1 - bottomRadius2 * .5f));
-				vertices[vert + 1] = new Vector3(cos * (bottomRadius1 + bottomRadius2 * .5f), -height / 2.0F,
-					sin * (bottomRadius1 + bottomRadius2 * .5f));
+				vertices[vert] = new Vector3(cos * (bottomR1 - bottomR2 * .5f), -height / 2.0F,
+					sin * (bottomR1 - bottomR2 * .5f));
+				vertices[vert + 1] = new Vector3(cos * (bottomR1 + bottomR2 * .5f), -height / 2.0F,
+					sin * (bottomR1 + bottomR2 * .5f));
 				vert += 2;
 			}
 
@@ -469,10 +482,10 @@ namespace DXToolKit {
 				float r1 = (float) (sideCounter++) / nbSides * _2pi;
 				float cos = Mathf.Cos(r1);
 				float sin = Mathf.Sin(r1);
-				vertices[vert] = new Vector3(cos * (topRadius1 - topRadius2 * .5f), height / 2.0F,
-					sin * (topRadius1 - topRadius2 * .5f));
-				vertices[vert + 1] = new Vector3(cos * (topRadius1 + topRadius2 * .5f), height / 2.0F,
-					sin * (topRadius1 + topRadius2 * .5f));
+				vertices[vert] = new Vector3(cos * (topR1 - topR2 * .5f), height / 2.0F,
+					sin * (topR1 - topR2 * .5f));
+				vertices[vert + 1] = new Vector3(cos * (topR1 + topR2 * .5f), height / 2.0F,
+					sin * (topR1 + topR2 * .5f));
 				vert += 2;
 			}
 
@@ -485,10 +498,10 @@ namespace DXToolKit {
 				float cos = Mathf.Cos(r1);
 				float sin = Mathf.Sin(r1);
 
-				vertices[vert] = new Vector3(cos * (topRadius1 + topRadius2 * .5f), height / 2.0F,
-					sin * (topRadius1 + topRadius2 * .5f));
-				vertices[vert + 1] = new Vector3(cos * (bottomRadius1 + bottomRadius2 * .5f), -height / 2.0F,
-					sin * (bottomRadius1 + bottomRadius2 * .5f));
+				vertices[vert] = new Vector3(cos * (topR1 + topR2 * .5f), height / 2.0F,
+					sin * (topR1 + topR2 * .5f));
+				vertices[vert + 1] = new Vector3(cos * (bottomR1 + bottomR2 * .5f), -height / 2.0F,
+					sin * (bottomR1 + bottomR2 * .5f));
 				vert += 2;
 			}
 
@@ -501,10 +514,10 @@ namespace DXToolKit {
 				float cos = Mathf.Cos(r1);
 				float sin = Mathf.Sin(r1);
 
-				vertices[vert] = new Vector3(cos * (topRadius1 - topRadius2 * .5f), height / 2.0F,
-					sin * (topRadius1 - topRadius2 * .5f));
-				vertices[vert + 1] = new Vector3(cos * (bottomRadius1 - bottomRadius2 * .5f), -height / 2.0F,
-					sin * (bottomRadius1 - bottomRadius2 * .5f));
+				vertices[vert] = new Vector3(cos * (topR1 - topR2 * .5f), height / 2.0F,
+					sin * (topR1 - topR2 * .5f));
+				vertices[vert + 1] = new Vector3(cos * (bottomR1 - bottomR2 * .5f), -height / 2.0F,
+					sin * (bottomR1 - bottomR2 * .5f));
 				vert += 2;
 			}
 

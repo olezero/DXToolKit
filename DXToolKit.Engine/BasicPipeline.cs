@@ -47,6 +47,14 @@ namespace DXToolKit.Engine {
 			m_context.OutputMerger.SetRenderTargets(m_depthStencilView, m_renderTargetView);
 		}
 
+		public RenderTargetView GetRenderTargetView() {
+			return m_renderTargetView;
+		}
+
+		public DepthStencilView GetDepthStencilView() {
+			return m_depthStencilView;
+		}
+
 		protected override void OnDispose() {
 			DisposeTargets();
 		}
@@ -61,7 +69,7 @@ namespace DXToolKit.Engine {
 				BindFlags = BindFlags.DepthStencil,
 				MipLevels = 1,
 				OptionFlags = ResourceOptionFlags.None,
-				SampleDescription = new SampleDescription(4, 0),
+				SampleDescription = m_backbuffer.Description.SampleDescription,
 				CpuAccessFlags = CpuAccessFlags.None,
 				ArraySize = 1,
 			});

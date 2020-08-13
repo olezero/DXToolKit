@@ -10,6 +10,14 @@ namespace DXToolKit {
 	public class DXCamera {
 		private Matrix m_uprotationMatrix = Matrix.Identity;
 
+		private bool m_hasFustrumChanged = true;
+		private BoundingFrustum m_boundingFrustum;
+
+		private bool m_isOrthographic;
+		private float m_orthoWidth = 1.0F;
+		private float m_orthoHeight = 1.0F;
+		private float m_orthoScaling = 1.0F;
+
 		/// <summary>
 		/// Matrix controlling the rotation of the camera
 		/// </summary>
@@ -277,10 +285,6 @@ namespace DXToolKit {
 		/// </summary>
 		public Matrix ViewProjectionTransposed => Matrix.Transpose(ViewProjection);
 
-
-		private bool m_hasFustrumChanged = true;
-		private BoundingFrustum m_boundingFrustum;
-
 		/// <summary>
 		/// Gets the bounding frustum of the camera
 		/// </summary>
@@ -294,12 +298,6 @@ namespace DXToolKit {
 				return m_boundingFrustum;
 			}
 		}
-
-
-		private bool m_isOrthographic;
-		private float m_orthoWidth = 1.0F;
-		private float m_orthoHeight = 1.0F;
-		private float m_orthoScaling = 1.0F;
 
 		/// <summary>
 		/// Gets or sets a value indicating if the cameras projection matrix should be a Orthographic projection

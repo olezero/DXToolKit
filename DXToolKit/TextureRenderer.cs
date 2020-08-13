@@ -2,6 +2,7 @@ using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using SharpDX.Mathematics.Interop;
 
 namespace DXToolKit {
 	public class TextureRenderer : DeviceComponent {
@@ -29,17 +30,18 @@ namespace DXToolKit {
 		public void Draw(ShaderResourceView texture, RectangleF destination) {
 			// Set default parameters
 			SetParameters();
-
+			// Fetch current viewports
+			var currentViewports = m_context.Rasterizer.GetViewports<RawViewportF>();
 			// Set new viewport for the shader
 			m_context.Rasterizer.SetViewport(new ViewportF(destination));
-
 			// Set internal pixel shader
 			m_context.PixelShader.Set(m_pixelShader);
 			m_context.PixelShader.SetShaderResource(0, texture);
 			m_context.PixelShader.SetSamplers(0, m_samplerState);
-
 			// Render quad to screen
 			m_quad.Render();
+			// Reset viewports back to default
+			m_context.Rasterizer.SetViewports(currentViewports, currentViewports.Length);
 		}
 
 
@@ -48,12 +50,16 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="destination"></param>
 		public void Draw(RectangleF destination) {
+			// Fetch current viewports
+			var currentViewports = m_context.Rasterizer.GetViewports<RawViewportF>();
 			// Set default parameters
 			SetParameters();
 			// Set new viewport for the shader
 			m_context.Rasterizer.SetViewport(new ViewportF(destination));
 			// Render quad to screen
 			m_quad.Render();
+			// Reset viewports back to default
+			m_context.Rasterizer.SetViewports(currentViewports, currentViewports.Length);
 		}
 
 		protected override void OnDispose() {

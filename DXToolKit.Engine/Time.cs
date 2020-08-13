@@ -96,10 +96,10 @@ namespace DXToolKit {
 			}
 
 			// End previous period
-			timeEndPeriod(1);
+			//timeEndPeriod(1);
 			
 			// Start next period (the frame)
-			timeBeginPeriod(1);
+			//timeBeginPeriod(1);
 
 			IsRunningSlowly = false;
 			IsRunningVerySlowly = false;
@@ -109,8 +109,8 @@ namespace DXToolKit {
 			while (m_frameTimeTicks < m_targetFrameTimeTicks) {
 				var difference = (int) Math.Floor((double) ((m_targetFrameTimeTicks - m_frameTimeTicks) * 1000) /
 				                                  Stopwatch.Frequency);
-				if (difference > 1) {
-					System.Threading.Thread.Sleep(difference - 1);
+				if (difference > 2) {
+					System.Threading.Thread.Sleep(1);
 				}
 
 				m_frameTimeTicks = m_frameTimer.ElapsedTicks;

@@ -70,12 +70,12 @@ namespace DXToolKit.Engine {
 
 		private static Dictionary<object, ProfilingJob> m_profilers = new Dictionary<object, ProfilingJob>();
 
-		public static void Profile(string name, Action action, bool print = true) {
+		public static void Profile(string name, Action action, bool print = true, float displayTime = -1.0F) {
 			StartProfiler(name);
 			action.Invoke();
 			StopProfiler(name);
 			if (print) {
-				DebugLog(name);
+				DebugLog(name, displayTime);
 			}
 		}
 

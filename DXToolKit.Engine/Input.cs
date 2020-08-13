@@ -102,6 +102,43 @@ namespace DXToolKit {
 			}
 		}
 
+		private static RectangleF m_leftMouseSelection;
+		private static RectangleF m_rightMouseSelection;
+
+		public static bool LeftSelectActive = false;
+		public static bool RightSelectActive = false;
+
+		public static RectangleF LeftMouseSelectionRectangle {
+			get {
+				var result = m_leftMouseSelection;
+				AbsRectangleF(ref result);
+				return result;
+			}
+		}
+
+		public static RectangleF RightMouseSelectionRectangle {
+			get {
+				var result = m_rightMouseSelection;
+				AbsRectangleF(ref result);
+				return result;
+			}
+		}
+
+		private static void AbsRectangleF(ref RectangleF rectangle) {
+			// Invert width
+			if (rectangle.Width < 0) {
+				rectangle.Width = -rectangle.Width;
+				rectangle.X -= rectangle.Width;
+			}
+
+			// Invert height
+			if (rectangle.Height < 0) {
+				rectangle.Height = -rectangle.Height;
+				rectangle.Y -= rectangle.Height;
+			}
+		}
+
+
 		private static System.Drawing.Rectangle WindowsFormRectangle;
 
 
@@ -204,6 +241,7 @@ namespace DXToolKit {
 				m_mouseButtonsPressed.Clear();
 				m_mouseButtonsUp.Clear();
 				m_textInputBuffer = "";
+				ResetMouseSelection();
 				return;
 			}
 
@@ -220,8 +258,12 @@ namespace DXToolKit {
 
 			HandleKeyboard(m_keyboardState);
 			HandleMouse(m_mouseState);
+			HandleMouseSelection();
 
-
+			/*
+			 this messes with normal resize handles for the window
+			 TODO - this should maybe only be applied if the mouse is within thee window with some (10ish pixel) margin
+			 
 			switch (m_cursorStyle) {
 				case CursorStyle.Default:
 					renderForm.Cursor = Cursors.Default;
@@ -243,6 +285,40 @@ namespace DXToolKit {
 			}
 
 			m_cursorStyle = CursorStyle.Default;
+			*/
+		}
+
+		private static void ResetMouseSelection() {
+			m_rightMouseSelection.X = m_leftMouseSelection.X = float.NegativeInfinity;
+			m_rightMouseSelection.Y = m_leftMouseSelection.Y = float.NegativeInfinity;
+			m_rightMouseSelection.Width = m_leftMouseSelection.Width = 0;
+			m_rightMouseSelection.Height = m_leftMouseSelection.Height = 0;
+			LeftSelectActive = RightSelectActive = false;
+		}
+
+		private static void HandleMouseSelection() {
+			LeftSelectActive = HandleSelectionRectangle(ref m_leftMouseSelection, MouseButton.Left);
+			RightSelectActive = HandleSelectionRectangle(ref m_rightMouseSelection, MouseButton.Right);
+		}
+
+		private static bool HandleSelectionRectangle(ref RectangleF rectangle, MouseButton dragButton) {
+			if (m_mouseButtonsPressed.Contains(dragButton)) {
+				// Was clicked, start selection at this point
+				if (m_mouseButtonsDown.Contains(dragButton)) {
+					rectangle.X = MousePosition.X;
+					rectangle.Y = MousePosition.Y;
+				}
+
+				// Dragging
+				rectangle.Width = MousePosition.X - rectangle.X;
+				rectangle.Height = MousePosition.Y - rectangle.Y;
+				return true;
+			}
+
+			// Reset if not pressed
+			rectangle.X = rectangle.Y = float.NegativeInfinity;
+			rectangle.Width = rectangle.Height = 0;
+			return false;
 		}
 
 		private static void HandleKeyboard(KeyboardState state) {
@@ -261,8 +337,11 @@ namespace DXToolKit {
 
 		private static void HandleMouse(MouseState state) {
 			var mbuttons = state.Buttons;
+
 			var current = new List<MouseButton>();
-			for (var i = 0; i < mbuttons.Length; i++) {
+			for (var i = 0;
+				i < mbuttons.Length;
+				i++) {
 				if (mbuttons[i]) {
 					current.Add((MouseButton) i);
 				}
@@ -272,7 +351,6 @@ namespace DXToolKit {
 			m_mouseButtonsDown = current.Except(m_mouseButtonsPressed).ToList();
 			m_mouseButtonsUp = m_mouseButtonsPressed.Except(current).ToList();
 			m_mouseButtonsPressed = current.ToList();
-
 			if (Math.Abs(state.Z) > 0) {
 				if (state.Z > 0) {
 					MouseWheelDelta = 1;
@@ -300,7 +378,9 @@ namespace DXToolKit {
 			m_mouseDoubleClick.Clear();
 
 			// Increment timers
-			for (int i = 0; i < m_doubleClickTimers.Length; i++) {
+			for (int i = 0;
+				i < m_doubleClickTimers.Length;
+				i++) {
 				m_doubleClickTimers[i] += Time.DeltaTime;
 				if (m_doubleClickTimers[i] > 10) {
 					m_doubleClickTimers[i] = 10;

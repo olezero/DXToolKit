@@ -88,6 +88,12 @@
     <Compile Include="DXApp.cs" />
     <Compile Include="EngineConfig.cs" />
     <Compile Include="FunctionToolBox.cs" />
+    <Compile Include="Gizmos\GizmoBase.cs" />
+    <Compile Include="Gizmos\GizmoDirection.cs" />
+    <Compile Include="Gizmos\RotationGizmo.cs" />
+    <Compile Include="Gizmos\ScaleGizmo.cs" />
+    <Compile Include="Gizmos\TransformGizmo.cs" />
+    <Compile Include="Gizmos\TranslationGizmo.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="GUI\BasicGUIDrawTools.cs" />
     <Compile Include="GUI\Controls\ActiveElement.cs" />

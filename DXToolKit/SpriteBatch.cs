@@ -31,7 +31,17 @@ namespace DXToolKit {
 		private SamplerState m_sampler;
 		private BlendState m_blendState;
 
-		public SpriteBatch(GraphicsDevice device) : base(device) {
+		private DXCamera m_camera;
+
+		/// <summary>
+		/// Gets or sets a value indicating if Zero Y is screen top
+		/// Default: true
+		/// </summary>
+		public bool IsZeroYScreenTop;
+
+
+		public SpriteBatch(GraphicsDevice device, bool isZeroYScreenTop = true) : base(device) {
+			IsZeroYScreenTop = isZeroYScreenTop;
 			m_spriteTextures = new List<ShaderResourceView>();
 			m_sprites = new List<SpriteBufferType>();
 			m_spriteBuffer = new VertexBuffer<SpriteBufferType>(m_device, 1);
@@ -55,6 +65,21 @@ namespace DXToolKit {
 			m_matrixBuffer = new ConstantBuffer<Matrix>(m_device);
 
 			LoadShaders();
+
+			// Default camera
+			m_camera = new DXCamera();
+			// Resize and  position
+			ResizeCamera();
+			// Handle resize when backbuffer is resized
+			m_device.OnResizeEnd += ResizeCamera;
+		}
+
+		private void ResizeCamera() {
+			m_camera.OrthoWidth = m_device.BackbufferWidth;
+			m_camera.OrthoHeight = m_device.BackbufferHeight;
+			m_camera.Position = new Vector3(m_device.BackbufferWidth / 2.0F, m_device.BackbufferHeight / 2.0F, -10);
+			m_camera.FarClippingPlane = 1000;
+			m_camera.NearClippingPlane = 1;
 		}
 
 		public void Draw(ShaderResourceView texture, RectangleF destination, float? rotation = null,
@@ -64,6 +89,10 @@ namespace DXToolKit {
 			var vertex = new SpriteBufferType {
 				Destination = new Vector4(destination.X, destination.Y, destination.Width, destination.Height),
 			};
+
+			if (IsZeroYScreenTop) {
+				vertex.Destination.Y = m_device.BackbufferHeight - vertex.Destination.W - vertex.Destination.Y;
+			}
 
 			if (depth != null && depth > 0) {
 				vertex.Depth = depth.Value;
@@ -94,12 +123,15 @@ namespace DXToolKit {
 			m_sprites.Add(vertex);
 		}
 
-		/*
-		public void Draw(ShaderResourceView texture, Transform2D transform, Size2F destinationSize,
-			RectangleF sourceRectangle) { }
-			*/
 
-		public void Render(DXCamera camera, Matrix? transform = null, SamplerState sampler = null, BlendState blend = null) {
+		/// <summary>
+		/// Presents the spritebatch to the screen
+		/// </summary>
+		/// <param name="camera">Camera to use, if null, the built in camera is used</param>
+		/// <param name="transform">World transform of all sprites, null for Matrix.Identity</param>
+		/// <param name="sampler">Texture sampler to use. null for built inn sampler</param>
+		/// <param name="blend">Blend state to use. null for built inn blend</param>
+		public void Render(DXCamera camera = null, Matrix? transform = null, SamplerState sampler = null, BlendState blend = null) {
 			// Check if there are sprites to render
 			if (m_sprites.Count > 0) {
 				// Write those sprites to the GPU sprite buffer
@@ -109,7 +141,7 @@ namespace DXToolKit {
 				m_context.InputAssembler.SetVertexBuffers(0, m_spriteBuffer);
 
 				// Update matrix buffer with view projection (add a world matrix here)
-				m_matrixBuffer.Write(Matrix.Transpose((transform ?? Matrix.Identity) * camera.ViewProjection));
+				m_matrixBuffer.Write(Matrix.Transpose((transform ?? Matrix.Identity) * camera?.ViewProjection ?? m_camera.ViewProjection));
 
 				// Set input layout and topology to point list, since geometry shader handles quad generation
 				m_context.InputAssembler.InputLayout = m_inputLayout;
@@ -178,6 +210,7 @@ namespace DXToolKit {
 			});
 		}
 
+		/// <inheritdoc />
 		protected override void OnDispose() {
 			Utilities.Dispose(ref m_spriteBuffer);
 			Utilities.Dispose(ref m_sampler);
