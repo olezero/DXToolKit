@@ -65,14 +65,10 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="GizmoTestingSketch.cs" />
-        <Compile Include="OctreeTestingSketch.cs" />
-        <Compile Include="Octree\IOctreeAware.cs" />
-        <Compile Include="Octree\IOctreeData.cs" />
-        <Compile Include="Octree\Octree.cs" />
-        <Compile Include="Octree\WorldToScreenParams.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="QuadtreeTesting.cs" />
+        <Compile Include="Quadtree\Quadtree.cs" />
         <Compile Include="RenderPipelineTesting\CustomRenderPipelineApp.cs" />
         <Compile Include="RenderPipelineTesting\BaseScene.cs" />
         <Compile Include="RenderPipelineTesting\MultiRenderTarget.cs" />

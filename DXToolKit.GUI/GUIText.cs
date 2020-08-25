@@ -17,11 +17,14 @@ namespace DXToolKit.GUI {
 			private float m_cachedMaxWidth;
 			private float m_cachedMaxHeight;
 			private bool m_hasFontOrSizeChanged;
+			private bool m_hasFontStyleChanged;
 
 			private ParagraphAlignment m_cachedParagraphAlignment;
 			private TextAlignment m_cachedTextAlignment;
 			private WordWrapping m_cachedWordWrapping;
-
+			private FontWeight m_cachedfontWeight;
+			private FontStyle m_cachedfontStyle;
+			private FontStretch m_cachedFontStretch;
 
 			public ParagraphAlignment ParagraphAlignment {
 				get => m_cachedParagraphAlignment;
@@ -59,6 +62,36 @@ namespace DXToolKit.GUI {
 				}
 			}
 
+			public FontWeight FontWeight {
+				get => m_cachedfontWeight;
+				set {
+					if (m_cachedfontWeight != value) {
+						m_cachedfontWeight = value;
+						m_hasFontStyleChanged = true;
+					}
+				}
+			}
+
+			public FontStyle FontStyle {
+				get => m_cachedfontStyle;
+				set {
+					if (m_cachedfontStyle != value) {
+						m_cachedfontStyle = value;
+						m_hasFontStyleChanged = true;
+					}
+				}
+			}
+
+			public FontStretch FontStretch {
+				get => m_cachedFontStretch;
+				set {
+					if (m_cachedFontStretch != value) {
+						m_cachedFontStretch = value;
+						m_hasFontStyleChanged = true;
+					}
+				}
+			}
+
 			public string Font {
 				get => m_font;
 				set {
@@ -79,17 +112,20 @@ namespace DXToolKit.GUI {
 				}
 			}
 
-			public GUIText(string font, int fontSize) {
+			public GUIText(string font, int fontSize, FontWeight fontWeight = FontWeight.Normal, FontStyle fontStyle = FontStyle.Normal, FontStretch fontStretch = FontStretch.Normal) {
 				m_font = font;
 				m_fontSize = fontSize;
 				m_cachedParagraphAlignment = ParagraphAlignment.Near;
 				m_cachedTextAlignment = TextAlignment.Leading;
 				m_cachedWordWrapping = WordWrapping.NoWrap;
+				m_cachedfontStyle = fontStyle;
+				m_cachedfontWeight = fontWeight;
+				m_cachedFontStretch = fontStretch;
 			}
 
 			private void LoadText(FactoryCollection factory, ref string text, ref float maxWidth, ref float maxHeigth) {
 				DisposeText();
-				m_textFormat = new TextFormat(factory, m_font, m_fontSize) {
+				m_textFormat = new TextFormat(factory, m_font, m_cachedfontWeight, m_cachedfontStyle, m_cachedFontStretch, m_fontSize) {
 					ParagraphAlignment = m_cachedParagraphAlignment,
 					TextAlignment = m_cachedTextAlignment,
 					WordWrapping = m_cachedWordWrapping,
@@ -128,7 +164,8 @@ namespace DXToolKit.GUI {
 				var result = m_hasFontOrSizeChanged ||
 				             text != m_cachedText ||
 				             !MathUtil.NearEqual(m_cachedMaxWidth, maxWidth) ||
-				             !MathUtil.NearEqual(m_cachedMaxHeight, maxHeight);
+				             !MathUtil.NearEqual(m_cachedMaxHeight, maxHeight) ||
+				             m_hasFontStyleChanged;
 
 				if (result) {
 					m_cachedMaxWidth = maxWidth;
@@ -137,6 +174,7 @@ namespace DXToolKit.GUI {
 				}
 
 				m_hasFontOrSizeChanged = false;
+				m_hasFontStyleChanged = false;
 				return result;
 			}
 

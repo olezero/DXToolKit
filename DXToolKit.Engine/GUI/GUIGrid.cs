@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Grid system used to position IGUIGriddable
+	/// Uses 12 columns
+	/// </summary>
 	public class GUIGrid : IGUIGriddable {
 		private class GridColumn {
 			public int ColumnSpan;
@@ -17,17 +21,41 @@ namespace DXToolKit.Engine {
 
 		private Action<GUIGrid> m_oncreate;
 		private GUIElement m_baseElement;
+		private GUIPadding m_gridPadding = new GUIPadding();
+		private GUIPadding m_elementPadding = new GUIPadding();
 
 		private GUIGrid() {
 			m_grid = new List<List<GridColumn>>();
 			m_currentrow = new List<GridColumn>();
 		}
 
+
+		/// <inheritdoc />
 		public float X { get; set; }
+
+		/// <inheritdoc />
 		public float Y { get; set; }
+
+		/// <inheritdoc />
 		public float Width { get; set; }
+
+		/// <inheritdoc />
 		public float Height { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating if GUI grid is allowed to resize parent so that all elements will be positioned within a whole number.
+		/// This does require all padding to be set to a whole number aswell
+		/// </summary>
+		public bool AllowParentResize = true;
+
+		/// <summary>
+		/// Adds a new column.
+		/// If a row consists of more then 12 column spans, a new row will be added
+		/// </summary>
+		/// <param name="element">The IGUIGriddable element to add to the column</param>
+		/// <param name="columspan">The column span the griddable should occupy</param>
+		/// <typeparam name="T">Type of the element for return value</typeparam>
+		/// <returns>The element</returns>
 		public T Column<T>(T element, int columspan) where T : IGUIGriddable {
 			// if a rows total column span + input column span is greater then 12 (default number of columns) add a new row
 			if (CurrentRowWidth() + columspan > COLUMN_COUNT) {
@@ -55,17 +83,29 @@ namespace DXToolKit.Engine {
 			return m_currentrow.Sum(column => column.ColumnSpan);
 		}
 
+		/// <summary>
+		/// Adds a sub grid as a element to the grid
+		/// </summary>
+		/// <param name="oncreate">Method invoked when creating the grid. This will only run once</param>
+		/// <param name="columnspan">The span the sub grid should occupy</param>
 		public void SubGrid(Action<GUIGrid> oncreate, int columnspan) {
 			// Create new grid and store the on create function for later
 			var subGrid = new GUIGrid() {
 				m_oncreate = oncreate,
 				m_baseElement = this.m_baseElement,
+				// Kinda have to do this or else things might get weird
+				AllowParentResize = false,
 			};
 			// Add grid to parent
 			Column(subGrid, columnspan);
 		}
 
-
+		/// <summary>
+		/// Creates a new GUI Grid
+		/// </summary>
+		/// <param name="baseElement">The GUI Element the grid should base its width and height on, aswell as append new elements to</param>
+		/// <param name="oncreate">Method invoked when creating the grid. This will only run once</param>
+		/// <returns>The newly created grid</returns>
 		public static GUIGrid Create(GUIElement baseElement, Action<GUIGrid> oncreate) {
 			// Create new grid and store the on create function for later
 			var grid = new GUIGrid {
@@ -83,21 +123,57 @@ namespace DXToolKit.Engine {
 
 			// Organize all elements
 			grid.OrganizeElements();
+
 			return grid;
 		}
 
+		/// <summary>
+		/// Adds padding to the grid as a whole
+		/// </summary>
+		/// <param name="padding"></param>
+		public void SetGridPadding(GUIPadding padding) {
+			m_gridPadding = padding;
+		}
+
+		/// <summary>
+		/// Sets the padding between elements in the grid
+		/// </summary>
+		/// <param name="padding"></param>
+		public void SetElementPadding(GUIPadding padding) {
+			m_elementPadding = padding;
+		}
+
+		/// <summary>
+		/// Organizes all elements that are part of the grid based on column size etc
+		/// </summary>
+		/// <param name="updateSize">If the grid should grab size from parent element</param>
 		public void RunOrganize(bool updateSize = true) {
 			if (updateSize) {
 				Width = m_baseElement.Width;
 				Height = m_baseElement.Height;
 			}
 
+			var targetX = X + m_gridPadding.Left;
+			var targetY = Y + m_gridPadding.Top;
+			var targetWidth = Width - (m_gridPadding.Left + m_gridPadding.Right);
+			var targetHeight = Height - (m_gridPadding.Top + m_gridPadding.Bottom);
+
+
 			// Should only position all elements, not append etc
 			// Each row height is number of rows divided by height.
-			var rowHeight = Height / m_grid.Count;
-			var spanWidth = Width / COLUMN_COUNT;
-			var yOffset = Y;
-			var xOffset = X;
+			var rowHeight = targetHeight / m_grid.Count;
+			var spanWidth = targetWidth / COLUMN_COUNT;
+
+			if (AllowParentResize) {
+				rowHeight = (float) Math.Ceiling(rowHeight);
+				spanWidth = (float) Math.Ceiling(spanWidth);
+			}
+
+			var yOffset = targetY;
+			var xOffset = targetX;
+
+			var newWidth = 0.0F;
+			var newHeight = 0.0F;
 
 			foreach (var gridrow in m_grid) {
 				foreach (var column in gridrow) {
@@ -111,16 +187,36 @@ namespace DXToolKit.Engine {
 					el.Height = rowHeight;
 					el.Y = yOffset;
 
+
+					if (xOffset + el.Width > newWidth) {
+						newWidth = xOffset + el.Width;
+					}
+
+					if (yOffset + el.Height > newHeight) {
+						newHeight = yOffset + el.Height;
+					}
+
 					// offset x
 					xOffset += el.Width;
 
-					if (column.Element is GUIGrid subgrid) {
+					if (el is GUIGrid subgrid) {
 						subgrid.RunOrganize(false);
+					} else {
+						// Apply element spacing
+						el.X += m_elementPadding.Left;
+						el.Y += m_elementPadding.Top;
+						el.Width -= m_elementPadding.Left + m_elementPadding.Right;
+						el.Height -= m_elementPadding.Top + m_elementPadding.Bottom;
 					}
 				}
 
 				yOffset += rowHeight;
-				xOffset = X;
+				xOffset = targetX;
+			}
+
+			if (AllowParentResize) {
+				m_baseElement.Height = newHeight + m_gridPadding.Bottom;
+				m_baseElement.Width = newWidth + m_gridPadding.Right;
 			}
 		}
 
@@ -136,8 +232,8 @@ namespace DXToolKit.Engine {
 			foreach (var gridrow in m_grid) {
 				foreach (var column in gridrow) {
 					if (column.Element is GUIGrid subgrid) {
-						subgrid.Width = this.Width;
-						subgrid.Height = this.Height;
+						subgrid.Width = Width;
+						subgrid.Height = Height;
 						subgrid.OrganizeElements();
 					}
 

@@ -53,13 +53,13 @@ namespace DXToolKit.GUI {
 				CpuAccessFlags = CpuAccessFlags.None,
 			});
 			m_surface = m_texture.QueryInterface<Surface1>();
-			m_texRenderTarget = new RenderTarget(m_device.Factory, m_surface, new RenderTargetProperties() {
+			m_texRenderTarget = new RenderTarget(m_device.Factory, m_surface, new RenderTargetProperties {
 				PixelFormat = new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Premultiplied),
 			});
-			m_bitmap = new Bitmap(m_device, m_surface, new BitmapProperties() {
+			m_bitmap = new Bitmap(m_device, m_surface, new BitmapProperties {
 				PixelFormat = new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Premultiplied)
 			});
-			m_renderTarget.TextAntialiasMode = TextAntialiasMode.Cleartype;
+			m_renderTarget.TextAntialiasMode = TextAntialiasMode.Default;
 			m_renderTargetView = new RenderTargetView(m_device, m_texture);
 		}
 

@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXToolKit.Sandbox", "DXTool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXToolKit.RasterTek", "DXToolKit.RasterTek\DXToolKit.RasterTek.csproj", "{F8222EFB-1761-4858-BEC6-4C4132166124}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXToolKit.Octree", "DXToolKit.Octree\DXToolKit.Octree.csproj", "{D3BE2E1E-AF91-4669-8B2B-2F3596287E70}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,9 +36,5 @@ Global
 		{F8222EFB-1761-4858-BEC6-4C4132166124}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8222EFB-1761-4858-BEC6-4C4132166124}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8222EFB-1761-4858-BEC6-4C4132166124}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3BE2E1E-AF91-4669-8B2B-2F3596287E70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3BE2E1E-AF91-4669-8B2B-2F3596287E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3BE2E1E-AF91-4669-8B2B-2F3596287E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3BE2E1E-AF91-4669-8B2B-2F3596287E70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

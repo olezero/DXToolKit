@@ -1,3 +1,4 @@
+using System;
 using SharpDX;
 using SharpDX.Direct3D11;
 
@@ -12,6 +13,7 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="device">Device used for creation</param>
 		public ConstantBuffer(GraphicsDevice device) : base(device) {
+			CheckSizeRequirements();
 			CreateBuffer(DefaultDescription());
 		}
 
@@ -21,6 +23,7 @@ namespace DXToolKit {
 		/// <param name="device">Device used for creation</param>
 		/// <param name="description">Description of the buffer</param>
 		public ConstantBuffer(GraphicsDevice device, BufferDescription description) : base(device) {
+			CheckSizeRequirements();
 			CreateBuffer(description);
 		}
 
@@ -30,6 +33,7 @@ namespace DXToolKit {
 		/// <param name="device">Device used for creation</param>
 		/// <param name="data">The data to set in the buffer</param>
 		public ConstantBuffer(GraphicsDevice device, T data) : base(device) {
+			CheckSizeRequirements();
 			CreateBuffer(data, DefaultDescription());
 		}
 
@@ -40,6 +44,7 @@ namespace DXToolKit {
 		/// <param name="data">The data to set in the buffer</param>
 		/// <param name="description">Description of the buffer</param>
 		public ConstantBuffer(GraphicsDevice device, T data, BufferDescription description) : base(device) {
+			CheckSizeRequirements();
 			CreateBuffer(data, description);
 		}
 
@@ -50,6 +55,16 @@ namespace DXToolKit {
 		public void Write(T data) {
 			OpenWrite().Write(data);
 			CloseBuffer();
+		}
+
+		/// <summary>
+		/// Checks the size of T to make sure its a multiple of 16
+		/// </summary>
+		/// <exception cref="Exception">Throws exception if invalid size of T</exception>
+		private static void CheckSizeRequirements() {
+			if (Utilities.SizeOf<T>() % 16 != 0) {
+				throw new Exception($"Sizeof(T) must be a multiple of 16 bytes. Got {Utilities.SizeOf<T>()} bytes");
+			}
 		}
 
 		/// <summary>

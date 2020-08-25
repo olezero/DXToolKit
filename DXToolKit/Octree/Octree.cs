@@ -195,6 +195,17 @@ namespace DXToolKit {
 			return false;
 		}
 
+		/// <summary>
+		/// Clears all data from the octree
+		/// </summary>
+		public void Clear() {
+			if (m_parentNode != null) {
+				throw new Exception("Clear must be called on root node of the octree");
+			}
+
+			RecurseClear();
+		}
+
 
 		/// <summary>
 		/// Updates the octree to reflect changes in positions of all contained data.
@@ -239,6 +250,22 @@ namespace DXToolKit {
 			Merge();
 		}
 
+		/// <summary>
+		/// Clears all data / child nodes from the tree
+		/// </summary>
+		private void RecurseClear() {
+			// Recurse down to leaf nodes
+			if (m_childNodes != null) {
+				for (int i = 0; i < m_childNodes.Length; i++) {
+					m_childNodes[i].RecurseClear();
+				}
+			}
+
+			// Currently at leaf node, clear data, parent and child nodes
+			m_data.Clear();
+			m_parentNode = null;
+			m_childNodes = null;
+		}
 
 		/// <summary>
 		/// Gets all data that are no longer completely contained within its parent node
@@ -597,6 +624,65 @@ namespace DXToolKit {
 			return result;
 		}
 
+
+		/// <summary>
+		/// Gets data that intersects with a given ray.
+		/// NOTE: This does not work with Point data (because of floating point imprecision)
+		/// </summary>
+		/// <param name="ray">The ray to check against</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Intersects(ref Ray ray) {
+			var result = new List<T>();
+			CollectIntersect(ref ray, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets data that intersects with a given point in space.
+		/// NOTE: This does not work with Point data (because of floating point imprecision)
+		/// </summary>
+		/// <param name="point">The point to check against</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Intersects(ref Vector3 point) {
+			var result = new List<T>();
+			CollectIntersect(ref point, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets data that intersects with a given bounding box.
+		/// </summary>
+		/// <param name="box">The bounds to check against</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Intersects(ref BoundingBox box) {
+			var result = new List<T>();
+			CollectIntersect(ref box, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets data that intersects with a given bounding sphere.
+		/// </summary>
+		/// <param name="sphere">The bounds to check against</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Intersects(ref BoundingSphere sphere) {
+			var result = new List<T>();
+			CollectIntersect(ref sphere, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets data that intersects with a given bounding frustum.
+		/// </summary>
+		/// <param name="frustum">The bounds to check against</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Intersects(ref BoundingFrustum frustum) {
+			var result = new List<T>();
+			CollectIntersect(ref frustum, ref result);
+			return result;
+		}
+
+
 		/// <summary>
 		/// Gets data that intersects with a given screen rectangle.
 		/// </summary>
@@ -818,6 +904,42 @@ namespace DXToolKit {
 		/// <param name="containmentType">What containment type to look for</param>
 		/// <returns>A list of intersecting data</returns>
 		public List<T> Contains(BoundingFrustum frustum, ContainmentType containmentType = ContainmentType.Contains) {
+			var result = new List<T>();
+			CollectContains(ref frustum, ref containmentType, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Runs a containment check against data in the octree.
+		/// </summary>
+		/// <param name="box">The bounds to check against</param>
+		/// <param name="containmentType">What containment type to look for</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Contains(ref BoundingBox box, ContainmentType containmentType = ContainmentType.Contains) {
+			var result = new List<T>();
+			CollectContains(ref box, ref containmentType, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Runs a containment check against data in the octree.
+		/// </summary>
+		/// <param name="sphere">The bounds to check against</param>
+		/// <param name="containmentType">What containment type to look for</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Contains(ref BoundingSphere sphere, ContainmentType containmentType = ContainmentType.Contains) {
+			var result = new List<T>();
+			CollectContains(ref sphere, ref containmentType, ref result);
+			return result;
+		}
+
+		/// <summary>
+		/// Runs a containment check against data in the octree.
+		/// </summary>
+		/// <param name="frustum">The bounds to check against</param>
+		/// <param name="containmentType">What containment type to look for</param>
+		/// <returns>A list of intersecting data</returns>
+		public List<T> Contains(ref BoundingFrustum frustum, ContainmentType containmentType = ContainmentType.Contains) {
 			var result = new List<T>();
 			CollectContains(ref frustum, ref containmentType, ref result);
 			return result;

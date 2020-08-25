@@ -12,7 +12,7 @@ namespace DXToolKit {
 		/// <param name="device">Device used for creation</param>
 		/// <param name="data">Data to set in the buffer</param>
 		public IndexBuffer(GraphicsDevice device, int[] data) : base(device, data, new BufferDescription() {
-			Usage = ResourceUsage.Default,
+			Usage = ResourceUsage.Immutable,
 			BindFlags = BindFlags.IndexBuffer,
 			OptionFlags = ResourceOptionFlags.None,
 			CpuAccessFlags = CpuAccessFlags.None,

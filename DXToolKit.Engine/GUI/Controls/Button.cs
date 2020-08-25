@@ -19,7 +19,7 @@ namespace DXToolKit.Engine {
 			TextAlignment = TextAlignment.Center;
 			ParagraphAlignment = ParagraphAlignment.Center;
 			WordWrapping = WordWrapping.NoWrap;
-			Padding = new GUIPadding(0);
+			// Padding = new GUIPadding(0);
 		}
 
 		protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {

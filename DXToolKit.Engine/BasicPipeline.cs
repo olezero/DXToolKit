@@ -2,6 +2,7 @@ using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using Device = SharpDX.Direct3D11.Device;
 
 namespace DXToolKit.Engine {
 	public class BasicPipeline : DeviceComponent, IRenderPipeline {
@@ -31,9 +32,19 @@ namespace DXToolKit.Engine {
 		/// </summary>
 		public virtual void Begin(Color? clearColor = null) {
 			m_context.OutputMerger.SetRenderTargets(m_depthStencilView, m_renderTargetView);
-			m_context.ClearRenderTargetView(m_renderTargetView, clearColor ?? Color.Black);
-			m_context.ClearDepthStencilView(m_depthStencilView, DepthStencilClearFlags.Depth, 1.0F, 0);
 			m_context.Rasterizer.SetViewport(m_viewport);
+
+			var rtvs = m_context.OutputMerger.GetRenderTargets(OutputMergerStage.SimultaneousRenderTargetCount, out var depthView);
+			m_context.ClearDepthStencilView(depthView, DepthStencilClearFlags.Depth, 1.0F, 0);
+			for (int i = 0; i < rtvs.Length; i++) {
+				if (rtvs[i] != null) {
+					m_context.ClearRenderTargetView(rtvs[i], clearColor ?? Color.Black);
+					rtvs[i].Dispose();
+					rtvs[i] = null;
+				}
+			}
+
+			depthView.Dispose();
 		}
 
 		/// <summary>
@@ -62,7 +73,8 @@ namespace DXToolKit.Engine {
 		private void SetupTargets() {
 			m_backbuffer = m_swapchain.GetBackBuffer<Texture2D>(0);
 			m_depthbuffer = new Texture2D(m_device, new Texture2DDescription() {
-				Format = Format.D32_Float_S8X24_UInt,
+				//Format = Format.D32_Float_S8X24_UInt,
+				Format = Format.D32_Float,
 				Width = m_backbuffer.Description.Width,
 				Height = m_backbuffer.Description.Height,
 				Usage = ResourceUsage.Default,

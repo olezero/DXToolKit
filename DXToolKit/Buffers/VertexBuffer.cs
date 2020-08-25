@@ -23,7 +23,7 @@ namespace DXToolKit {
 		/// <param name="device">Base device used to create the buffer.</param>
 		/// <param name="data">The data to set in the buffer.</param>
 		public VertexBuffer(GraphicsDevice device, T[] data) : base(device, data, new BufferDescription() {
-			Usage = ResourceUsage.Default,
+			Usage = ResourceUsage.Immutable,
 			BindFlags = BindFlags.VertexBuffer,
 			OptionFlags = ResourceOptionFlags.None,
 			CpuAccessFlags = CpuAccessFlags.None,

@@ -90,11 +90,11 @@ namespace DXToolKit {
 				ModeDescription = modeDescription,
 				Flags = SwapChainFlags.AllowModeSwitch,
 				Usage = Usage.RenderTargetOutput,
-				BufferCount = 1,
+				BufferCount = 2,
 				IsWindowed = true,
 				OutputHandle = window.Handle,
-				SampleDescription = new SampleDescription(2, 0),
-				SwapEffect = SwapEffect.Discard,
+				SampleDescription = new SampleDescription(1, 0),
+				SwapEffect = SwapEffect.Sequential,
 			});
 			m_swapchain.ResizeTarget(ref modeDescription);
 			CreateRenderTarget();
@@ -126,7 +126,7 @@ namespace DXToolKit {
 
 			// Resize buffers
 			m_swapchain.ResizeBuffers(
-				1,
+				2,
 				modeDescription.Width,
 				modeDescription.Height,
 				modeDescription.Format,

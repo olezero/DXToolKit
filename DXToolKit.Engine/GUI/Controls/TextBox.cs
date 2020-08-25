@@ -28,11 +28,12 @@ namespace DXToolKit.Engine {
 
 		private Scrollbar m_verticalScroll;
 		private Scrollbar m_horizontalScroll;
-		
+
 		public int ScrollSize = 16;
 		public bool DrawBorder = false;
 		public bool OnlyNumbers = false;
 		public bool IgnoreTab = true;
+		public bool AllowEditing = true;
 
 
 		public string SelectedText => GetSelectedText();
@@ -104,14 +105,14 @@ namespace DXToolKit.Engine {
 					HandleHotkey(repeatingKey);
 				}
 
-				if (Input.TextInputAvailable) {
+				if (Input.TextInputAvailable && AllowEditing) {
 					HandleTextInput(Input.TextInput);
 				}
 			} else {
 				m_caretVisible = false;
 			}
 
-			if (ContainsMouse) {
+			if (ContainsMouse && AllowEditing) {
 				if (m_multiline && m_verticalScroll.Enabled) {
 					if (m_verticalScroll.ContainsMouse == false && m_horizontalScroll.ContainsMouse == false) {
 						if (Mathf.Abs(Input.MouseWheelDelta) > 0) {
@@ -219,8 +220,8 @@ namespace DXToolKit.Engine {
 
 			if (ctrl) {
 				if (key == Key.C) Copy();
-				if (key == Key.X) Cut();
-				if (key == Key.V) Paste();
+				if (key == Key.X && AllowEditing) Cut();
+				if (key == Key.V && AllowEditing) Paste();
 				if (key == Key.A) SelectAll();
 			}
 
@@ -256,15 +257,19 @@ namespace DXToolKit.Engine {
 				}
 
 				if (key == Key.Back) {
-					Backspace(ctrl);
-					// Need to reset select if shift + back is pressed, which does not do anything but makes some wonky selections
-					ResetSelect();
+					if (AllowEditing) {
+						Backspace(ctrl);
+						// Need to reset select if shift + back is pressed, which does not do anything but makes some wonky selections
+						ResetSelect();
+					}
 				}
 
 				if (key == Key.Delete) {
-					Delete(ctrl);
-					// Need to reset select if shift + delete is pressed, which does not do anything but makes some wonky selections
-					ResetSelect();
+					if (AllowEditing) {
+						Delete(ctrl);
+						// Need to reset select if shift + delete is pressed, which does not do anything but makes some wonky selections
+						ResetSelect();
+					}
 				}
 
 				if (!shift) ResetSelect();

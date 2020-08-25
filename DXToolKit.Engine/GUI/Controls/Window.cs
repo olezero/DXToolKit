@@ -1,3 +1,4 @@
+using System;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -7,6 +8,8 @@ namespace DXToolKit.Engine {
 		public class WinHeader : GUIElement {
 			private Window m_parentWindow;
 			private CloseButton m_closeButton;
+
+			public CloseButton CloseButton => m_closeButton;
 
 			public WinHeader(Window parent) {
 				m_parentWindow = parent;
@@ -63,6 +66,13 @@ namespace DXToolKit.Engine {
 
 		public GUIColor HeaderColor = GUIColor.Primary;
 		public GUIColor BodyColor = GUIColor.Default;
+		public CloseButton CloseButton => Header.CloseButton;
+
+		public event Action Closing;
+		public event Action Opening;
+
+		protected virtual void OnOpening() => Opening?.Invoke();
+		protected virtual void OnClosing() => Closing?.Invoke();
 
 		public Window() {
 			// Append elements for header and body
@@ -83,18 +93,21 @@ namespace DXToolKit.Engine {
 					Y += Input.MouseMove.Y;
 				}
 			};
+			Header.CloseButton.Click += args => {
+				Close();
+			};
 			// Default text
 			Text = "Window";
 		}
 
 		protected sealed override void OnBoundsChangedDirect() {
-			Header.Width = this.Width;
+			Header.Width = Width;
 			Header.Height = 20;
 			Header.X = 0;
 			Header.Y = 0;
 
-			Body.Width = this.Width;
-			Body.Height = this.Height - Header.Height;
+			Body.Width = Width;
+			Body.Height = Height - Header.Height;
 			Body.Y = Header.Height;
 			Body.X = 0;
 
@@ -112,6 +125,18 @@ namespace DXToolKit.Engine {
 		protected override void OnContainFocusGained() {
 			MoveToFront();
 			base.OnContainFocusGained();
+		}
+
+		public void Close() {
+			Visible = false;
+			OnClosing();
+		}
+
+		public void Open() {
+			Visible = true;
+			MoveToFront();
+			OnOpening();
+			Focus();
 		}
 	}
 }

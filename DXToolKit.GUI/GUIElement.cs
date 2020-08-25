@@ -10,16 +10,21 @@ using RectangleF = SharpDX.RectangleF;
 using TextAlignment = SharpDX.DirectWrite.TextAlignment;
 
 namespace DXToolKit.GUI {
+	/// <summary>
+	/// Base element for everything GUI
+	/// </summary>
 	public abstract partial class GUIElement : IDisposable {
 		// TODO - fix Focused variable (does not seem to update correctly on focus lost for the next render frame)
-
-
 		// TODO - FIX OnContainedFocusLost ( seams to be called even if a child element is focused )
 		// TODO - Need a layering system, for instance to allow windows to always be drawn on top of everything else. Like a z-index
 		// TODO - Variable for "move to front on focus gained", to allow for toggling that functionality
 
-
 		#region Fields
+
+		/// <summary>
+		/// Gets or sets a value indicating the total amount of redraw counts processed by all GUI Elements
+		/// </summary>
+		public static long RedrawCount = 0;
 
 		/// <summary>
 		/// Gets or sets the default font used by the GUI, this is a global variable
@@ -32,6 +37,22 @@ namespace DXToolKit.GUI {
 		public static int DEFAULT_FONT_SIZE = 14;
 
 		/// <summary>
+		/// Gets or sets the default font weight of all new GUI Elements
+		/// </summary>
+		public static FontWeight DEFAULT_FONT_WEIGHT = FontWeight.Normal;
+
+		/// <summary>
+		/// Gets or sets the default font style of all new GUI elements
+		/// </summary>
+		public static FontStyle DEFAULT_FONT_STYLE = FontStyle.Normal;
+
+		/// <summary>
+		/// Gets or sets the default font stretch of all new GUI elements
+		/// </summary>
+		public static FontStretch DEFAULT_FONT_STRETCH = FontStretch.Normal;
+
+
+		/// <summary>
 		/// Stored text in the element
 		/// </summary>
 		private string m_text = "";
@@ -39,7 +60,7 @@ namespace DXToolKit.GUI {
 		/// <summary>
 		/// Container for the gui text used for rendering
 		/// </summary>
-		private GUIText m_guiText = new GUIText(DEFAULT_FONT, DEFAULT_FONT_SIZE);
+		private GUIText m_guiText = new GUIText(DEFAULT_FONT, DEFAULT_FONT_SIZE, DEFAULT_FONT_WEIGHT, DEFAULT_FONT_STYLE, DEFAULT_FONT_STRETCH);
 
 		/// <summary>
 		/// Gets or sets a value indicating if the element can receive mouse input
@@ -97,6 +118,11 @@ namespace DXToolKit.GUI {
 		/// Controller to run text change events
 		/// </summary>
 		private bool m_hasTextChanged;
+
+		/// <summary>
+		/// Controller to run text property change events
+		/// </summary>
+		private bool m_hasTextPropsChanged;
 
 		/// <summary>
 		/// Parent element, will be NULL by default, and NULL if its the root element
@@ -157,6 +183,11 @@ namespace DXToolKit.GUI {
 		/// Controller for if this control contains the mouse in screen coordinates
 		/// </summary>
 		private bool m_containsMouse;
+
+		/// <summary>
+		/// Controller to keep track of if the mouse is pressed while over the control
+		/// </summary>
+		private bool m_isMousePressed;
 
 		/// <summary>
 		/// Controller for if OnMouseWheel events should be fired even if this control does not have focus
@@ -397,7 +428,13 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public ParagraphAlignment ParagraphAlignment {
 			get => m_guiText.ParagraphAlignment;
-			set => m_guiText.ParagraphAlignment = value;
+			set {
+				if (m_guiText.ParagraphAlignment != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.ParagraphAlignment = value;
+			}
 		}
 
 		/// <summary>
@@ -405,7 +442,13 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public TextAlignment TextAlignment {
 			get => m_guiText.TextAlignment;
-			set => m_guiText.TextAlignment = value;
+			set {
+				if (m_guiText.TextAlignment != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.TextAlignment = value;
+			}
 		}
 
 		/// <summary>
@@ -413,7 +456,13 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public WordWrapping WordWrapping {
 			get => m_guiText.WordWrapping;
-			set => m_guiText.WordWrapping = value;
+			set {
+				if (m_guiText.WordWrapping != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.WordWrapping = value;
+			}
 		}
 
 		/// <summary>
@@ -421,7 +470,13 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public string Font {
 			get => m_guiText.Font;
-			set => m_guiText.Font = value;
+			set {
+				if (m_guiText.Font != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.Font = value;
+			}
 		}
 
 		/// <summary>
@@ -429,8 +484,58 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public int FontSize {
 			get => m_guiText.FontSize;
-			set => m_guiText.FontSize = value;
+			set {
+				if (m_guiText.FontSize != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.FontSize = value;
+			}
 		}
+
+
+		/// <summary>
+		/// Gets or sets the font weight
+		/// </summary>
+		public FontWeight FontWeight {
+			get => m_guiText.FontWeight;
+			set {
+				if (m_guiText.FontWeight != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.FontWeight = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the font style
+		/// </summary>
+		public FontStyle FontStyle {
+			get => m_guiText.FontStyle;
+			set {
+				if (m_guiText.FontStyle != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.FontStyle = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the font stretch
+		/// </summary>
+		public FontStretch FontStretch {
+			get => m_guiText.FontStretch;
+			set {
+				if (m_guiText.FontStretch != value) {
+					m_hasTextPropsChanged = true;
+				}
+
+				m_guiText.FontStretch = value;
+			}
+		}
+
 
 		public TextLayout TextLayout => m_guiText.GetCachedTextLayout();
 		public TextFormat TextFormat => m_guiText.GetCachedTextFormat();
@@ -488,6 +593,11 @@ namespace DXToolKit.GUI {
 		/// Gets a value indicating if this control contains the mouse
 		/// </summary>
 		public bool ContainsMouse => m_containsMouse;
+
+		/// <summary>
+		/// Gets a value indicating if the mouse is being pressed while hovering over the elements bounds
+		/// </summary>
+		public bool IsMousePressed => m_isMousePressed;
 
 		/// <summary>
 		/// Gets or sets a value indicating if OnMouseWheel events should be raised even if the control does not contain focus
@@ -628,6 +738,11 @@ namespace DXToolKit.GUI {
 		public event Action<string> TextChanged;
 
 		/// <summary>
+		/// Invoked if properties of the text has changed (Font, size, alignment, etc)
+		/// </summary>
+		public event Action TextPropertiesChanged;
+
+		/// <summary>
 		/// Raised when this or a child receives focus
 		/// </summary>
 		public event Action ContainFocusGained;
@@ -637,59 +752,242 @@ namespace DXToolKit.GUI {
 		/// </summary>
 		public event Action ContainFocusLost;
 
+		/// <summary>
+		/// Raised each time the element is updated (usually once per frame)
+		/// </summary>
 		public event Action Updated;
 
-
+		/// <summary>
+		/// Delegate used for when parent changes
+		/// </summary>
+		/// <param name="newParent">The newly set parent</param>
+		/// <param name="oldParent">The previous parent (can be NULL)</param>
 		public delegate void ParentChangeHandler(GUIElement newParent, GUIElement oldParent);
 
+		/// <summary>
+		/// Delegate used for when a element is appended or removed
+		/// </summary>
+		/// <param name="parent">The current/previous parent</param>
+		/// <param name="child">The target element that was added</param>
 		public delegate void AppendHandler(GUIElement parent, GUIElement child);
 
+		/// <summary>
+		/// Raised when parent element changes
+		/// </summary>
 		public event ParentChangeHandler ParentChanged;
+
+		/// <summary>
+		/// Raised when a new child is appended to this element
+		/// </summary>
 		public event AppendHandler ChildAppended;
+
+		/// <summary>
+		/// Raised when a child element is removed from this element
+		/// </summary>
 		public event AppendHandler ChildRemoved;
+
+		/// <summary>
+		/// Raised when this elements parent is set
+		/// </summary>
 		public event AppendHandler ParentSet;
+
+		/// <summary>
+		/// Raised when this elements parent is unset
+		/// </summary>
 		public event AppendHandler ParentUnset;
 
+		/// <summary>
+		/// Invoked on LateUpdate at a maximum of once per frame after the Elements bounds has changed.
+		/// For a more direct callback, check OnBoundsChangedDirect
+		/// Note: Will only be invoked if input value differs from stored value.
+		/// </summary>
 		protected virtual void OnBoundsChanged() => BoundsChanged?.Invoke();
+
+		/// <summary>
+		/// Invoked immediately after any bounds has been changed.
+		/// Note: Will only be invoked if input value differs from stored value.
+		/// </summary>
 		protected virtual void OnBoundsChangedDirect() => BoundsChangedDirect?.Invoke();
+
+		/// <summary>
+		/// Invoked on LateUpdate at a maximum of once per frame if location has changed
+		/// Note: Will only be invoked if input value differs from stored value.
+		/// </summary>
 		protected virtual void OnLocationChanged() => LocationChanged?.Invoke();
+
+		/// <summary>
+		/// Invoked on LateUpdate at a maximum of once per frame if size has changed
+		/// Note: Will only be invoked if input value differs from stored value.
+		/// </summary>
 		protected virtual void OnResize() => Resized?.Invoke();
 
+		/// <summary>
+		/// Invoked on PreUpdate if focus was lost
+		/// </summary>
 		protected virtual void OnFocusLost() => FocusLost?.Invoke();
+
+		/// <summary>
+		/// Invoked on PreUpdate if focus was gained
+		/// </summary>
 		protected virtual void OnFocusGained() => FocusGained?.Invoke();
 
+		/// <summary>
+		/// Invoked if the mouse enters the controls bounds
+		/// </summary>
 		protected virtual void OnMouseEnter() => MouseEnter?.Invoke();
+
+		/// <summary>
+		/// Invoked if the mouse leaves the controls bounds
+		/// </summary>
 		protected virtual void OnMouseLeave() => MouseLeave?.Invoke();
+
+		/// <summary>
+		/// Invoked every frame the mouse is hovering above the controls bounds
+		/// </summary>
 		protected virtual void OnMouseHover() => MouseHover?.Invoke();
 
+
+		/// <summary>
+		/// Invoked when a drag operation is started.
+		/// Node: Draggable must be set to TRUE to allow for this to fire
+		/// </summary>
 		protected virtual void OnDragStart() => DragStart?.Invoke();
+
+		/// <summary>
+		/// Invoked every frame the element is dragged
+		/// Node: Draggable must be set to TRUE to allow for this to fire
+		/// </summary>
 		protected virtual void OnDrag() => Drag?.Invoke();
+
+		/// <summary>
+		/// Invoked when the element is "dropped" after a drag
+		/// Node: Draggable must be set to TRUE to allow for this to fire
+		/// </summary>
 		protected virtual void OnDragStop() => DragStop?.Invoke();
 
+		/// <summary>
+		/// Invoked if the mouse is over the control and a mouse button is down this frame
+		/// </summary>
+		/// <param name="args">MouseEventArgs</param>
 		protected virtual void OnMouseDown(GUIMouseEventArgs args) => MouseDown?.Invoke(args);
+
+		/// <summary>
+		/// Invoked if the mouse is over the control and a mouse button is up this frame
+		/// </summary>
+		/// <param name="args">MouseEventArgs</param>
 		protected virtual void OnMouseUp(GUIMouseEventArgs args) => MouseUp?.Invoke(args);
+
+		/// <summary>
+		/// Invoked if the mouse is over the control and a mouse button is pressed this frame
+		/// </summary>
+		/// <param name="args">MouseEventArgs</param>
 		protected virtual void OnMousePressed(GUIMouseEventArgs args) => MousePressed?.Invoke(args);
+
+		/// <summary>
+		/// Invoked if the mouse is over the control and a mouse button is up this frame ( same as OnMouseUp )
+		/// </summary>
+		/// <param name="args">MouseEventArgs</param>
 		protected virtual void OnClick(GUIMouseEventArgs args) => Click?.Invoke(args);
+
+		/// <summary>
+		/// Invoked if the mouse is over the control and a double click is registered this frame
+		/// </summary>
+		/// <param name="args">MouseEventArgs</param>
 		protected virtual void OnDoubleClick(GUIMouseEventArgs args) => DoubleClick?.Invoke(args);
+
+		/// <summary>
+		/// Invoked if the mousewheel has moved this frame.
+		/// Use MouseWheelNeedsFocus to toggle if this should be invoked even if element is not in focus
+		/// </summary>
+		/// <param name="delta">The mouse wheel movement this frame</param>
 		protected virtual void OnMouseWheel(float delta) => MosueWheel?.Invoke(delta);
 
 
+		/// <summary>
+		/// Invoked if this element has focus and a key was pressed this frame
+		/// </summary>
+		/// <param name="keys">The pressed keys</param>
 		protected virtual void OnKeyDown(List<Key> keys) => KeyDown?.Invoke(keys);
+
+		/// <summary>
+		/// Invoked if this element has focus and a key was released this frame
+		/// </summary>
+		/// <param name="keys">The pressed keys</param>
 		protected virtual void OnKeyUp(List<Key> keys) => KeyUp?.Invoke(keys);
+
+		/// <summary>
+		/// Invoked if this element has focus and a key is pressed this frame
+		/// </summary>
+		/// <param name="keys">The pressed keys</param>
 		protected virtual void OnKeyPressed(List<Key> keys) => KeyPressed?.Invoke(keys);
+
+		/// <summary>
+		/// Invoked if this element has focus and text input was received this frame (Normal input with repeats etc)
+		/// </summary>
+		/// <param name="text">Input formatted as a string to handle more charecters</param>
 		protected virtual void OnTextInput(string text) => TextInput?.Invoke(text);
+
+		/// <summary>
+		/// Invoked if this element has focus and a key is being held with the windows repeating timer
+		/// </summary>
+		/// <param name="key">The repeating keys</param>
 		protected virtual void OnRepeatKey(Key key) => RepeatKey?.Invoke(key);
 
+		/// <summary>
+		/// Invoked if the stored Text property has changed
+		/// </summary>
+		/// <param name="text">The new text</param>
 		protected virtual void OnTextChanged(string text) => TextChanged?.Invoke(text);
 
+		/// <summary>
+		/// Invoked if this element or any of its child elements lost focus
+		/// </summary>
 		protected virtual void OnContainFocusGained() => ContainFocusGained?.Invoke();
+
+		/// <summary>
+		/// Invoked if this element or any of its child elements gained focus
+		/// </summary>
 		protected virtual void OnContainFocusLost() => ContainFocusLost?.Invoke();
 
+		/// <summary>
+		/// Invoked if parent changed
+		/// </summary>
+		/// <param name="newParent"></param>
+		/// <param name="oldParent"></param>
 		protected virtual void OnParentChanged(GUIElement newParent, GUIElement oldParent) => ParentChanged?.Invoke(newParent, oldParent);
+
+		/// <summary>
+		/// Invoked when a child is appended to this control
+		/// </summary>
+		/// <param name="parent">The parent control (usually this)</param>
+		/// <param name="child">The child control</param>
 		protected virtual void OnChildAppended(GUIElement parent, GUIElement child) => ChildAppended?.Invoke(parent, child);
+
+		/// <summary>
+		/// Invoked when a child was removed from this control
+		/// </summary>
+		/// <param name="parent">The parent control (usually this)</param>
+		/// <param name="child">The child control</param>
 		protected virtual void OnChildRemoved(GUIElement parent, GUIElement child) => ChildRemoved?.Invoke(parent, child);
+
+		/// <summary>
+		/// Invoked when this elements parent was set
+		/// </summary>
+		/// <param name="parent">The new parent element</param>
+		/// <param name="child">The child (usually this)</param>
 		protected virtual void OnParentSet(GUIElement parent, GUIElement child) => ParentSet?.Invoke(parent, child);
+
+		/// <summary>
+		/// Invoked when this elements parent was unset
+		/// </summary>
+		/// <param name="parent">The parent element that was set previously</param>
+		/// <param name="child">The child (usually this)</param>
 		protected virtual void OnParentUnset(GUIElement parent, GUIElement child) => ParentUnset?.Invoke(parent, child);
+
+		/// <summary>
+		/// Invoked if properties of the text has changed (Font, size, alignment, etc)
+		/// </summary>
+		protected virtual void OnTextPropertiesChanged() => TextPropertiesChanged?.Invoke();
 
 		#endregion
 
@@ -743,7 +1041,8 @@ namespace DXToolKit.GUI {
 		/// Removes an element from this element
 		/// </summary>
 		/// <param name="element">The element to remove</param>
-		public void Remove(GUIElement element) {
+		/// <param name="dispose">If child should be disposed when removed</param>
+		public void Remove(GUIElement element, bool dispose = false) {
 			if (m_childElements.Contains(element)) {
 				// Remove from child elements
 				m_childElements.Remove(element);
@@ -757,7 +1056,24 @@ namespace DXToolKit.GUI {
 			// Set parent to null
 			element.m_parentElement = null;
 
+			// Dispose if needed
+			if (dispose) {
+				element.Dispose();
+			}
+
 			// Toggle a redraw after element is removed
+			ToggleRedraw();
+		}
+
+		/// <summary>
+		/// Removes all children from this element
+		/// </summary>
+		/// <param name="dispose">If child should be disposed when removed</param>
+		public void RemoveAllChildren(bool dispose = true) {
+			while (m_childElements.Count > 0) {
+				Remove(m_childElements[0], dispose);
+			}
+
 			ToggleRedraw();
 		}
 
@@ -856,7 +1172,6 @@ namespace DXToolKit.GUI {
 
 		#endregion
 
-
 		#region Update
 
 		/// <summary>
@@ -950,6 +1265,15 @@ namespace DXToolKit.GUI {
 				ToggleRedraw();
 				// Call event
 				OnTextChanged(Text);
+			}
+
+			if (m_hasTextPropsChanged) {
+				// Flip trigger
+				m_hasTextPropsChanged = false;
+				// Toggle redraw
+				ToggleRedraw();
+				// Fire events
+				OnTextPropertiesChanged();
 			}
 
 			// Start with parent late update
@@ -1064,10 +1388,6 @@ namespace DXToolKit.GUI {
 			return isMouseHandled;
 		}
 
-		private bool m_isMousePressed;
-
-		public bool IsMousePressed => m_isMousePressed;
-
 
 		private void HandleMouseInput(GUIMouseEventArgs args, GUISystem guiSystem) {
 			if (args.LeftMouseDown && guiSystem.DragTarget != this && Draggable) {
@@ -1089,8 +1409,10 @@ namespace DXToolKit.GUI {
 				OnClick(args);
 			}
 
-			if (args.LeftDoubleClick || args.RightDoubleClick) {
-				OnDoubleClick(args);
+			if (m_isFocused) {
+				if (args.LeftDoubleClick || args.RightDoubleClick) {
+					OnDoubleClick(args);
+				}
 			}
 		}
 
@@ -1477,9 +1799,11 @@ namespace DXToolKit.GUI {
 
 				// Toggle redraw
 				m_redraw = false;
+
+				// Increment redraw count
+				RedrawCount++;
 			}
 		}
-
 
 		/// <summary>
 		/// Draws this elements built inn render texture to the input render target
@@ -1490,12 +1814,27 @@ namespace DXToolKit.GUI {
 			if (m_enabled && m_visible) {
 				// If we need to redraw, redraw.
 				if (m_redraw) Redraw(guiSystem);
+
+				// TODO 
+				// Possibiibibibility, could round down or up based on remainder
+				var renderBounds = m_bounds;
+
+				/*
+				renderBounds.X = Mathf.Floor(renderBounds.X);
+				renderBounds.Y = Mathf.Floor(renderBounds.Y);
+				renderBounds.Width = Mathf.Floor(renderBounds.Width);
+				renderBounds.Height = Mathf.Floor(renderBounds.Height);
+				*/
+
+
 				// Then render our complete texture to callers render target
-				renderTarget.DrawBitmap(m_renderTexture.Bitmap, m_bounds, 1.0F, BitmapInterpolationMode.Linear);
+				renderTarget.DrawBitmap(m_renderTexture.Bitmap, renderBounds, 1.0F, BitmapInterpolationMode.NearestNeighbor);
 			}
 		}
 
-
+		/// <summary>
+		/// Toggles a redraw of this element and all parent elements
+		/// </summary>
 		public void ToggleRedraw() {
 			// If this element needs a redraw, all parents also need to redraw.
 			m_parentElement?.ToggleRedraw();
@@ -1505,6 +1844,9 @@ namespace DXToolKit.GUI {
 			m_redraw = true;
 		}
 
+		/// <summary>
+		/// Toggles a resize of the stored render texture on this element
+		/// </summary>
 		public void ToggleResize() {
 			m_resizeRenderTexture = true;
 		}
@@ -1513,16 +1855,39 @@ namespace DXToolKit.GUI {
 
 		#region Virtuals
 
+		/// <summary>
+		/// Runs before OnUpdate
+		/// </summary>
 		protected virtual void OnPreUpdate() { }
+
+		/// <summary>
+		/// Runs once every frame, if this element is Enabled
+		/// </summary>
 		protected virtual void OnUpdate() => Updated?.Invoke();
+
+		/// <summary>
+		/// Runs after update
+		/// </summary>
 		protected virtual void OnLateUpdate() { }
+
+		/// <summary>
+		/// Runs when this element needs a redraw
+		/// </summary>
+		/// <param name="renderTarget">Rendertarget to use when rendering the element</param>
+		/// <param name="bounds">The bounds the element should render into</param>
+		/// <param name="textLayout">Text layout for text rendering</param>
 		protected virtual void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout) { }
+
+		/// <summary>
+		/// Virtual to add mor functionality to dispose
+		/// </summary>
 		protected virtual void OnDispose() { }
 
 		#endregion
 
 		#region Dispose
 
+		/// <inheritdoc />
 		public void Dispose() {
 			// Remove parent (we dont call "Remove" here, since it changes the parents child element list
 			m_parentElement = null;
@@ -1612,6 +1977,18 @@ namespace DXToolKit.GUI {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Copies the text parameters from another element
+		/// </summary>
+		/// <param name="other">The other element to copy parameters from</param>
+		public void CopyTextParameters(GUIElement other) {
+			WordWrapping = other.WordWrapping;
+			TextAlignment = other.TextAlignment;
+			ParagraphAlignment = other.ParagraphAlignment;
+			Font = other.Font;
+			FontSize = other.FontSize;
 		}
 
 		#endregion
