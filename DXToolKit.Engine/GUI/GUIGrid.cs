@@ -43,6 +43,11 @@ namespace DXToolKit.Engine {
 		public float Height { get; set; }
 
 		/// <summary>
+		/// Gets the total row count of the grid
+		/// </summary>
+		public int RowCount => m_grid.Count;
+
+		/// <summary>
 		/// Gets or sets a value indicating if GUI grid is allowed to resize parent so that all elements will be positioned within a whole number.
 		/// This does require all padding to be set to a whole number aswell
 		/// </summary>
@@ -63,7 +68,7 @@ namespace DXToolKit.Engine {
 			}
 
 			// Something like this
-			m_currentrow.Add(new GridColumn() {
+			m_currentrow.Add(new GridColumn {
 				ColumnSpan = columspan,
 				Element = element
 			});
@@ -90,7 +95,7 @@ namespace DXToolKit.Engine {
 		/// <param name="columnspan">The span the sub grid should occupy</param>
 		public void SubGrid(Action<GUIGrid> oncreate, int columnspan) {
 			// Create new grid and store the on create function for later
-			var subGrid = new GUIGrid() {
+			var subGrid = new GUIGrid {
 				m_oncreate = oncreate,
 				m_baseElement = this.m_baseElement,
 				// Kinda have to do this or else things might get weird

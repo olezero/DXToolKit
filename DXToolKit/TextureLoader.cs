@@ -18,7 +18,7 @@ namespace DXToolKit {
 
 		public static Texture2D FromFile(GraphicsDevice device, string filename, ResourceUsage usage = ResourceUsage.Default, BindFlags bindFlags = BindFlags.ShaderResource, CpuAccessFlags cpuAccessFlags = CpuAccessFlags.None) {
 			var data = LoadImage(filename);
-			var texture = new Texture2D(device, new Texture2DDescription() {
+			var texture = new Texture2D(device, new Texture2DDescription {
 				Height = data.Height,
 				Width = data.Width,
 				Format = Format.R8G8B8A8_UNorm,
@@ -54,7 +54,7 @@ namespace DXToolKit {
 			var imageData = LoadImage(filename, out var width, out var height);
 
 			// Create texture description
-			var textureDescription = new Texture2DDescription() {
+			var textureDescription = new Texture2DDescription {
 				Width = width,
 				Height = height,
 				Format = Format.R8G8B8A8_UNorm,

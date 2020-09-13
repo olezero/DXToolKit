@@ -2,6 +2,9 @@ using System;
 using SharpDX;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Gizmo used for rotation
+	/// </summary>
 	public class RotationGizmo : GizmoBase {
 		private Primitive m_circle;
 		private Primitive m_collider;
@@ -13,7 +16,10 @@ namespace DXToolKit.Engine {
 		private float m_colliderOuter = 0.65F;
 		private float m_colliderInner = 0.35F;
 
-
+		/// <summary>
+		/// Creates a new instance of the rotation gizmo
+		/// </summary>
+		/// <param name="device">Device used to create resources</param>
 		public RotationGizmo(GraphicsDevice device) : base(device) {
 			m_circle = PrimitiveFactory.Tube(
 				height: m_height,
@@ -34,14 +40,11 @@ namespace DXToolKit.Engine {
 			);
 		}
 
-
-		private float m_rot;
-
+		/// <inheritdoc />
 		public override Matrix Render(DXCamera camera, PrimitiveRenderer renderer, Matrix world) {
 			var (xMatrix, yMatrix, zMatrix) = ConstructMatrices(world);
 			m_direction = HandleDrag(ref camera, ref m_collider, ref xMatrix, ref yMatrix, ref zMatrix, out var isDragging);
 			world.Decompose(out var worldScale, out var worldRotation, out var worldTranslation);
-
 
 			renderer.CustomPrimitive(m_circle, xMatrix, GetColor(GizmoDirection.X, m_direction == GizmoDirection.X));
 			renderer.CustomPrimitive(m_circle, yMatrix, GetColor(GizmoDirection.Y, m_direction == GizmoDirection.Y));
@@ -97,6 +100,7 @@ namespace DXToolKit.Engine {
 			return Matrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z);
 		}
 
+		/// <inheritdoc />
 		protected override void OnDispose() { }
 	}
 }

@@ -1,6 +1,9 @@
 using SharpDX;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Gizmo used for scaling
+	/// </summary>
 	public class ScaleGizmo : GizmoBase {
 		private Primitive m_line;
 		private Primitive m_cube;
@@ -13,12 +16,16 @@ namespace DXToolKit.Engine {
 		private float m_lineRadius = 0.005F;
 		private float m_capRadius = 0.02F;
 
+		/// <summary>
+		/// Creates a the gizmo used for scaling
+		/// </summary>
 		public ScaleGizmo(GraphicsDevice device) : base(device) {
 			m_line = PrimitiveFactory.Cone(m_arrowLength - m_capLength, m_lineRadius, m_lineRadius, 8);
 			m_cube = PrimitiveFactory.Cube(m_capRadius, m_capRadius, m_capRadius);
 			m_collider = PrimitiveFactory.Cone(m_arrowLength, 0.05F, 0.05F, 8);
 		}
 
+		/// <inheritdoc />
 		public override Matrix Render(DXCamera camera, PrimitiveRenderer renderer, Matrix world) {
 			var (xMatrix, yMatrix, zMatrix) = ConstructMatrices(world);
 			xMatrix = FaceCamera(camera, ref xMatrix, out var xInverted);
@@ -79,6 +86,7 @@ namespace DXToolKit.Engine {
 			return Matrix.Scaling(m_scaling);
 		}
 
+		// ReSharper disable once MemberCanBeMadeStatic.Local
 		private Matrix FaceCamera(DXCamera camera, ref Matrix matrix, out bool iverted) {
 			var camLook = Vector3.Normalize(camera.Position - matrix.TranslationVector);
 			if (Vector3.Dot(camLook, matrix.Up) < 0) {
@@ -96,6 +104,7 @@ namespace DXToolKit.Engine {
 			renderer.CustomPrimitive(m_cube, Matrix.Translation(0, m_arrowLength - m_capLength, 0) * world, clr);
 		}
 
+		/// <inheritdoc />
 		protected override void OnDispose() { }
 	}
 }

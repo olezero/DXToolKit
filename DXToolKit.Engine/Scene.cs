@@ -4,6 +4,7 @@ using SharpDX.DXGI;
 using DeviceContext = SharpDX.Direct3D11.DeviceContext;
 using DXToolKit.GUI;
 using SharpDX;
+using SharpDX.DirectWrite;
 
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
@@ -82,10 +83,8 @@ namespace DXToolKit.Engine {
 			if (m_isGuiEnabled) {
 				// Gather input for GUI
 				UpdateGUIEventArgs();
-
 				// Run GUI update to check if mouse or keyboard was captured before running scene update
-				m_guiSystem.Update(m_guiMouseEventArgs, m_guiKeyboardArgs, out m_guiCaptureMouse, out m_guiCaptureKeyboard);
-
+				m_guiSystem.Update(Time.DeltaTime, m_guiMouseEventArgs, m_guiKeyboardArgs, out m_guiCaptureMouse, out m_guiCaptureKeyboard);
 				// If GUI unloaded scene, get out of here
 				if (!m_isLoaded) return;
 			}
@@ -188,7 +187,7 @@ namespace DXToolKit.Engine {
 		}
 
 
-		protected void EnableGUI(GUIColorPalette palette, GUIDrawTools drawTools) {
+		protected void EnableGUI(GUIColorPalette palette = null, GUIDrawTools drawTools = null) {
 			if (m_isGuiEnabled) {
 				return;
 			}
@@ -198,23 +197,29 @@ namespace DXToolKit.Engine {
 			// Dispose of current palette if already set
 			Utilities.Dispose(ref m_guiColorPalette);
 
-			m_guiDrawTools = drawTools;
-			m_guiColorPalette = palette;
+			m_guiColorPalette = palette ?? new GUIColorPalette(m_device, GUIColorPaletteDescription.Cyborg);
+			m_guiDrawTools = drawTools ?? new BasicGUIDrawTools();
+			SetTooltipElement(new BasicTooltipElement());
 		}
 
 
-		protected void EnableGUI() {
-			// Return if GUI is already enabled
+		/// <summary>
+		/// Sets the element to be used as a tool tip
+		/// </summary>
+		public void SetTooltipElement(ITooltipElement guiElement) {
 			if (m_isGuiEnabled) {
-				return;
+				m_guiSystem.SetTooltipElement(guiElement);
 			}
+		}
 
-			// Create basic color palette and drawing tools
-			m_guiColorPalette = new GUIColorPalette(m_device, GUIColorPaletteDescription.Cyborg);
-			m_guiDrawTools = new BasicGUIDrawTools();
-
-			// Enable gui
-			m_isGuiEnabled = true;
+		/// <summary>
+		/// Sets the time in milliseconds the mouse has to hover over a element before a tooltip is displayed
+		/// Default: 1000ms
+		/// </summary>
+		public void SetTooltipPopupDelay(float delay) {
+			if (m_isGuiEnabled) {
+				m_guiSystem.SetTooltipPopupDelay(delay);
+			}
 		}
 	}
 }

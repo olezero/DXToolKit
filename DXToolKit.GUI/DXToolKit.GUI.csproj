@@ -81,12 +81,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GUIElement.cs" />
+    <Compile Include="GUIElement\GUIElement.cs" />
+    <Compile Include="GUIElement\GUIElement_Hierarchy.cs" />
+    <Compile Include="GUIElement\GUIElement_Rendering.cs" />
+    <Compile Include="GUIElement\GUIElement_Tabbing.cs" />
+    <Compile Include="GUIElement\GUIElement_Text.cs" />
+    <Compile Include="GUIElement\GUIElement_Update.cs" />
     <Compile Include="GUIKeyboardArgs.cs" />
     <Compile Include="GUIMouseEventArgs.cs" />
     <Compile Include="GUIRenderTexture.cs" />
     <Compile Include="GUISystem.cs" />
-    <Compile Include="GUIText.cs" />
+    <Compile Include="ITooltipElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

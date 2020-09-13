@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using DXToolKit;
@@ -10,7 +10,12 @@ using SharpDX.DirectInput;
 using SharpDX.DirectWrite;
 
 namespace DXToolKit.Engine {
-	public class TextBox : ActiveElement {
+	/// <summary>
+	/// Simple text box input element
+	/// </summary>
+	public class Textbox : ActiveElement {
+		// TODO - slow down scrolling a bit when dragging outside bounds..
+
 		private int m_caretPosition;
 		private Vector2 m_textOffset;
 		private GUIPadding m_textpadding;
@@ -29,19 +34,45 @@ namespace DXToolKit.Engine {
 		private Scrollbar m_verticalScroll;
 		private Scrollbar m_horizontalScroll;
 
-		public int ScrollSize = 16;
-		public bool DrawBorder = false;
+		/// <summary>
+		/// Gets or sets a value that controls the size of the scroll bars when in multiline mode
+		/// </summary>
+		public int ScrollSize = 12;
+
+		/// <summary>
+		/// Gets or sets a value indicating if the text box can only input numbers
+		/// </summary>
 		public bool OnlyNumbers = false;
+
+		/// <summary>
+		/// Gets or sets a value indicating if the tab key should be ignored
+		/// </summary>
 		public bool IgnoreTab = true;
+
+		/// <summary>
+		/// Gets or sets a value indicating if the text contents can be edited
+		/// </summary>
 		public bool AllowEditing = true;
 
-
+		/// <summary>
+		/// Gets the currently selected text
+		/// </summary>
 		public string SelectedText => GetSelectedText();
 
-		public TextBox(string text = "", bool multiline = false) {
+		/// <inheritdoc />
+		protected sealed override float MinimumWidth => m_multiline ? ScrollSize + FontSize * 2 : FontSize * 2;
+
+		/// <inheritdoc />
+		protected sealed override float MinimumHeight => m_multiline ? ScrollSize + FontSize * 2 : FontSize;
+
+		/// <summary>
+		/// Creates a text box
+		/// </summary>
+		/// <param name="text">Starting text</param>
+		/// <param name="multiline">If line breaks should be allowed</param>
+		public Textbox(string text = "", bool multiline = false) {
 			Text = text;
 			m_multiline = multiline;
-
 			m_caretPosition = 0;
 			Draggable = true;
 			m_systemCaretBlinkTime = SystemInformation.CaretBlinkTime / 1000.0F;
@@ -73,8 +104,19 @@ namespace DXToolKit.Engine {
 			m_horizontalScroll.ValueChanged += value => {
 				m_textOffset.X = -value;
 			};
+
+			if (!multiline) {
+				Text = text.Replace("\n", "").Replace("\r", "");
+				Height = Mathf.Ceiling(FontCalculator.CalculateTextHeight(this)) + 2;
+				m_horizontalScroll.MaxValue = float.MaxValue;
+			} else {
+				Height = 12 * 12;
+			}
+
+			Width = 12 * 12;
 		}
 
+		/// <inheritdoc />
 		protected override void OnBoundsChanged() {
 			m_verticalScroll.Width = ScrollSize;
 			m_verticalScroll.Height = Height;
@@ -86,11 +128,13 @@ namespace DXToolKit.Engine {
 			base.OnBoundsChanged();
 		}
 
+		/// <inheritdoc />
 		protected override void OnDispose() {
 			m_textEditorLayer?.Dispose();
 			base.OnDispose();
 		}
 
+		/// <inheritdoc />
 		protected override void OnUpdate() {
 			if (ContainsFocus) {
 				m_caretPosition = Mathf.Clamp(m_caretPosition, 0, Text.Length);
@@ -129,6 +173,7 @@ namespace DXToolKit.Engine {
 			base.OnUpdate();
 		}
 
+		/// <inheritdoc />
 		protected override void OnDrag() {
 			if (Input.MouseMove.LengthSquared() > 0) {
 				var currentIndex = TextAtPoint(LocalMousePosition);
@@ -157,11 +202,13 @@ namespace DXToolKit.Engine {
 			//ResetSelect();
 		}
 
+		/// <inheritdoc />
 		protected override void OnMouseHover() {
 			Input.SetCursorStyle(CursorStyle.IBeam);
 			base.OnMouseHover();
 		}
 
+		/// <inheritdoc />
 		protected override void OnContainFocusGained() {
 			m_caretVisible = true;
 			ResetCaretBlink();
@@ -174,6 +221,7 @@ namespace DXToolKit.Engine {
 			base.OnContainFocusGained();
 		}
 
+		/// <inheritdoc />
 		protected override void OnContainFocusLost() {
 			m_caretVisible = false;
 			ResetSelect();
@@ -183,6 +231,7 @@ namespace DXToolKit.Engine {
 
 		private bool m_skipMoveCaret = false;
 
+		/// <inheritdoc />
 		protected override void OnMouseDown(GUIMouseEventArgs args) {
 			if (args.LeftMouseDown) {
 				m_skipMoveCaret = true;
@@ -193,6 +242,7 @@ namespace DXToolKit.Engine {
 			base.OnMouseDown(args);
 		}
 
+		/// <inheritdoc />
 		protected override void OnDoubleClick(GUIMouseEventArgs args) {
 			if (m_multiline == false) {
 				SelectAll();
@@ -276,11 +326,12 @@ namespace DXToolKit.Engine {
 			}
 		}
 
-		protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {
-			drawTools.Rectangle(renderTarget, bounds, palette, BackgroundColor, GUIBrightness.Dark);
+		/// <inheritdoc />
+		protected override void OnRender(GUIDrawTools tools, ref GUIDrawParameters drawParameters) {
+			tools.Background.Rectangle();
 
-			var textMetrics = textLayout.Metrics;
-			var textBounds = bounds;
+			var textMetrics = drawParameters.TextLayout.Metrics;
+			var textBounds = drawParameters.Bounds;
 			textBounds.Width -= m_textpadding.Right;
 			textBounds.Height -= m_textpadding.Bottom;
 
@@ -318,36 +369,48 @@ namespace DXToolKit.Engine {
 			}
 
 			m_textEditorLayerParameters.ContentBounds = textBounds;
-			renderTarget.PushLayer(ref m_textEditorLayerParameters, m_textEditorLayer);
+			drawParameters.RenderTarget.PushLayer(ref m_textEditorLayerParameters, m_textEditorLayer);
 
 			if (m_selectionStart >= 0 && m_selectionEnd >= 0) {
 				var (start, length) = GetSelectionLength();
-				var result = textLayout.HitTestTextRange(start, length, 0, 0);
+				var result = drawParameters.TextLayout.HitTestTextRange(start, length, 0, 0);
 				for (int i = 0; i < result.Length; i++) {
 					var hit = result[i];
-					renderTarget.FillRectangle(
+					drawParameters.RenderTarget.FillRectangle(
 						new RectangleF(
 							hit.Left + m_textOffset.X + textPaddingVector.X,
 							hit.Top + m_textOffset.Y + textPaddingVector.Y,
 							hit.Width,
 							hit.Height
 						),
-						palette.GetBrush(ForegroundColor, GUIBrightness.Brightest)
+						GUIColorPalette.Current[ForegroundColor, GUIBrightness.Brightest]
 					);
 				}
 			}
 
-			drawTools.Text(renderTarget, m_textOffset + textPaddingVector, textLayout, palette, GUIColor.Text, TextBrightness);
+			tools.Text(m_textOffset + textPaddingVector);
+			//drawTools.Text(renderTarget, m_textOffset + textPaddingVector, textLayout, palette, GUIColor.Text, TextBrightness);
 			if (m_caretVisible) {
-				DrawCaret(renderTarget, palette.GetBrush(GUIColor.Text, TextBrightness));
+				DrawCaret(drawParameters.RenderTarget, GUIColorPalette.Current[TextColor, TextBrightness]);
 			}
 
-			renderTarget.PopLayer();
+			drawParameters.RenderTarget.PopLayer();
+		}
 
-			if (DrawBorder) {
-				drawTools.Border(renderTarget, bounds, palette, ForegroundColor, GUIBrightness.Normal);
+		/// <inheritdoc />
+		protected override void PostRender(GUIDrawTools tools, ref GUIDrawParameters drawParameters) {
+			tools.Background.BevelBorder(true);
+			if (m_verticalScroll.Enabled && m_horizontalScroll.Enabled) {
+				tools.BevelBorder(new RectangleF(
+					Width - ScrollSize,
+					Height - ScrollSize,
+					ScrollSize,
+					ScrollSize
+				), BackgroundColor, Brightness);
 			}
 		}
+
+		//protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) { }
 
 		private void ZoomToCaret() {
 			// If caret is out of bounds, we need to move
@@ -392,7 +455,7 @@ namespace DXToolKit.Engine {
 			m_zoomToCaret = false;
 		}
 
-		private void DrawCaret(RenderTarget renderTarget, SolidColorBrush brush) {
+		private void DrawCaret(RenderTarget renderTarget, Brush brush) {
 			if (TextLayout != null && m_caretPosition >= 0 && m_caretPosition <= Text.Length) {
 				if (!m_caretBlinkHidden) {
 					var (top, bottom) = GetCaretPosition(true);
@@ -485,11 +548,7 @@ namespace DXToolKit.Engine {
 			var prevPosition = m_caretPosition;
 			m_caretPosition = Mathf.Clamp(index, 0, Text.Length);
 			if (select) {
-				if (m_selectionStart != -1) {
-					SelectText(m_selectionStart, m_caretPosition);
-				} else {
-					SelectText(prevPosition, m_caretPosition);
-				}
+				SelectText(m_selectionStart != -1 ? m_selectionStart : prevPosition, m_caretPosition);
 			}
 
 			ResetCaretBlink();
@@ -518,6 +577,10 @@ namespace DXToolKit.Engine {
 			m_caretBlinkTimer = 0;
 		}
 
+		/// <summary>
+		/// Performs a backspace operation, removing one character behind the current caret position
+		/// </summary>
+		/// <param name="wholeWord">If a whole word should be removed instead of just a single character</param>
 		public void Backspace(bool wholeWord = false) {
 			if (HandleRemoveSelection() != 0) return;
 			if (wholeWord) {
@@ -531,6 +594,10 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Removes one character ahead of the current caret position
+		/// </summary>
+		/// <param name="wholeWord">If a whole word should be deleted and not just a single character</param>
 		public void Delete(bool wholeWord = false) {
 			if (HandleRemoveSelection() != 0) return;
 			if (wholeWord) {
@@ -542,6 +609,9 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Copies the selected text into the clipboard
+		/// </summary>
 		public void Copy() {
 			var selection = GetSelectedText();
 			if (selection != "") {
@@ -549,6 +619,9 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Removes selected text and puts it into the clipboard
+		/// </summary>
 		public void Cut() {
 			var selection = GetSelectedText();
 			if (selection != "") {
@@ -558,6 +631,9 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Pasts text from the clipboard into the textbox
+		/// </summary>
 		public void Paste() {
 			var clipboardText = ClipboardHandler.GetText();
 			if (clipboardText != "") {
@@ -566,6 +642,9 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Selects all text
+		/// </summary>
 		public void SelectAll() {
 			SelectText(0, Text.Length);
 		}
@@ -586,17 +665,25 @@ namespace DXToolKit.Engine {
 		}
 
 
+		/// <summary>
+		/// Selects a specific range
+		/// </summary>
+		/// <param name="fromIndex">From index</param>
+		/// <param name="toIndex">To index</param>
 		public void SelectText(int fromIndex, int toIndex) {
 			m_selectionStart = fromIndex;
 			m_selectionEnd = toIndex;
 		}
 
+		/// <summary>
+		/// Removes selection
+		/// </summary>
 		public void ResetSelect() {
 			m_selectionStart = -1;
 			m_selectionEnd = -1;
 		}
 
-		public string GetSelectedText() {
+		private string GetSelectedText() {
 			var (start, length) = GetSelectionLength();
 			if (start >= 0 && length > 0) {
 				return Text.Substring(start, length);
@@ -605,7 +692,7 @@ namespace DXToolKit.Engine {
 			return "";
 		}
 
-		public (int start, int length) GetSelectionLength() {
+		private (int start, int length) GetSelectionLength() {
 			var (selectStart, selectEnd) = GetSelectionStartEnd();
 			var length = selectEnd - selectStart;
 			if (selectStart > Text.Length) return (-1, -1);
@@ -616,7 +703,7 @@ namespace DXToolKit.Engine {
 			return (selectStart, length);
 		}
 
-		public (int start, int end) GetSelectionStartEnd() {
+		private (int start, int end) GetSelectionStartEnd() {
 			var selectEnd = m_selectionEnd;
 			var selectStart = m_selectionStart;
 			if (selectEnd < selectStart) {

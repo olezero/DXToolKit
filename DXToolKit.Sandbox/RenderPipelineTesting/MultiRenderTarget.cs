@@ -77,7 +77,7 @@ namespace DXToolKit.Sandbox {
 				m_srvs[i] = new ShaderResourceView(m_device, m_buffers[i]);
 			}
 
-			m_depthbuffer = new Texture2D(m_device, new Texture2DDescription() {
+			m_depthbuffer = new Texture2D(m_device, new Texture2DDescription {
 				//Format = Format.R24G8_Typeless,
 				Format = Format.R32_Typeless,
 				Width = targetWidth,
@@ -90,20 +90,20 @@ namespace DXToolKit.Sandbox {
 				OptionFlags = ResourceOptionFlags.None,
 				CpuAccessFlags = CpuAccessFlags.None
 			});
-			m_depthStencilView = new DepthStencilView(m_device, m_depthbuffer, new DepthStencilViewDescription() {
+			m_depthStencilView = new DepthStencilView(m_device, m_depthbuffer, new DepthStencilViewDescription {
 				Dimension = DepthStencilViewDimension.Texture2DMultisampled,
 				//Format = Format.D24_UNorm_S8_UInt,
 				Format = Format.D32_Float,
 				Flags = DepthStencilViewFlags.None,
-				Texture2D = new DepthStencilViewDescription.Texture2DResource() {
+				Texture2D = new DepthStencilViewDescription.Texture2DResource {
 					MipSlice = 0,
 				},
 			});
-			m_depthSRV = new ShaderResourceView(m_device, m_depthbuffer, new ShaderResourceViewDescription() {
+			m_depthSRV = new ShaderResourceView(m_device, m_depthbuffer, new ShaderResourceViewDescription {
 				// Format = Format.R24_UNorm_X8_Typeless,
 				Format = Format.R32_Float,
 				Dimension = ShaderResourceViewDimension.Texture2DMultisampled,
-				Texture2D = new ShaderResourceViewDescription.Texture2DResource() {
+				Texture2D = new ShaderResourceViewDescription.Texture2DResource {
 					MipLevels = 1,
 					MostDetailedMip = 0,
 				},

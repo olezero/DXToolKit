@@ -1,6 +1,9 @@
 using SharpDX;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Gizmo used for translation calculations
+	/// </summary>
 	public class TranslationGizmo : GizmoBase {
 		private Primitive m_line;
 		private Primitive m_cap;
@@ -12,12 +15,16 @@ namespace DXToolKit.Engine {
 		private float m_lineRadius = 0.005F;
 		private float m_capRadius = 0.02F;
 
+		/// <summary>
+		/// Creates a new instance of the gizmo used for translation calculations
+		/// </summary>
 		public TranslationGizmo(GraphicsDevice device) : base(device) {
 			m_line = PrimitiveFactory.Cone(m_arrowLength - m_capLength, m_lineRadius, m_lineRadius, 8);
 			m_cap = PrimitiveFactory.Cone(m_capLength, m_capRadius, 0.0F, 8);
 			m_collider = PrimitiveFactory.Cone(m_arrowLength, 0.05F, 0.05F, 8);
 		}
 
+		/// <inheritdoc />
 		public override Matrix Render(DXCamera camera, PrimitiveRenderer renderer, Matrix world) {
 			var (xMatrix, yMatrix, zMatrix) = ConstructMatrices(world);
 
@@ -144,6 +151,7 @@ namespace DXToolKit.Engine {
 			return Matrix.Translation(movement);
 		}
 
+		// ReSharper disable once MemberCanBeMadeStatic.Local
 		private Matrix FaceCamera(DXCamera camera, ref Matrix matrix) {
 			var camLook = Vector3.Normalize(camera.Position - matrix.TranslationVector);
 			if (Vector3.Dot(camLook, matrix.Up) < 0) {
@@ -159,6 +167,7 @@ namespace DXToolKit.Engine {
 			renderer.CustomPrimitive(m_cap, Matrix.Translation(0, m_arrowLength - m_capLength, 0) * world, clr);
 		}
 
+		/// <inheritdoc />
 		protected override void OnDispose() { }
 	}
 }

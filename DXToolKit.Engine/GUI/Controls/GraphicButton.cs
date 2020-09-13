@@ -1,78 +1,67 @@
-using System;
+﻿using System;
+using DXToolKit;
+using DXToolKit.Engine;
 using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.Direct2D1;
-using SharpDX.DirectWrite;
+using SharpDX.Direct2D1.Effects;
 
 namespace DXToolKit.Engine {
-	public abstract class GraphicButton : ActiveElement {
-		private bool m_runCreateGraphics = true;
-
-		private GUIRenderTexture m_renderTexture;
-
-		protected abstract void CreateGraphics(RenderTarget renderTarget, RectangleF bounds, GUIColorPalette palette, GUIDrawTools drawTools, float recommendedStrokeWidth);
-
-		private void CreateGraphics(RectangleF bounds, GUIColorPalette palette, GUIDrawTools drawTools) {
-			// Clear or create the render texture
-			if (m_renderTexture == null) {
-				m_renderTexture = new GUIRenderTexture(Graphics.Device, (int) bounds.Width, (int) bounds.Height);
-			}
-
-			// Direct call, since rendertexture checks if width and height is different before resizing
-			m_renderTexture.Resize((int) bounds.Width, (int) bounds.Height);
-
-			// Clear render texture
-			m_renderTexture.Clear(Color.Transparent);
-
-			var recommendedStrokeWidth = Math.Max(bounds.Width / 8.0F, 1.0F);
-
-			// Run create graphics
-			CreateGraphics(m_renderTexture.RenderTarget, bounds, palette, drawTools, recommendedStrokeWidth);
-
-			// Switch to disable further calls to generate graphics
-			m_runCreateGraphics = false;
+	/// <summary>
+	/// Base class for graphic buttons that extends from IconElement
+	/// Pretty much obsolete since IconButton exists
+	/// </summary>
+	[Obsolete("Use IconButton")]
+	public abstract class GraphicButton : IconElement {
+		/// <summary>
+		/// Creates a new graphic button
+		/// </summary>
+		protected GraphicButton() : base(false) {
+			Width = 24;
+			Height = 24;
 		}
 
-		protected override void OnBoundsChanged() {
-			base.OnBoundsChanged();
-			m_runCreateGraphics = true;
+		/// <summary>
+		/// Creates a new graphic button
+		/// </summary>
+		protected GraphicButton(Action<GUIMouseEventArgs> click) : this() {
+			if (click != null) Click += click;
 		}
 
-		protected sealed override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {
-			// Might have to run create graphics from here since we have access to the draw tools and palette
-			if (m_runCreateGraphics) {
-				CreateGraphics(bounds, palette, drawTools);
-				m_runCreateGraphics = false;
-			}
-
-			// Call new OnRender with the generated bitmap
-			OnRender(renderTarget, bounds, textLayout, palette, drawTools, m_renderTexture.Bitmap);
+		/// <summary>
+		/// Creates a new graphic button
+		/// </summary>
+		protected GraphicButton(GUIColor foregroundColor, Action<GUIMouseEventArgs> click) : this(click) {
+			ForegroundColor = foregroundColor;
 		}
 
-		protected virtual void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools, Bitmap graphics) {
+		/// <inheritdoc />
+		protected override void OnRender(GUIDrawTools tools, ref GUIDrawParameters parameters, Bitmap graphics) {
 			// Could just do a simple render here
 			var targetBrightness = Brightness;
 			var iconOffset = new Vector2();
 
+			// Standard hover pressed
 			if (MouseHovering) {
 				if (IsMousePressed) {
 					targetBrightness = GUIBrightness.Brightest;
-					iconOffset += 1;
+					iconOffset.X += 0.2F;
+					iconOffset.Y += 0.4F;
 				} else {
 					targetBrightness = GUIBrightness.Bright;
 				}
 			}
 
+			// Draw rectangle to contain graphic
+			tools.Background.Rectangle(targetBrightness);
+			tools.Background.BevelBorder(IsMousePressed && MouseHovering);
 
-			drawTools.Rectangle(renderTarget, bounds, palette, ForegroundColor, targetBrightness);
-			bounds.Location += iconOffset;
-			renderTarget.DrawBitmap(graphics, bounds, 1.0F, BitmapInterpolationMode.Linear);
-		}
+			// Get bounds for the icon
+			var iconBounds = parameters.Bounds;
+			iconBounds.Location += iconOffset;
 
-
-		protected override void OnDispose() {
-			base.OnDispose();
-			Utilities.Dispose(ref m_renderTexture);
+			// Render bitmap
+			parameters.RenderTarget.DrawBitmap(graphics, iconBounds, 1.0F, BitmapInterpolationMode.Linear);
 		}
 	}
 }

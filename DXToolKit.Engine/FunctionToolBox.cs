@@ -82,17 +82,65 @@ namespace DXToolKit.Engine {
 		/// <param name="outMin">The minimum value of the output</param>
 		/// <param name="outMax">The maximum value of the output</param>
 		protected float Map(float input, float inputMin, float inputMax, float outMin, float outMax) => Mathf.Map(input, inputMin, inputMax, outMin, outMax);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Sin(float val) => Mathf.Sin(val);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Cos(float val) => Mathf.Cos(val);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Lerp(float from, float to, float amount) => Mathf.Lerp(from, to, amount);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Max(float a, float b) => Mathf.Max(a, b);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Min(float a, float b) => Mathf.Min(a, b);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected int Floor(float val) => (int) Math.Floor(val);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected int Ceiling(float val) => (int) Math.Ceiling(val);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float DegToRad(float degrees) => Mathf.DegToRad(degrees);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float RadToDeg(float radians) => Mathf.RadToDeg(radians);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Clamp(float value, float min, float max) => Mathf.Clamp(value, min, max);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Sqrt(float value) => Mathf.Sqrt(value);
+
+		/// <summary>
+		/// Quick math function access
+		/// </summary>
 		protected float Abs(float value) => Mathf.Abs(value);
 	}
 }

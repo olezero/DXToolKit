@@ -78,5 +78,7 @@ namespace DXToolKit.Engine {
 			       MathUtil.NearEqual(Top, other.Top) &&
 			       MathUtil.NearEqual(Bottom, other.Bottom);
 		}
+		
+		
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -7,26 +8,47 @@ using SharpDX.DXGI;
 using SharpDX.Windows;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Base application class of the engine
+	/// </summary>
 	public abstract class DXApp : FunctionToolBox, IDisposable {
-		public static DXApp Current;
-
-
-		protected RenderForm m_renderform => Graphics.Renderform;
-		protected GraphicsDevice m_device => Graphics.Device;
-		public Color ClearColor = Color.Black;
+		// TODO: Global Exception handler. Should run try catch on each part of the game loop. One for update, one for render, etc
+		// TODO: If exception handler does not have any attached handlers, throw exception as normal
 
 		private float m_minimumFrameAccumulator;
 		private float m_minimumFrameRate = 100.0F;
 		private double m_lastUpdateTime;
 		private Stopwatch m_updateTimer;
 		private bool m_useDynamicUpdates = false;
-
 		private float m_fixedFrameRate = 100.0F;
 		private float m_fixedUpdateTimer;
 		private string[] m_cmdArgs;
-
 		private IRenderPipeline m_renderPipeline;
+		private List<IDisposable> m_disposables;
 
+		/// <summary>
+		/// Gets a reference to the current DXApp
+		/// </summary>
+		public static DXApp Current;
+
+		/// <summary>
+		/// Gets the render form used by the application
+		/// </summary>
+		protected RenderForm m_renderform => Graphics.Renderform;
+
+		/// <summary>
+		/// Gets the graphics device used by the application
+		/// </summary>
+		protected GraphicsDevice m_device => Graphics.Device;
+
+		/// <summary>
+		/// Gets or sets the color used to clear the back buffer each frame
+		/// </summary>
+		public Color ClearColor = Color.Black;
+
+		/// <summary>
+		/// Gets a reference to the render pipeline used by the application
+		/// </summary>
 		public IRenderPipeline RenderPipeline => m_renderPipeline;
 
 		/// <summary>
@@ -55,6 +77,11 @@ namespace DXToolKit.Engine {
 			set => m_fixedFrameRate = value;
 		}
 
+		/// <summary>
+		/// Runs the application
+		/// </summary>
+		/// <param name="args">Command line arguments</param>
+		/// <returns>Application exit code</returns>
 		public int Run(string[] args) {
 			bool logExceptions = false;
 			foreach (var arg in args) {
@@ -94,7 +121,6 @@ namespace DXToolKit.Engine {
 
 			return 0;
 		}
-
 
 		private void Frame() {
 			// Get last frame time, and slow down frame rate to target
@@ -158,6 +184,7 @@ namespace DXToolKit.Engine {
 				for (int i = 0; i < updateCount; i++) {
 					// Run normal application update
 					Input.Frame(Graphics.Renderform);
+					Animation.Update();
 					Update();
 					SceneManager.RunUpdate();
 
@@ -179,6 +206,7 @@ namespace DXToolKit.Engine {
 			} else {
 				// Run normal application update
 				Input.Frame(Graphics.Renderform);
+				Animation.Update();
 				Update();
 				SceneManager.RunUpdate();
 			}
@@ -192,11 +220,27 @@ namespace DXToolKit.Engine {
 			m_renderPipeline.Present(EngineConfig.UseVsync ? 1 : 0);
 		}
 
+		/// <summary>
+		/// Exits the application by closing the active window
+		/// </summary>
 		public void Exit() {
 			Graphics.Renderform.Close();
 		}
 
+
+		/// <inheritdoc />
 		public void Dispose() {
+			if (m_disposables != null) {
+				for (int i = 0; i < m_disposables.Count; i++) {
+					m_disposables[i]?.Dispose();
+				}
+
+				m_disposables.Clear();
+			}
+
+			m_disposables = null;
+
+			Animation.Shutdown();
 			Time.Shutdown();
 			SceneManager.Shutdown();
 			OnDispose();
@@ -207,14 +251,49 @@ namespace DXToolKit.Engine {
 			Graphics.Shutdown();
 		}
 
+		/// <summary>
+		/// Called when the application is disposed
+		/// </summary>
 		protected virtual void OnDispose() { }
+
+		/// <summary>
+		/// Called after base components are initialized, right before main application loop starts
+		/// </summary>
 		protected virtual void Initialize() { }
+
+		/// <summary>
+		/// Called once every frame
+		/// </summary>
 		protected virtual void Update() { }
+
+		/// <summary>
+		/// Called exactly FixedFrameRate times per second
+		/// </summary>
 		protected virtual void FixedUpdate() { }
+
+		/// <summary>
+		/// Called once per frame
+		/// </summary>
 		protected virtual void Render() { }
 
+		/// <summary>
+		/// Override to set a custom render pipeline in the application
+		/// </summary>
 		protected virtual IRenderPipeline CreateRenderPipeline() {
 			return new BasicPipeline(m_device);
+		}
+
+
+		/// <summary>
+		/// Adds a disposable to be disposed of when the application shuts down
+		/// </summary>
+		/// <param name="disposable">The disposable to dispose of</param>
+		public void AddDisposable(IDisposable disposable) {
+			if (m_disposables == null) {
+				m_disposables = new List<IDisposable>();
+			}
+
+			m_disposables.Add(disposable);
 		}
 	}
 }

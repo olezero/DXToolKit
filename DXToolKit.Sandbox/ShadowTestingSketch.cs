@@ -118,13 +118,13 @@ namespace DXToolKit.Sandbox {
 
 
 			m_matrixBuffer = new ConstantBuffer<MatrixBufferType>(m_device, new MatrixBufferType());
-			m_lightBuffer = new ConstantBuffer<LightBufferType>(m_device, new LightBufferType() {
+			m_lightBuffer = new ConstantBuffer<LightBufferType>(m_device, new LightBufferType {
 				ambientColor = new Vector4(0.2F),
 				diffuseColor = new Vector4(0.8F),
 			});
 
 			m_lightPosition = new Vector3(5, 5, 5);
-			m_lightBuffer2 = new ConstantBuffer<LightBufferType2>(m_device, new LightBufferType2() {
+			m_lightBuffer2 = new ConstantBuffer<LightBufferType2>(m_device, new LightBufferType2 {
 				Position = m_lightPosition,
 			});
 			m_matrices = new MatrixBufferType {
@@ -142,13 +142,13 @@ namespace DXToolKit.Sandbox {
 			}
 
 			m_texture = TextureHelper.CreateSRV(m_device, ref colors, size, size);
-			m_clampSampler = new SamplerState(m_device, new SamplerStateDescription() {
+			m_clampSampler = new SamplerState(m_device, new SamplerStateDescription {
 				Filter = Filter.MinMagMipLinear,
 				AddressU = TextureAddressMode.Clamp,
 				AddressV = TextureAddressMode.Clamp,
 				AddressW = TextureAddressMode.Clamp,
 			});
-			m_wrapSampler = new SamplerState(m_device, new SamplerStateDescription() {
+			m_wrapSampler = new SamplerState(m_device, new SamplerStateDescription {
 				Filter = Filter.MinMagMipLinear,
 				AddressU = TextureAddressMode.Wrap,
 				AddressV = TextureAddressMode.Wrap,
@@ -206,7 +206,7 @@ namespace DXToolKit.Sandbox {
 			m_matrices.view = Matrix.Transpose(m_camera.ViewMatrix);
 			m_matrices.proj = Matrix.Transpose(m_camera.ProjectionMatrix);
 			m_matrixBuffer.Write(m_matrices);
-			m_lightBuffer2.Write(new LightBufferType2() {
+			m_lightBuffer2.Write(new LightBufferType2 {
 				Position = m_lightPosition,
 			});
 

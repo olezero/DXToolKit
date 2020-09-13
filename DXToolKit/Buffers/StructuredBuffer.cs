@@ -19,7 +19,7 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="device">Graphics device to use when creating the buffer</param>
 		/// <param name="data">Data to initialize the buffer with</param>
-		public StructuredBuffer(GraphicsDevice device, T[] data) : base(device, data, new BufferDescription() {
+		public StructuredBuffer(GraphicsDevice device, T[] data) : base(device, data, new BufferDescription {
 			Usage = ResourceUsage.Default,
 			BindFlags = BindFlags.UnorderedAccess,
 			OptionFlags = ResourceOptionFlags.BufferStructured,
@@ -36,7 +36,7 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="device">Graphics device to use when creating the buffer</param>
 		/// <param name="elementCount">The number of elements that should be reserved for this stream</param>
-		public StructuredBuffer(GraphicsDevice device, int elementCount) : base(device, elementCount, new BufferDescription() {
+		public StructuredBuffer(GraphicsDevice device, int elementCount) : base(device, elementCount, new BufferDescription {
 			Usage = ResourceUsage.Default,
 			BindFlags = BindFlags.UnorderedAccess,
 			OptionFlags = ResourceOptionFlags.BufferStructured,

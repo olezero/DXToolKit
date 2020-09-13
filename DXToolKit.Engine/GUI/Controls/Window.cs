@@ -1,142 +1,344 @@
-using System;
+﻿using System;
+using DXToolKit;
+using DXToolKit.Engine;
 using SharpDX;
-using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 
+
 namespace DXToolKit.Engine {
+	// ReSharper disable MemberInitializerValueIgnored
+	/// <summary>
+	/// Basic draggable window element.
+	/// Node: All child element should be appended to Window.Body and not the window directly
+	/// </summary>
 	public class Window : GUIElement {
-		public class WinHeader : GUIElement {
-			private Window m_parentWindow;
+		#region Class Definitions
+
+		/// <summary>
+		/// Window header element
+		/// </summary>
+		public class WindowHeader : GUIElement {
+			private bool m_ignoreAppendException = true;
 			private CloseButton m_closeButton;
 
+			/// <summary>
+			/// Close button used by the window
+			/// </summary>
 			public CloseButton CloseButton => m_closeButton;
 
-			public WinHeader(Window parent) {
-				m_parentWindow = parent;
-				Draggable = true;
-
-				m_closeButton = Append(new CloseButton {
-					ForegroundColor = m_parentWindow.HeaderColor,
+			/// <summary>
+			/// Creates a new window header
+			/// </summary>
+			public WindowHeader() {
+				Text = "Window";
+				TextOffset = new Vector2(4, 0);
+				// FontWeight = FontWeight.Bold;
+				m_closeButton = Append(new CloseButton() {
+					SinkOnPress = false,
 				});
-				ResizeChildren();
+				m_ignoreAppendException = false;
+				Draggable = true;
+				PositionChildren();
 			}
 
-			protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {
-				drawTools.Rectangle(renderTarget, bounds, palette, m_parentWindow.HeaderColor, m_parentWindow.Brightness);
 
-				if (string.IsNullOrEmpty(Text) == false) {
-					drawTools.Text(renderTarget, Vector2.Zero, textLayout, palette, GUIColor.Text, TextBrightness);
+			/// <inheritdoc />
+			protected override void OnRender(GUIDrawTools tools, ref GUIDrawParameters drawParameters) {
+				tools.Background.Rectangle();
+				tools.Background.BevelBorder();
+				tools.Text();
+			}
+
+			/// <inheritdoc />
+			protected override void OnChildAppended(DXToolKit.GUI.GUIElement parent, DXToolKit.GUI.GUIElement child) {
+				if (!m_ignoreAppendException) {
+					throw new Exception("Cannot append directly to header");
 				}
 
-				drawTools.Border(renderTarget, bounds, palette, m_parentWindow.BodyColor, GUIBrightness.Darkest);
+				base.OnChildAppended(parent, child);
 			}
 
-			protected override void OnBoundsChanged() {
-				ResizeChildren();
-				base.OnBoundsChanged();
+			/// <inheritdoc />
+			protected override void OnBoundsChangedDirect() {
+				PositionChildren();
+				base.OnBoundsChangedDirect();
 			}
 
-			private void ResizeChildren() {
-				// Position close button on the right side of the header, with some padding
-				m_closeButton.X = this.Width - this.Height + 2;
-				m_closeButton.Y = 2;
-
-				// Scale the close button to match this.height with some padding
-				m_closeButton.Width = this.Height - 4;
-				m_closeButton.Height = this.Height - 4;
+			private void PositionChildren() {
+				m_closeButton.Width = Height - BorderWidth * 2;
+				m_closeButton.Height = Height - BorderWidth * 2;
+				m_closeButton.Top = Top + BorderWidth;
+				m_closeButton.Right = Right - BorderWidth;
 			}
 		}
 
-		public class WinBody : GUIElement {
-			private Window m_parentWindow;
+		/// <summary>
+		/// Empty GUIElement to store window child elements
+		/// </summary>
+		public class WindowBody : GUIElement { }
 
-			public WinBody(Window parent) {
-				m_parentWindow = parent;
-				Draggable = false;
-			}
+		#endregion
 
-			protected override void OnRender(RenderTarget renderTarget, RectangleF bounds, TextLayout textLayout, GUIColorPalette palette, GUIDrawTools drawTools) {
-				drawTools.Rectangle(renderTarget, bounds, palette, m_parentWindow.BodyColor, m_parentWindow.Brightness);
-				drawTools.Border(renderTarget, bounds, palette, m_parentWindow.BodyColor, GUIBrightness.Darkest);
-			}
-		}
+		private bool m_ignoreAppendException = true;
+		private WindowHeader m_header;
+		private WindowBody m_body;
+		private float m_headerHeight = 20;
+		private bool m_useInnerBorder = true;
+		private bool m_useInnerBorderShadow = true;
+		private float m_innerBorderSize = 3.0F;
 
-		public WinHeader Header;
-		public WinBody Body;
+		/// <summary>
+		/// Controller for where dragging started
+		/// </summary>
+		private Vector2 m_dragStartLocation;
 
-		public GUIColor HeaderColor = GUIColor.Primary;
-		public GUIColor BodyColor = GUIColor.Default;
-		public CloseButton CloseButton => Header.CloseButton;
+		/// <summary>
+		/// Gets or sets a value indicating if the window is draggable
+		/// </summary>
+		public new bool Draggable = true;
 
+		/// <summary>
+		/// Gets a reference to the header element
+		/// </summary>
+		public WindowHeader Header => m_header;
+
+		/// <summary>
+		/// Gets a reference to the body element
+		/// </summary>
+		public WindowBody Body => m_body;
+
+		/// <summary>
+		/// Gets a reference to the close button element on the header
+		/// </summary>
+		public CloseButton CloseButton => m_header.CloseButton;
+
+		/// <summary>
+		/// Event raised when the window is being closed
+		/// </summary>
 		public event Action Closing;
+
+		/// <summary>
+		/// Event raised when the window is being opened
+		/// </summary>
 		public event Action Opening;
 
-		protected virtual void OnOpening() => Opening?.Invoke();
-		protected virtual void OnClosing() => Closing?.Invoke();
+		/// <summary>
+		/// Gets or sets a value indicating if the window should be disposed of when closed.
+		/// Useful for quick dialog boxes or message popups
+		/// </summary>
+		public bool DisposeOnClose = false;
 
+		/// <summary>
+		/// Gets or sets a value indicating if a inner border should be drawn
+		/// </summary>
+		public bool UseInnerBorder {
+			get => m_useInnerBorder;
+			set {
+				if (m_useInnerBorder != value) {
+					m_useInnerBorder = value;
+					ToggleRedraw();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating if there should be a shadow effect on the inner border
+		/// </summary>
+		public bool UseInnerBorderShadow {
+			get => m_useInnerBorderShadow;
+			set {
+				if (m_useInnerBorderShadow != value) {
+					m_useInnerBorderShadow = value;
+					ToggleRedraw();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value that controls the distance from the outer bounds to the inner border
+		/// </summary>
+		public float InnerBorderSize {
+			get => m_innerBorderSize;
+			set {
+				if (MathUtil.NearEqual(m_innerBorderSize, value) == false) {
+					m_innerBorderSize = value;
+					ToggleRedraw();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value that controls the height of the header element
+		/// </summary>
+		public float HeaderHeight {
+			get => m_headerHeight;
+			set {
+				m_headerHeight = value;
+				PositionChildren();
+			}
+		}
+
+		/// <summary>
+		/// Create a new window
+		/// </summary>
 		public Window() {
-			// Append elements for header and body
-			Header = Append(new WinHeader(this));
-			Body = Append(new WinBody(this));
-			// Set default drag to true
-			Draggable = true;
-			// Set some default width and height
-			Width = 12 * 32;
-			Height = 12 * 24;
-			// Set some default paragraph and text alignments
+			ConstrainToParent = true;
+			m_body = Append(new WindowBody {
+				PassOnStyle = false,
+				PassOnFontParameters = false,
+			});
+
+			m_header = Append(new WindowHeader());
+			m_ignoreAppendException = false;
+			Width = 12 * 12;
+			Height = 12 * 12;
+			CanReceiveMouseInput = false;
+			TextAlignment = TextAlignment.Leading;
 			ParagraphAlignment = ParagraphAlignment.Center;
-			TextAlignment = TextAlignment.Center;
-			// Setup header dragging
-			Header.Drag += () => {
+			InnerGlow.Opacity = 0.3F;
+
+			m_header.DragStart += () => {
+				m_dragStartLocation = m_header.LocalMousePosition;
+			};
+
+			m_header.Drag += () => {
 				if (Draggable) {
-					X += Input.MouseMove.X;
-					Y += Input.MouseMove.Y;
+					Location = Input.MousePosition - m_dragStartLocation;
 				}
 			};
-			Header.CloseButton.Click += args => {
+
+			CloseButton.Click += args => {
 				Close();
 			};
-			// Default text
-			Text = "Window";
+
+			// Lock header
+			m_header.BoundsChangedDirect += () => {
+				m_header.X = 0;
+				m_header.Y = 0;
+				m_headerHeight = m_header.Height;
+				Width = m_header.Width;
+				PositionChildren();
+			};
+
+			// Lock body
+			m_body.BoundsChangedDirect += () => {
+				Width = m_body.Width;
+				Height = m_body.Height + m_headerHeight;
+				m_body.X = 0;
+				m_body.Y = m_headerHeight;
+				PositionChildren();
+			};
 		}
 
-		protected sealed override void OnBoundsChangedDirect() {
-			Header.Width = Width;
-			Header.Height = 20;
-			Header.X = 0;
-			Header.Y = 0;
-
-			Body.Width = Width;
-			Body.Height = Height - Header.Height;
-			Body.Y = Header.Height;
-			Body.X = 0;
-
-			base.OnBoundsChangedDirect();
-		}
-
+		/// <inheritdoc />
 		protected override void OnTextChanged(string text) {
-			Header.Text = Text;
-			Header.TextAlignment = TextAlignment;
-			Header.ParagraphAlignment = ParagraphAlignment;
-
+			m_header.Text = text;
 			base.OnTextChanged(text);
 		}
 
+		/// <inheritdoc />
+		protected override void OnChildAppended(DXToolKit.GUI.GUIElement parent, DXToolKit.GUI.GUIElement child) {
+			if (!m_ignoreAppendException) {
+				throw new Exception("Cannot append directly to window, append to Window.Body");
+			}
+
+			base.OnChildAppended(parent, child);
+		}
+
+		/// <inheritdoc />
+		protected override void OnBoundsChangedDirect() {
+			if (Width < 12 * 8) {
+				Width = 12 * 8;
+			}
+
+			if (Height < 12 * 4) {
+				Height = 12 * 4;
+			}
+
+			PositionChildren();
+			base.OnBoundsChangedDirect();
+		}
+
+
+		/// <inheritdoc />
+		protected override void OnRender(GUIDrawTools tools, ref GUIDrawParameters drawParameters) {
+			tools.Background.Rectangle();
+			tools.Background.BevelBorder();
+
+			if (m_useInnerBorder) {
+				var innerBorderBounds = m_body.Bounds;
+				innerBorderBounds.Inflate(-m_innerBorderSize, -m_innerBorderSize);
+				tools.Background.BevelBorder(innerBorderBounds, true);
+
+				if (m_useInnerBorderShadow) {
+					tools.InnerGlow(innerBorderBounds);
+				}
+			}
+
+			tools.Shine(drawParameters.Bounds, true);
+		}
+
+		/// <summary>
+		/// Positions children correctly
+		/// </summary>
+		private void PositionChildren() {
+			m_header.X = 0;
+			m_header.Y = 0;
+			m_header.Width = Width;
+			m_header.Height = m_headerHeight;
+			m_body.X = 0;
+			m_body.Top = m_header.Bottom;
+			m_body.Height = Height - m_header.Height;
+			m_body.Width = Width;
+		}
+
+		/// <summary>
+		/// Closes the window. Disposes if DisposeOnClose is set to true
+		/// </summary>
+		public void Close() {
+			Visible = false;
+			OnClosing();
+
+			if (DisposeOnClose) {
+				Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Opens the window.
+		/// </summary>
+		public void Open() {
+			Visible = true;
+			Enabled = true;
+			OnOpening();
+			MoveToFront();
+		}
+
+		/// <summary>
+		/// Opens or closes window depending on if its visible
+		/// </summary>
+		public void Toggle() {
+			if (Visible) {
+				Close();
+			} else {
+				Open();
+			}
+		}
+
+		/// <inheritdoc />
 		protected override void OnContainFocusGained() {
 			MoveToFront();
 			base.OnContainFocusGained();
 		}
 
-		public void Close() {
-			Visible = false;
-			OnClosing();
-		}
+		/// <summary>
+		/// Invoked when the window is closing
+		/// </summary>
+		protected virtual void OnClosing() => Closing?.Invoke();
 
-		public void Open() {
-			Visible = true;
-			MoveToFront();
-			OnOpening();
-			Focus();
-		}
+		/// <summary>
+		/// Invoked when the window is opening
+		/// </summary>
+		protected virtual void OnOpening() => Opening?.Invoke();
 	}
 }

@@ -143,7 +143,7 @@ namespace DXToolKit {
 		private static List<DelayedAction> m_actions = new List<DelayedAction>();
 
 		public static DelayedAction SetTimeout(float ms, Action action) {
-			var result = new DelayedAction() {
+			var result = new DelayedAction {
 				TimeToCall = ms,
 				Action = action,
 			};

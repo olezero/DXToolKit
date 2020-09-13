@@ -5,21 +5,59 @@ using SharpDX.DXGI;
 using Device = SharpDX.Direct3D11.Device;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Basic render pipeline with a single render target view and a depth stencil
+	/// </summary>
 	public class BasicPipeline : DeviceComponent, IRenderPipeline {
+		/// <summary>
+		/// Gets a reference to the back buffer resource
+		/// </summary>
 		public Texture2D Backbuffer => m_backbuffer;
+
+		/// <summary>
+		/// Gets a reference to the depth buffer resource
+		/// </summary>
 		public Texture2D Depthbuffer => m_depthbuffer;
 
+		/// <summary>
+		/// Gets a reference to the RenderTargetView connected to the back buffer resource
+		/// </summary>
 		public RenderTargetView RenderTargetView => m_renderTargetView;
+
+		/// <summary>
+		/// Gets a reference to the DepthStencilView connected to the depth buffer resource
+		/// </summary>
 		public DepthStencilView DepthStencilView => m_depthStencilView;
 
+		/// <summary>
+		/// Back buffer 
+		/// </summary>
 		private Texture2D m_backbuffer;
+
+		/// <summary>
+		/// Depth buffer
+		/// </summary>
 		private Texture2D m_depthbuffer;
 
+		/// <summary>
+		/// Back buffer RTV
+		/// </summary>
 		private RenderTargetView m_renderTargetView;
+
+		/// <summary>
+		/// Depth buffer DSV
+		/// </summary>
 		private DepthStencilView m_depthStencilView;
 
+		/// <summary>
+		/// Full screen viewport
+		/// </summary>
 		private ViewportF m_viewport;
 
+		/// <summary>
+		/// Creates a new instance of the basic pipeline
+		/// </summary>
+		/// <param name="device">Device used to create resources</param>
 		public BasicPipeline(GraphicsDevice device) : base(device) {
 			SetupTargets();
 			m_device.OnResizeBegin += DisposeTargets;
@@ -54,25 +92,39 @@ namespace DXToolKit.Engine {
 			m_swapchain.Present(syncInterval, PresentFlags.None);
 		}
 
+		/// <summary>
+		/// Sets the stored depth stencil and render target view on the immediate context
+		/// </summary>
 		public void SetDefaultRenderTargets() {
 			m_context.OutputMerger.SetRenderTargets(m_depthStencilView, m_renderTargetView);
 		}
 
+		/// <summary>
+		/// Gets the stored render target view
+		/// </summary>
 		public RenderTargetView GetRenderTargetView() {
 			return m_renderTargetView;
 		}
 
+		/// <summary>
+		/// Gets the stored depth stencil view
+		/// </summary>
 		public DepthStencilView GetDepthStencilView() {
 			return m_depthStencilView;
 		}
 
+
+		/// <inheritdoc />
 		protected override void OnDispose() {
 			DisposeTargets();
 		}
 
+		/// <summary>
+		/// Simple setup targets
+		/// </summary>
 		private void SetupTargets() {
 			m_backbuffer = m_swapchain.GetBackBuffer<Texture2D>(0);
-			m_depthbuffer = new Texture2D(m_device, new Texture2DDescription() {
+			m_depthbuffer = new Texture2D(m_device, new Texture2DDescription {
 				//Format = Format.D32_Float_S8X24_UInt,
 				Format = Format.D32_Float,
 				Width = m_backbuffer.Description.Width,
@@ -90,6 +142,9 @@ namespace DXToolKit.Engine {
 			m_viewport = new ViewportF(0, 0, m_backbuffer.Description.Width, m_backbuffer.Description.Height, 0.0F, 1.0F);
 		}
 
+		/// <summary>
+		/// Simple release resources
+		/// </summary>
 		private void DisposeTargets() {
 			Utilities.Dispose(ref m_backbuffer);
 			Utilities.Dispose(ref m_depthbuffer);

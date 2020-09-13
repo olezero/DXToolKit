@@ -189,10 +189,17 @@ namespace DXToolKit {
 		}
 
 		/// <summary>Returns the largest integral value less than or equal to the specified double-precision floating-point number.</summary>
-		/// <param name="value">A double-precision floating-point number.</param>
+		/// <param name="value">A single-precision floating-point number.</param>
 		/// <returns>The largest integral value less than or equal to <paramref name="value" />. If <paramref name="value" /> is equal to <see cref="F:System.Single.NaN" />, <see cref="F:System.Single.NegativeInfinity" />, or <see cref="F:System.Single.PositiveInfinity" />, that value is returned.</returns>
 		public static int Floor(float value) {
 			return (int) Math.Floor(value);
+		}
+
+		/// <summary>Returns the smallest integral value that is greater than or equal to the specified double-precision floating-point number.</summary>
+		/// <param name="value">A single-precision floating-point number.</param>
+		/// <returns>The smallest integral value that is greater than or equal to <paramref name="value" />. If <paramref name="value" /> is equal to <see cref="F:System.Double.NaN" />, <see cref="F:System.Double.NegativeInfinity" />, or <see cref="F:System.Double.PositiveInfinity" />, that value is returned. Note that this method returns a <see cref="T:System.Double" /> instead of an integral type.</returns>
+		public static int Ceiling(float value) {
+			return (int) Math.Ceiling(value);
 		}
 
 		/// <summary>Rounds a double-precision floating-point value to the nearest integral value, and rounds midpoint values to the nearest even number.</summary>

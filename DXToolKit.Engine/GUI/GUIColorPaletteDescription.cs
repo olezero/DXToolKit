@@ -13,11 +13,36 @@ namespace DXToolKit.Engine {
 		public Color Text;
 		public Color Dark;
 		public Color Light;
+		public float TransparentAlpha = 0.2F;
+
+		/// <summary>
+		/// Gets or sets a value (from 0 to 1) indicating how much darker the GUIBrightness.Darkest should darken the input color
+		/// Default: 0.2F
+		/// </summary>
+		public float DarkestStrength = 0.2F;
+
+		/// <summary>
+		/// Gets or sets a value (from 0 to 1) indicating how much darker the GUIBrightness.Dark should darken the input color
+		/// Default: 0.1F
+		/// </summary>
+		public float DarkStrength = 0.1F;
+
+		/// <summary>
+		/// Gets or sets a value (from 0 to 1) indicating how much brighter the GUIBrightness.Bright should brighten the input color
+		/// Default: 0.1F
+		/// </summary>
+		public float BrightStrength = 0.1F;
+
+		/// <summary>
+		/// Gets or sets a value (from 0 to 1) indicating how much brighter the GUIBrightness.Brightest should brighten the input color
+		/// Default: 0.2F
+		/// </summary>
+		public float BrightestStrength = 0.2F;
 
 		public static GUIColorPaletteDescription Cyborg => FromHex("#505050", "#2A9FD6", "#77B300", "#CC0000", "#FF8800", "#9933CC", "#F0F0F0");
 
 		public static GUIColorPaletteDescription FromHex(string defaultColor, string primaryColor, string successColor, string dangerColor, string warningColor, string infoColor, string textColor) {
-			return new GUIColorPaletteDescription() {
+			return new GUIColorPaletteDescription {
 				Default = FromHex(defaultColor),
 				Primary = FromHex(primaryColor),
 				Success = FromHex(successColor),

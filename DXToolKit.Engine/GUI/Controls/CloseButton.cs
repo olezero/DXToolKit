@@ -1,29 +1,16 @@
-using System;
+﻿using System;
+using DXToolKit.Engine;
 using DXToolKit.GUI;
-using SharpDX;
-using SharpDX.Direct2D1;
 
 namespace DXToolKit.Engine {
-	public class CloseButton : GraphicButton {
-		public CloseButton() { }
+	/// <summary>
+	/// Graphic button that uses Cross Icon
+	/// </summary>
+	public class CloseButton : IconButton {
+		/// <inheritdoc />
+		public CloseButton() : base(new CrossIcon()) { }
 
-		public CloseButton(Action<GUIMouseEventArgs> click) {
-			Click += click;
-		}
-
-		protected override void CreateGraphics(RenderTarget renderTarget, RectangleF bounds, GUIColorPalette palette, GUIDrawTools drawTools, float recommendedStrokeWidth) {
-			bounds.Inflate(-recommendedStrokeWidth, -recommendedStrokeWidth);
-
-			var topLeft = new Vector2(bounds.X + 1, bounds.Y + 1);
-			var topRight = new Vector2(bounds.X + bounds.Width - 1, bounds.Y + 1);
-			var bottomLeft = new Vector2(bounds.X + 1, bounds.Y + bounds.Height - 1);
-			var bottomRight = new Vector2(bounds.X + bounds.Width - 1, bounds.Y + bounds.Height - 1);
-			var brush = palette.GetBrush(GUIColor.Text, TextBrightness);
-
-			renderTarget.BeginDraw();
-			renderTarget.DrawLine(topLeft, bottomRight, brush, recommendedStrokeWidth);
-			renderTarget.DrawLine(topRight, bottomLeft, brush, recommendedStrokeWidth);
-			renderTarget.EndDraw();
-		}
+		/// <inheritdoc />
+		public CloseButton(Action<GUIMouseEventArgs> onClick) : base(new CrossIcon(), onClick) { }
 	}
 }

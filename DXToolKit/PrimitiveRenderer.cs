@@ -93,7 +93,7 @@ namespace DXToolKit {
 				Matrix.Transpose(ref transform, out transform);
 
 				// Add a new instance to the instance list
-				m_instanceList.Add(new InstanceBufferType() {
+				m_instanceList.Add(new InstanceBufferType {
 					WorldMatrix = transform,
 					Color = color.ToVector4(),
 				});
@@ -273,7 +273,7 @@ namespace DXToolKit {
 			m_matrices = new MatrixBufferType();
 
 			// Setup light buffer
-			m_lightBuffer = new ConstantBuffer<LightBufferType>(m_device, new LightBufferType() {
+			m_lightBuffer = new ConstantBuffer<LightBufferType>(m_device, new LightBufferType {
 				AmbientColor = new Vector4(0.1F, 0.1F, 0.1F, 1.0F),
 				DiffuseColor = new Vector4(1.0F, 1.0F, 1.0F, 1.0F),
 				LightDirection = Vector3.Normalize(Vector3.Down + (Vector3.Left * 0.2F) + (Vector3.ForwardLH * 0.4F)),

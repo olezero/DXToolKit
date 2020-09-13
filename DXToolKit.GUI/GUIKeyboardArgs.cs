@@ -3,6 +3,9 @@ using System.Windows.Forms;
 using SharpDX.DirectInput;
 
 namespace DXToolKit.GUI {
+	/// <summary>
+	/// Keyboard arguments passed to the GUI
+	/// </summary>
 	public class GUIKeyboardArgs {
 		/// <summary>
 		/// List containing all keys that are pressed

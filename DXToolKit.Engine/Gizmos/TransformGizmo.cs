@@ -4,6 +4,9 @@ using SharpDX.Direct3D11;
 using SharpDX.DirectInput;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Gizmo used for transforms (Translation, Rotation and Scaling)
+	/// </summary>
 	public class TransformGizmo : DeviceComponent {
 		private enum Mode {
 			Translation = 0,
@@ -24,8 +27,14 @@ namespace DXToolKit.Engine {
 		private Matrix m_scaleMatrix = Matrix.Identity;
 		private Matrix m_rotationMatrix = Matrix.Identity;
 
+		/// <summary>
+		/// Gets the computed transformation of the gizmo
+		/// </summary>
 		public Matrix Transformation => m_scaleMatrix * m_rotationMatrix * m_translationMatrix;
 
+		/// <summary>
+		/// Creates a new instance of the transform gizmo
+		/// </summary>
 		public TransformGizmo(GraphicsDevice device) : base(device) {
 			m_renderer = new PrimitiveRenderer(m_device);
 			m_translationGizmo = new TranslationGizmo(m_device);
@@ -42,6 +51,9 @@ namespace DXToolKit.Engine {
 			m_mode = Mode.Translation;
 		}
 
+		/// <summary>
+		/// Updates and renders the Gizmo
+		/// </summary>
 		public void Render(DXCamera camera) {
 			m_context.OutputMerger.SetBlendState(m_blendState);
 
@@ -95,6 +107,7 @@ namespace DXToolKit.Engine {
 			m_context.OutputMerger.SetBlendState(null);
 		}
 
+		/// <inheritdoc />
 		protected override void OnDispose() {
 			Utilities.Dispose(ref m_renderer);
 			Utilities.Dispose(ref m_translationGizmo);

@@ -86,7 +86,7 @@ namespace DXToolKit {
 			m_factory = factory ?? throw new ArgumentNullException(nameof(factory));
 			m_comDevice = new Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport, FeatureLevel.Level_11_0);
 			m_deviceContext = m_comDevice.ImmediateContext;
-			m_swapchain = new SwapChain(m_factory, m_comDevice, new SwapChainDescription() {
+			m_swapchain = new SwapChain(m_factory, m_comDevice, new SwapChainDescription {
 				ModeDescription = modeDescription,
 				Flags = SwapChainFlags.AllowModeSwitch,
 				Usage = Usage.RenderTargetOutput,
@@ -176,7 +176,7 @@ namespace DXToolKit {
 			var backbuffer = m_swapchain.GetBackBuffer<Texture2D>(0);
 			var surface = backbuffer.QueryInterface<Surface1>();
 			// Create rendertarget using the backbuffer surface
-			m_renderTarget = new RenderTarget(m_factory, surface, new RenderTargetProperties() {
+			m_renderTarget = new RenderTarget(m_factory, surface, new RenderTargetProperties {
 				Type = RenderTargetType.Hardware,
 				PixelFormat = new PixelFormat {
 					Format = Format.R8G8B8A8_UNorm,

@@ -197,7 +197,7 @@ namespace DXToolKit {
 			};
 
 			renderForm.KeyPress += (sender, args) => {
-				// Should only handle letters, numbers and whitespace (space and return) aaaaand some more....
+				// Should only handle letters, numbers and whitespace (space and return) and some more....
 				if (char.IsLetter(args.KeyChar) || char.IsNumber(args.KeyChar) || char.IsWhiteSpace(args.KeyChar) || char.IsPunctuation(args.KeyChar) || char.IsSeparator(args.KeyChar) || char.IsSymbol(args.KeyChar)) {
 					m_textInputBuffer += args.KeyChar;
 					args.Handled = true;
@@ -364,7 +364,7 @@ namespace DXToolKit {
 			}
 
 			if (UseHardwareMouse) {
-				// TODO - fix this. After changing from a renderform.mousemove to cursor.position this broke, since we cant save mouseposition. Although "hardware" mouse seams more sluggish then a direct from windows mouse position
+				// TODO - fix this. After changing from a renderform.mousemove to cursor.position this broke, since we cant save mouse position. Although "hardware" mouse seams more sluggish then a direct from windows mouse position
 				throw new NotImplementedException();
 				//MouseMove = new Vector2(state.X, state.Y);
 				//MousePosition += MouseMove;

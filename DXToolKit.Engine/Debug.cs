@@ -31,8 +31,9 @@ namespace DXToolKit {
 			m_brush = new SolidColorBrush(device, Color.White);
 			m_initialized = true;
 			m_primitiveRenderer = new PrimitiveRenderer(device);
-			m_lineRenderer = new LineRenderer(device);
-			m_lineRenderer.Resolution = 16;
+			m_lineRenderer = new LineRenderer(device) {
+				Resolution = 16
+			};
 		}
 
 		public static void Log(object log, float time = -1) {

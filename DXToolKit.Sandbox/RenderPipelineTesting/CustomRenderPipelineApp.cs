@@ -16,8 +16,6 @@ namespace DXToolKit.Sandbox {
 
 		protected override IRenderPipeline CreateRenderPipeline() {
 			return new SketchPipeline(m_device);
-			return base.CreateRenderPipeline();
-			return new RenderPipeline(m_device);
 		}
 	}
 }

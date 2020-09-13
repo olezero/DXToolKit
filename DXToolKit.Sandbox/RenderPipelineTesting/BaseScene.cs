@@ -207,19 +207,19 @@ namespace DXToolKit.Sandbox {
 
 			m_multiRenderTarget = new MultiRenderTarget(m_device, 4, m_sketchPipeline);
 
-			m_pixelShader = new Shader(m_device, new ShaderDescription() {
+			m_pixelShader = new Shader(m_device, new ShaderDescription {
 				file = @"C:\Programming\HLSLShaders\pixel.fx",
 				psEntry = "PS",
 			});
 			m_pixelShader.EnableWatcher();
 
-			m_pointSampler = new SamplerState(m_device, new SamplerStateDescription() {
+			m_pointSampler = new SamplerState(m_device, new SamplerStateDescription {
 				Filter = Filter.MinMagMipPoint,
 				AddressU = TextureAddressMode.Clamp,
 				AddressV = TextureAddressMode.Clamp,
 				AddressW = TextureAddressMode.Clamp,
 			});
-			m_ansoSampler = new SamplerState(m_device, new SamplerStateDescription() {
+			m_ansoSampler = new SamplerState(m_device, new SamplerStateDescription {
 				Filter = Filter.Anisotropic,
 				AddressU = TextureAddressMode.Clamp,
 				AddressV = TextureAddressMode.Clamp,

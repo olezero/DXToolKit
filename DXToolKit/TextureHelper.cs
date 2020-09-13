@@ -20,7 +20,7 @@ namespace DXToolKit {
 		}
 
 		public static Texture2D CreateTexture2D(GraphicsDevice device, ref Color[] data, int width, int height, BindFlags bindFlags = BindFlags.ShaderResource) {
-			return CreateTexture(device, ref data, new Texture2DDescription() {
+			return CreateTexture(device, ref data, new Texture2DDescription {
 				Usage = ResourceUsage.Default,
 				Format = Format.R8G8B8A8_UNorm,
 				Width = width,
@@ -35,7 +35,7 @@ namespace DXToolKit {
 		}
 
 		public static Texture2D CreateTexture2D(GraphicsDevice device, ref Vector4[] data, int width, int height, BindFlags bindFlags = BindFlags.ShaderResource) {
-			return CreateTexture(device, ref data, new Texture2DDescription() {
+			return CreateTexture(device, ref data, new Texture2DDescription {
 				Usage = ResourceUsage.Default,
 				Format = Format.R32G32B32A32_Float,
 				Width = width,
@@ -66,7 +66,7 @@ namespace DXToolKit {
 		}
 
 		public static ShaderResourceView CreateSRVArray(GraphicsDevice device, ref Color[][] data, int width, int height, int depth) {
-			var texture = CreateTexture(device, ref data, new Texture2DDescription() {
+			var texture = CreateTexture(device, ref data, new Texture2DDescription {
 				Format = Format.R8G8B8A8_UNorm,
 				Height = height,
 				Width = width,

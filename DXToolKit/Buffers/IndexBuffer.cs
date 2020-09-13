@@ -11,7 +11,7 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="device">Device used for creation</param>
 		/// <param name="data">Data to set in the buffer</param>
-		public IndexBuffer(GraphicsDevice device, int[] data) : base(device, data, new BufferDescription() {
+		public IndexBuffer(GraphicsDevice device, int[] data) : base(device, data, new BufferDescription {
 			Usage = ResourceUsage.Immutable,
 			BindFlags = BindFlags.IndexBuffer,
 			OptionFlags = ResourceOptionFlags.None,
@@ -25,7 +25,7 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="device">Base device used to create the buffer.</param>
 		/// <param name="elementCount">Number of elements to allocate space for in the buffer</param>
-		public IndexBuffer(GraphicsDevice device, int elementCount) : base(device, elementCount, new BufferDescription() {
+		public IndexBuffer(GraphicsDevice device, int elementCount) : base(device, elementCount, new BufferDescription {
 			Usage = ResourceUsage.Dynamic,
 			BindFlags = BindFlags.IndexBuffer,
 			OptionFlags = ResourceOptionFlags.None,

@@ -4,17 +4,53 @@ using System.Linq;
 using SharpDX.Direct3D11;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Camera key binds used by Camera3D class
+	/// </summary>
 	public struct CameraKeyBinds {
+		/// <summary>
+		/// Keys used to move forward
+		/// </summary>
 		public Key[] ForwardKeys;
+
+		/// <summary>
+		/// Keys used to move backward
+		/// </summary>
 		public Key[] BackwardKeys;
+
+		/// <summary>
+		/// Keys used to translate left
+		/// </summary>
 		public Key[] LeftKeys;
+
+		/// <summary>
+		/// Keys used to translate right
+		/// </summary>
 		public Key[] RightKeys;
+
+		/// <summary>
+		/// Keys used to translate up
+		/// </summary>
 		public Key[] UpKeys;
+
+		/// <summary>
+		/// Keys used to translate down
+		/// </summary>
 		public Key[] DownKeys;
+
+		/// <summary>
+		/// Keys used to increase speed
+		/// </summary>
 		public Key[] SprintKeys;
 
+		/// <summary>
+		/// Mouse button used to rotate the camera
+		/// </summary>
 		public MouseButton[] RotateButtons;
 
+		/// <summary>
+		/// Gets some default keybindings for the camera (WASD / up down left right arrow etc)
+		/// </summary>
 		public static CameraKeyBinds Default => new CameraKeyBinds {
 			ForwardKeys = new[] {Key.W, Key.Up},
 			BackwardKeys = new[] {Key.S, Key.Down},
@@ -26,22 +62,63 @@ namespace DXToolKit.Engine {
 			RotateButtons = new[] {MouseButton.Right},
 		};
 
+		/// <summary>
+		/// Gets a value indicating if a Forward key is pressed
+		/// </summary>
 		public bool Forward() => ForwardKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Backward key is pressed
+		/// </summary>
 		public bool Backward() => BackwardKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Left key is pressed
+		/// </summary>
 		public bool Left() => LeftKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Right key is pressed
+		/// </summary>
 		public bool Right() => RightKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Up key is pressed
+		/// </summary>
 		public bool Up() => UpKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Down key is pressed
+		/// </summary>
 		public bool Down() => DownKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Sprint key is pressed
+		/// </summary>
 		public bool Sprint() => SprintKeys.Select(Input.KeyPressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Rotate mouse button is pressed
+		/// </summary>
 		public bool Rotate() => RotateButtons.Select(Input.MousePressed).Any(pressed => pressed);
+
+		/// <summary>
+		/// Gets a value indicating if a Rotate mouse button is released
+		/// </summary>
 		public bool RotateStop() => RotateButtons.Select(Input.MouseUp).Any(pressed => pressed);
 	}
 
+	/// <summary>
+	/// Class used to calculate a Projection and View matrix
+	/// </summary>
 	public class Camera3D : DXCamera {
 		private const float ROTATION_SLOWDOWN_FACTOR = 12.0F;
 		private const float TARGET_LERP_SPEED_FACTOR = 10.0F;
 		private const float TARGET_ZOOM_SPEED_FACTOR = 20.0F;
 
+		/// <summary>
+		/// Creates a new instance of a Camera3D used to calculate a Projection and View matrix
+		/// </summary>
 		public Camera3D() {
 			Graphics.Device.OnResizeEnd += () => {
 				AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
@@ -73,19 +150,20 @@ namespace DXToolKit.Engine {
 		private bool m_keepOrbitRotationVelocity = true;
 
 		private Vector2 m_rotationVelocity = Vector2.Zero;
-
 		private bool m_flipHorizontalRotation = false;
 		private bool m_flipVerticalRotation = false;
-
 		private float m_targetZoom = 10;
+		private Vector3 m_newTarget;
 
 		/// <summary>
 		/// Controls key bindings used by the camera
 		/// </summary>
 		private CameraKeyBinds m_keybindings = CameraKeyBinds.Default;
 
-		private Vector3 m_newTarget;
-
+		/// <summary>
+		/// Call once to make the camera lerp to focus on a new target
+		/// </summary>
+		/// <param name="target"></param>
 		public void SmoothLerpToTarget(Vector3 target) {
 			m_targetZoom = TargetDistance;
 			if (IsOrbitCamera) {
@@ -103,6 +181,9 @@ namespace DXToolKit.Engine {
 			m_smoothTransitionOrbitCam = true;
 		}
 
+		/// <summary>
+		/// Updates the camera, gathering inputs and moving it accordingly
+		/// </summary>
 		public void Update() {
 			// Get transformed mouse movement
 			var mouseMove = Input.MouseMove * (Mathf.Pi / 180.0F) * m_mouseSensitivity;
@@ -134,6 +215,7 @@ namespace DXToolKit.Engine {
 				}
 
 				if (m_smoothTransitionOrbitCam) {
+					// ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
 					if (Vector3.NearEqual(Target, m_newTarget, new Vector3(Mathf.ZeroTolerance))) {
 						Target = m_newTarget;
 					} else {

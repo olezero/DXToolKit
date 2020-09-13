@@ -5,15 +5,33 @@ using SharpDX.DXGI;
 using SharpDX.Windows;
 
 namespace DXToolKit.Engine {
+	/// <summary>
+	/// Static application wide Graphics object
+	/// </summary>
 	public static class Graphics {
 		private static GraphicsDevice m_device;
 		private static RenderForm m_renderForm;
 		private static FactoryCollection m_factoryCollection;
 
+		/// <summary>
+		/// Gets the render form used by the application
+		/// </summary>
 		public static RenderForm Renderform => m_renderForm;
+
+		/// <summary>
+		/// Gets the graphics device used by the application
+		/// </summary>
 		public static GraphicsDevice Device => m_device;
+
+		/// <summary>
+		/// Gets a factory collection used by the application
+		/// </summary>
 		public static FactoryCollection Factory => m_factoryCollection;
 
+		/// <summary>
+		/// Sets up the graphics object
+		/// </summary>
+		/// <param name="cmdArgs">Command line arguments</param>
 		public static void Setup(string[] cmdArgs) {
 			var hidden = false;
 			var targetWidth = -1;
@@ -84,6 +102,9 @@ namespace DXToolKit.Engine {
 			};
 		}
 
+		/// <summary>
+		/// Disposes of all unmanaged resources
+		/// </summary>
 		public static void Shutdown() {
 			m_device?.Dispose();
 			m_renderForm?.Dispose();
