@@ -53,8 +53,8 @@ namespace DXToolKit.Tests {
 			Assert.True(buffer.CanWrite);
 			// Read from GPU
 			var result = ReadBuffer(buffer);
-			// Should be a empty array
-			Assert.AreEqual(new[] {0, 0, 0, 0, 0, 0}, result);
+			// Should have 6 elements, but since they are not written to, they can be random values
+			Assert.That(result.Length == 6);
 			// Write updated array to index buffer
 			buffer.WriteRange(indices);
 			// Read back data from GPU

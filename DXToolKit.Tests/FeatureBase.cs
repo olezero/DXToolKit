@@ -10,6 +10,7 @@ namespace DXToolKit.Tests {
 	public abstract class FeatureBase {
 		protected GraphicsDevice m_device => m_storedDevice;
 		protected DeviceContext m_context => m_device.Context;
+		protected FactoryCollection m_factory => m_device.Factory;
 		private static GraphicsDevice m_storedDevice = null;
 
 		public static void SetDevice(GraphicsDevice device) {
@@ -31,6 +32,11 @@ namespace DXToolKit.Tests {
 			Console.WriteLine(str);
 		}
 
+		protected void dump(object obj, Formatting formatting = Formatting.Indented) {
+			Dump(obj, formatting);
+		}
+
+
 		private List<IDisposable> m_disposables;
 
 		protected T ToDispose<T>(T disposable) where T : IDisposable {
@@ -51,6 +57,26 @@ namespace DXToolKit.Tests {
 
 				m_disposables?.Clear();
 				m_disposables = null;
+			}
+
+
+			var objects = SharpDX.Diagnostics.ObjectTracker.FindActiveObjects();
+			var report = SharpDX.Diagnostics.ObjectTracker.ReportActiveObjects();
+
+			// Dispose of any objects that are still active
+			if (objects.Count > 0) {
+				Console.WriteLine();
+
+				foreach (var obj in objects) {
+					if (obj?.Object?.Target is IDisposable disposable) {
+						disposable.Dispose();
+					}
+				}
+
+				Console.WriteLine("ACTIVE COM OBJECTS:");
+				Console.WriteLine(report);
+				Console.WriteLine("END REPORT");
+				Assert.Fail("Found undisposed com objects");
 			}
 		}
 

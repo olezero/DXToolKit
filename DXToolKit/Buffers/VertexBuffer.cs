@@ -73,6 +73,9 @@ namespace DXToolKit {
 		/// </summary>
 		public static implicit operator VertexBufferBinding(VertexBuffer<T> vbuffer) => vbuffer.m_binding;
 
+		/// <summary>
+		/// Sets the binding
+		/// </summary>
 		private void SetBinding() {
 			m_binding = new VertexBufferBinding(m_buffer, Utilities.SizeOf<T>(), 0);
 		}

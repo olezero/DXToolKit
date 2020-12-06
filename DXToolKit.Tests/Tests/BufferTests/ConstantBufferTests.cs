@@ -90,7 +90,7 @@ namespace DXToolKit.Tests {
 				OptionFlags = ResourceOptionFlags.None,
 				CpuAccessFlags = CpuAccessFlags.Write,
 				SizeInBytes = Utilities.SizeOf<Matrix>(),
-				StructureByteStride = 0,
+				StructureByteStride = Utilities.SizeOf<Matrix>(),
 			};
 			// Create constant buffer
 			var cBuffer = ToDispose(new ConstantBuffer<Matrix>(m_device, matrix, desc));

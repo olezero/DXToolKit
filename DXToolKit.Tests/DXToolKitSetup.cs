@@ -19,6 +19,7 @@ namespace DXToolKit.Tests {
 			m_factoryCollection = new FactoryCollection(dxgiFactory, d2dFactory, dwFactory);
 			m_device = new GraphicsDevice(m_factoryCollection, window, new ModeDescription(1920, 1080, new Rational(60, 1), Format.R8G8B8A8_UNorm));
 			FeatureBase.SetDevice(m_device);
+			Configuration.EnableObjectTracking = true;
 		}
 
 		[OneTimeTearDown]

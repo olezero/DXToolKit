@@ -86,10 +86,12 @@
         <Compile Include="DXToolKitSetup.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="FeatureBase.cs" />
-        <Compile Include="Tests\ArrayBufferTests.cs" />
-        <Compile Include="Tests\ConstantBufferTests.cs" />
-        <Compile Include="Tests\CustomDXBufferTests.cs" />
-        <Compile Include="Tests\IndexBufferTests.cs" />
+        <Compile Include="Tests\BufferTests\ArrayBufferTests.cs" />
+        <Compile Include="Tests\BufferTests\ConstantBufferTests.cs" />
+        <Compile Include="Tests\BufferTests\CustomDXBufferTests.cs" />
+        <Compile Include="Tests\BufferTests\IndexBufferTests.cs" />
+        <Compile Include="Tests\BufferTests\StructuredBufferTests.cs" />
+        <Compile Include="Tests\BufferTests\VertexBufferTests.cs" />
     </ItemGroup>
 
     <ItemGroup>

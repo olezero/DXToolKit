@@ -113,7 +113,7 @@ namespace DXToolKit {
 			SetDescription(description);
 			// Make sure the size is correct based on input data.
 			m_bufferDescription.SizeInBytes = Utilities.SizeOf<T>();
-			m_bufferDescription.StructureByteStride = 0;
+			m_bufferDescription.StructureByteStride = Utilities.SizeOf<T>();
 			// Dispose of old buffer
 			m_buffer?.Dispose();
 			// Create new buffer with input data
