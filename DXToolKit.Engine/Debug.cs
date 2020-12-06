@@ -5,7 +5,7 @@ using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 
-namespace DXToolKit {
+namespace DXToolKit.Engine {
 	public static class Debug {
 		private class DebugLog {
 			public string LogStr;

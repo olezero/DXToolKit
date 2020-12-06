@@ -7,7 +7,7 @@ using SharpDX;
 using SharpDX.DirectInput;
 using SharpDX.Windows;
 
-namespace DXToolKit {
+namespace DXToolKit.Engine {
 	public enum MouseButton {
 		Left = 0,
 		Right = 1,

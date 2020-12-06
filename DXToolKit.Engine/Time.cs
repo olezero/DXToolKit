@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace DXToolKit {
+namespace DXToolKit.Engine {
 	public static class Time {
 		[DllImport("winmm.dll")]
 		internal static extern uint timeBeginPeriod(uint period);

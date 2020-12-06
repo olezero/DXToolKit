@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using DXToolKit.Engine;
 using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
