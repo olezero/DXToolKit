@@ -5,6 +5,3 @@ packages
 */obj/*
 *.DotSettings
 *.DotSettings.user
-DXToolKit.Engine.Sandbox
-DXToolKit.RasterTek
-DXToolKit.Octree
