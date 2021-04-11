@@ -8,6 +8,9 @@ namespace DXToolKit.Engine {
 	/// This is unique per element
 	/// </summary>
 	public class GUIDrawParameters {
+		/// <summary>
+		/// Defines what styles should be inherited from parent element
+		/// </summary>
 		public StyleInheritance StyleInheritance = new StyleInheritance();
 
 		/// <summary>

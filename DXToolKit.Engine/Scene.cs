@@ -4,7 +4,6 @@ using SharpDX.DXGI;
 using DeviceContext = SharpDX.Direct3D11.DeviceContext;
 using DXToolKit.GUI;
 using SharpDX;
-using SharpDX.DirectWrite;
 
 // ReSharper disable VirtualMemberNeverOverridden.Global
 

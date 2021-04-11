@@ -8,22 +8,9 @@ using SharpDX.DirectInput;
 using SharpDX.Windows;
 
 namespace DXToolKit.Engine {
-	public enum MouseButton {
-		Left = 0,
-		Right = 1,
-		Middle = 2,
-		Mouse4 = 3,
-		Mouse5 = 4,
-	}
-
-	public enum CursorStyle {
-		Default,
-		IBeam,
-		Cross,
-		HSplit,
-		VSplit
-	}
-
+	/// <summary>
+	/// DirectInput wrapper for mouse and keyboard input
+	/// </summary>
 	public static class Input {
 		[DllImport("user32.dll")]
 		static extern IntPtr GetForegroundWindow();
@@ -32,16 +19,28 @@ namespace DXToolKit.Engine {
 		private static Keyboard m_keyboard;
 		private static Mouse m_mouse;
 
+		// TODO: remove this when cursor style is fixed
+		// ReSharper disable once NotAccessedField.Local
 		private static CursorStyle m_cursorStyle;
 
 		private static List<Key> m_keysUp = new List<Key>();
 		private static List<Key> m_keysDown = new List<Key>();
 		private static List<Key> m_pressedKeys = new List<Key>();
 
+		/// <summary>
+		/// Gets a list of keys that were released during the previous frame
+		/// </summary>
 		public static List<Key> KeysUp => m_keysUp;
-		public static List<Key> KeysDown => m_keysDown;
-		public static List<Key> KeysPressed => m_pressedKeys;
 
+		/// <summary>
+		/// Gets a list of keys that were pressed down during the previous frame
+		/// </summary>
+		public static List<Key> KeysDown => m_keysDown;
+
+		/// <summary>
+		/// Gets a list of keys that are currently pressed.
+		/// </summary>
+		public static List<Key> KeysPressed => m_pressedKeys;
 
 		private static List<MouseButton> m_mouseButtonsUp = new List<MouseButton>();
 		private static List<MouseButton> m_mouseButtonsDown = new List<MouseButton>();
@@ -49,11 +48,37 @@ namespace DXToolKit.Engine {
 		private static List<MouseButton> m_mouseDoubleClick = new List<MouseButton>();
 		private static float[] m_doubleClickTimers;
 
+		/// <summary>
+		/// Gets a value indicating if the input key was released during the last frame
+		/// </summary>
+		/// <param name="key">The key to check against</param>
+		/// <returns>True on key up</returns>
 		public static bool KeyUp(Key key) => m_keysUp.Contains(key);
+
+		/// <summary>
+		/// Gets a value indicating if the input key was pressed down during the last frame
+		/// </summary>
+		/// <param name="key">The key to check against</param>
+		/// <returns>True on key down</returns>
 		public static bool KeyDown(Key key) => m_keysDown.Contains(key);
+
+		/// <summary>
+		/// Gets a value indicating if the input key is currently pressed
+		/// </summary>
+		/// <param name="key">The key to check against</param>
+		/// <returns>True on key pressed</returns>
 		public static bool KeyPressed(Key key) => m_pressedKeys.Contains(key);
+
+		/// <summary>
+		/// Gets a value indicating if the input key is currently pressed and repeated based on Win32 repeat delay
+		/// </summary>
+		/// <param name="key">The key to check against</param>
+		/// <returns>True on every tick the repeat delay triggers a keypress</returns>
 		public static bool RepeatKey(Key key) => m_toggleRepeatKey && m_repeatKey == key;
 
+		/// <summary>
+		/// Gets the current key that is set as the "repeating key" as Win32 can only have a single key being repeated at any given time
+		/// </summary>
 		public static Key? RepeatingKey {
 			get {
 				if (m_toggleRepeatKey) {
@@ -64,18 +89,69 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating if the input mouse button was released during the previous frame
+		/// </summary>
+		/// <param name="button">The button to check</param>
+		/// <returns>True on mouse up</returns>
 		public static bool MouseUp(MouseButton button) => m_mouseButtonsUp.Contains(button);
+
+		/// <summary>
+		/// Gets a value indicating if the input mouse button was pressed down during the previous frame
+		/// </summary>
+		/// <param name="button">The button to check</param>
+		/// <returns>True on mouse down</returns>
 		public static bool MouseDown(MouseButton button) => m_mouseButtonsDown.Contains(button);
+
+		/// <summary>
+		/// Gets a value indicating if the input mouse button is currently being pressed
+		/// </summary>
+		/// <param name="button">The button to check</param>
+		/// <returns>True on mouse pressed</returns>
 		public static bool MousePressed(MouseButton button) => m_mouseButtonsPressed.Contains(button);
+
+		/// <summary>
+		/// Gets a value indicating if the input mouse button was double clicked based on Win32 double click delay
+		/// </summary>
+		/// <param name="button">The button to check</param>
+		/// <returns>True on mouse double click</returns>
 		public static bool MouseDoubleClick(MouseButton button) => m_mouseDoubleClick.Contains(button);
+
+		/// <summary>
+		/// Sets the cursor style to use in the application
+		/// TODO: Check if there is a way of setting Form.cursor = cursor style
+		/// </summary>
+		/// <param name="style"></param>
 		public static void SetCursorStyle(CursorStyle style) => m_cursorStyle = style;
 
+		/// <summary>
+		/// Gets a list of mouse buttons that was released during the last frame
+		/// </summary>
 		public static List<MouseButton> MouseButtonsUp => m_mouseButtonsUp;
+
+		/// <summary>
+		/// Gets a list of mouse buttons that was pressed down during the last frame
+		/// </summary>
 		public static List<MouseButton> MouseButtonsDown => m_mouseButtonsDown;
+
+		/// <summary>
+		/// Gets a list of mouse buttons that are pressed down
+		/// </summary>
 		public static List<MouseButton> MouseButtonsPressed => m_mouseButtonsPressed;
+
+		/// <summary>
+		/// Gets a list of mouse buttons that was double clicked during the last frame
+		/// </summary>
 		public static List<MouseButton> MouseButtonsDoubleClick => m_mouseDoubleClick;
 
+		/// <summary>
+		/// Text input buffer to store each frames text input as a string
+		/// </summary>
 		private static string m_textInputBuffer = "";
+
+		/// <summary>
+		/// Last frame input buffer to return to the user
+		/// </summary>
 		private static string m_lastFrameInput = "";
 
 		/// <summary>
@@ -83,16 +159,34 @@ namespace DXToolKit.Engine {
 		/// </summary>
 		public static string TextInput => m_lastFrameInput;
 
+		/// <summary>
+		/// Gets a value indicating if there is text input available
+		/// </summary>
 		public static bool TextInputAvailable => m_lastFrameInput.Length > 0;
 
+		/// <summary>
+		/// Gets a value indicating how much the mouse wheel has moved during the previous frame
+		/// </summary>
 		public static int MouseWheelDelta { get; private set; }
+
+		/// <summary>
+		/// Gets the amount of lines the mouse scroll wheel is configured in Win32 to scroll
+		/// </summary>
 		public static readonly int MouseWheelScrollLines;
 
+		/// <summary>
+		/// Gets or sets a value indicating if mouse should be hardware controlled and not windows Form based
+		/// </summary>
 		public static bool UseHardwareMouse { get; set; } = false;
 
+		/// <summary>
+		/// Gets a value indicating the amount of pixels the mouse moved the previous frame
+		/// </summary>
 		public static Vector2 MouseMove { get; private set; }
-		//public static Vector2 MousePosition { get; private set; }
 
+		/// <summary>
+		/// Gets the current mouse position based on the top left corner of the Win32 Form
+		/// </summary>
 		public static Vector2 MousePosition {
 			get {
 				var pos = Cursor.Position;
@@ -102,12 +196,29 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Value used for left mouse selection rectangle
+		/// </summary>
 		private static RectangleF m_leftMouseSelection;
+
+		/// <summary>
+		/// Value used for right mouse selection rectangle
+		/// </summary>
 		private static RectangleF m_rightMouseSelection;
 
+		/// <summary>
+		/// Gets a value indicating if the left selection is active (Triggered by holding the left mouse button down and dragging the mouse)
+		/// </summary>
 		public static bool LeftSelectActive = false;
+
+		/// <summary>
+		/// Gets a value indicating if the right selection is active (Triggered by holding the left mouse button down and dragging the mouse)
+		/// </summary>
 		public static bool RightSelectActive = false;
 
+		/// <summary>
+		/// Gets a rectangle representing a selection box
+		/// </summary>
 		public static RectangleF LeftMouseSelectionRectangle {
 			get {
 				var result = m_leftMouseSelection;
@@ -116,6 +227,9 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Gets a rectangle representing a selection box
+		/// </summary>
 		public static RectangleF RightMouseSelectionRectangle {
 			get {
 				var result = m_rightMouseSelection;
@@ -124,6 +238,10 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Converts a rectangle to absolute values where 0,0 is always the top left corner of the rectangle
+		/// </summary>
+		/// <param name="rectangle"></param>
 		private static void AbsRectangleF(ref RectangleF rectangle) {
 			// Invert width
 			if (rectangle.Width < 0) {
@@ -138,11 +256,19 @@ namespace DXToolKit.Engine {
 			}
 		}
 
-
+		/// <summary>
+		/// Holder for the windows forms rectangle
+		/// </summary>
 		private static System.Drawing.Rectangle WindowsFormRectangle;
 
-
+		/// <summary>
+		/// Values used for mouse move calculation
+		/// </summary>
 		private static Vector2 m_lastFrameMousePosition;
+
+		/// <summary>
+		/// Values used for mouse move calculation
+		/// </summary>
 		private static Vector2 m_windowMousePosition;
 
 		private static Key m_repeatKey;
@@ -439,6 +565,11 @@ namespace DXToolKit.Engine {
 			}
 		}
 
+		/// <summary>
+		/// Simulates a key press
+		/// TODO: Move to seperate sub class. Such as Input.Fake.Keypress and Input.Fake.MousePress(x,y,button)
+		/// </summary>
+		/// <param name="key"></param>
 		public static void SimulateKeyPress(Key key) {
 			m_keysDown.Add(key);
 			m_pressedKeys.Add(key);
@@ -448,6 +579,15 @@ namespace DXToolKit.Engine {
 			m_mouse?.Dispose();
 			m_keyboard?.Dispose();
 			m_diretInput?.Dispose();
+		}
+
+		/// <summary>
+		/// TODO: Something like this for simulating
+		/// </summary>
+		public static class Faker {
+			public static void Sim(Key key) {
+				m_keysDown.Add(key);
+			}
 		}
 	}
 }

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using NUnit.Framework;
 using SharpDX;
 using SharpDX.Direct3D11;
-using Newtonsoft.Json;
-using SharpDX.DXGI;
-using Buffer = SharpDX.Direct3D11.Buffer;
-using MapFlags = SharpDX.Direct3D11.MapFlags;
 
 namespace DXToolKit.Tests {
 	[TestFixture]

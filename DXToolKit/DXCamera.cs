@@ -68,7 +68,7 @@ namespace DXToolKit {
 		/// <summary>
 		/// Position of the camera
 		/// </summary>
-		private Vector3 m_position = Vector3.Zero;
+		private Vector3 m_position = new Vector3(0, 0, -10);
 
 		/// <summary>
 		/// Camera yaw

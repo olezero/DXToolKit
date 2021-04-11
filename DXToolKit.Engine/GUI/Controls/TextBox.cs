@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Forms;
-using DXToolKit;
-using DXToolKit.Engine;
 using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectInput;
 using SharpDX.DirectWrite;
+
+// ReSharper disable UnusedVariable
 
 namespace DXToolKit.Engine {
 	/// <summary>

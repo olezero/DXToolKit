@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Windows;
@@ -213,7 +212,7 @@ namespace DXToolKit.Engine {
 
 			// Run draw as much as possible
 			m_renderPipeline.Begin(ClearColor);
-			Debug.Run3DRender(m_device);
+			Debug.Run3DRender();
 			Render();
 			SceneManager.RunRender();
 			Debug.Render(Graphics.Device);

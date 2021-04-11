@@ -40,7 +40,6 @@ namespace DXToolKit.ECS {
 
 	using global::System.Diagnostics;
 #if !XBOX && !WINDOWS_PHONE && !PORTABLE
-	using global::System.Numerics;
 #endif
 #if XBOX || WINDOWS_PHONE || PORTABLE || FORCEINT32
 	using BigInteger = global::System.Int32;

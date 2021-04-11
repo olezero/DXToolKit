@@ -1,5 +1,4 @@
 using DXToolKit.Engine;
-using SharpDX.DirectWrite;
 
 namespace DXToolKit.Sandbox {
 	public class SomeGUIElement : ActiveElement {

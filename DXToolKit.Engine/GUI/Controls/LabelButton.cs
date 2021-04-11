@@ -1,6 +1,4 @@
 ﻿using System;
-using DXToolKit;
-using DXToolKit.Engine;
 using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.DirectWrite;

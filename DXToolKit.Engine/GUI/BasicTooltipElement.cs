@@ -1,7 +1,9 @@
-using System;
 using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.DirectWrite;
+
+// TODO: Under construction
+#pragma warning disable
 
 namespace DXToolKit.Engine {
 	/// <summary>

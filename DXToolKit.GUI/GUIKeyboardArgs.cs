@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Windows.Forms;
 using SharpDX.DirectInput;
 
 namespace DXToolKit.GUI {

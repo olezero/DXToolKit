@@ -1,7 +1,6 @@
 using SharpDX;
 using SharpDX.DirectInput;
 using System.Linq;
-using SharpDX.Direct3D11;
 
 namespace DXToolKit.Engine {
 	/// <summary>
@@ -121,9 +120,9 @@ namespace DXToolKit.Engine {
 		/// </summary>
 		public Camera3D() {
 			Graphics.Device.OnResizeEnd += () => {
-				AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
+				AspectRatio = EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
 			};
-			AspectRatio = (float) EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
+			AspectRatio = EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight;
 		}
 
 		/// <summary>

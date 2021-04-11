@@ -1,7 +1,5 @@
-using System;
 using DXToolKit.Engine;
 using SharpDX;
-using SharpDX.Direct2D1;
 
 namespace DXToolKit.Sandbox {
 	

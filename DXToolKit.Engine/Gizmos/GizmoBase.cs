@@ -1,5 +1,6 @@
-using DXToolKit.Engine;
 using SharpDX;
+
+// ReSharper disable UnusedVariable
 
 namespace DXToolKit.Engine {
 	/// <summary>

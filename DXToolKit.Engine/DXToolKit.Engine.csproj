@@ -85,6 +85,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="BasicPipeline.cs" />
     <Compile Include="Camera3D.cs" />
+    <Compile Include="CursorStyle.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="DXApp.cs" />
     <Compile Include="AppState.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="GUI\IGUIGriddable.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="IRenderPipeline.cs" />
+    <Compile Include="MouseButton.cs" />
     <Compile Include="Profiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuietRenderForm.cs">

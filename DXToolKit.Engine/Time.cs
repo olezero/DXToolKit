@@ -96,10 +96,10 @@ namespace DXToolKit.Engine {
 			}
 
 			// End previous period
-			//timeEndPeriod(1);
-			
+			timeEndPeriod(1);
+
 			// Start next period (the frame)
-			//timeBeginPeriod(1);
+			timeBeginPeriod(1);
 
 			IsRunningSlowly = false;
 			IsRunningVerySlowly = false;
@@ -116,6 +116,7 @@ namespace DXToolKit.Engine {
 				m_frameTimeTicks = m_frameTimer.ElapsedTicks;
 			}
 
+			m_frameTimeTicks = m_frameTimer.ElapsedTicks;
 			m_frameTimer.Restart();
 			m_frameTime = (double) m_frameTimeTicks / Stopwatch.Frequency;
 			m_frameCounter.Frame(m_frameTime);

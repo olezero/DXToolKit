@@ -1,6 +1,4 @@
-﻿using DXToolKit.Engine;
-
-namespace DXToolKit.Engine {
+﻿namespace DXToolKit.Engine {
 	/// <summary>
 	/// Empty GUI panel
 	/// </summary>

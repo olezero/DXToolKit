@@ -1,6 +1,4 @@
-﻿using DXToolKit;
-using DXToolKit.Engine;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct2D1;
 
 namespace DXToolKit.Engine {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SharpDX.DirectInput;
 using DXToolKit.GUI;
-using GUIElement = DXToolKit.Engine.GUIElement;
 
 namespace DXToolKit.Engine {
 	/// <summary>

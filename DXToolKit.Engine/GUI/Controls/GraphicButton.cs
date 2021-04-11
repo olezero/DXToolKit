@@ -1,10 +1,7 @@
 ﻿using System;
-using DXToolKit;
-using DXToolKit.Engine;
 using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.Direct2D1;
-using SharpDX.Direct2D1.Effects;
 
 namespace DXToolKit.Engine {
 	/// <summary>

@@ -1,7 +1,6 @@
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
-using SharpDX.DirectWrite;
 using SharpDX.DXGI;
 using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 using TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode;

@@ -42,7 +42,6 @@ namespace DXToolKit.ECS {
 	using global::System.Diagnostics;
 	using global::System.Linq;
 #if !XBOX && !WINDOWS_PHONE && !PORTABLE
-	using global::System.Numerics;
 #endif
 	using global::System.Text;
 	using Manager;

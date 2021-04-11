@@ -1,8 +1,6 @@
-using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using Device = SharpDX.Direct3D11.Device;
 
 namespace DXToolKit.Engine {
 	/// <summary>

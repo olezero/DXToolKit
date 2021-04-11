@@ -1,6 +1,7 @@
 ﻿using System;
 using SharpDX;
 using DXToolKit.GUI;
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace DXToolKit.Engine {
 	/// <summary>
@@ -8,7 +9,14 @@ namespace DXToolKit.Engine {
 	/// Good practice to keep width and height the same 
 	/// </summary>
 	public class IconButton : ActiveElement {
+		/// <summary>
+		/// Icon element used by this button
+		/// </summary>
 		private IconElement m_icon;
+
+		/// <summary>
+		/// Gets or sets a value indicating if the button should "sink" when pressed
+		/// </summary>
 		public bool SinkOnPress = true;
 
 		/// <summary>

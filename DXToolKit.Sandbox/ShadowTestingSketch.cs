@@ -130,6 +130,7 @@ namespace DXToolKit.Sandbox {
 			m_matrices = new MatrixBufferType {
 				lightView = Matrix.Transpose(Matrix.LookAtLH(m_lightPosition, Vector3.Zero, Vector3.Up)),
 				lightProj = Matrix.Transpose(Matrix.PerspectiveFovLH(Mathf.Pi / 2.0F, 1.0F, 1.0F, 1000.0F)),
+				//lightProj = Matrix.Transpose(Matrix.OrthoLH(1, 1, 1, 1000.0F)),
 			};
 
 			var size = 128;
@@ -205,6 +206,7 @@ namespace DXToolKit.Sandbox {
 			m_matrices.world = Matrix.Transpose(Matrix.Identity);
 			m_matrices.view = Matrix.Transpose(m_camera.ViewMatrix);
 			m_matrices.proj = Matrix.Transpose(m_camera.ProjectionMatrix);
+
 			m_matrixBuffer.Write(m_matrices);
 			m_lightBuffer2.Write(new LightBufferType2 {
 				Position = m_lightPosition,
@@ -240,7 +242,9 @@ namespace DXToolKit.Sandbox {
 			m_lightPosition.X = Mathf.Sin(sinwave) * 3;
 
 			m_matrices.lightView = Matrix.Transpose(Matrix.LookAtLH(m_lightPosition, Vector3.Zero, Vector3.Up));
-			m_matrices.lightProj = Matrix.Transpose(Matrix.PerspectiveFovLH(Mathf.Pi / 2.0F, EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight, 1.0F, 100.0F));
+			m_matrices.lightProj = Matrix.Transpose(Matrix.PerspectiveFovLH(Mathf.Pi / 2.0F, EngineConfig.ScreenWidth / (float) EngineConfig.ScreenHeight, 1.0F, 10.0F));
+			//m_matrices.lightProj = Matrix.Transpose(Matrix.OrthoLH(5, 5, 1, 100.0F));
+
 
 			m_depthRenderer.Begin();
 			m_depthRenderer.Apply(Matrix.Transpose(Matrix.Translation(0, -0.5F, 0)), m_matrices.lightView, m_matrices.lightProj);

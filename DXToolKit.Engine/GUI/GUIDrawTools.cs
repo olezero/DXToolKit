@@ -274,6 +274,14 @@ namespace DXToolKit.Engine {
 			);
 		}
 
+		public void InnerGlow() {
+			InnerGlow(m_currentParameters.Bounds);
+		}
+
+		public void OuterGlow() {
+			OuterGlow(m_currentParameters.Bounds);
+		}
+
 
 		public void TransparentText(Vector2? offset = null, GUIColor? color = null, GUIBrightness? brightness = null) {
 			var textOffset = m_currentParameters.TextOffset;

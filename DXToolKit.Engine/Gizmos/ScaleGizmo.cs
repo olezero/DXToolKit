@@ -1,5 +1,7 @@
 using SharpDX;
 
+// ReSharper disable UnusedVariable
+
 namespace DXToolKit.Engine {
 	/// <summary>
 	/// Gizmo used for scaling

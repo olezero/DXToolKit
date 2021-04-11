@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DXToolKit;
-using DXToolKit.Engine;
-using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectInput;
 using SharpDX.DirectWrite;
-using GUIElement = DXToolKit.Engine.GUIElement;
 using TextAlignment = SharpDX.DirectWrite.TextAlignment;
 
 namespace DXToolKit.Engine {

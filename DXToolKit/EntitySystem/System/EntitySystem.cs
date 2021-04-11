@@ -45,7 +45,6 @@ namespace DXToolKit.ECS.System {
 	using BigInteger = global::System.Int32;
 #endif
 #if !XBOX && !WINDOWS_PHONE && !PORTABLE
-	using global::System.Numerics;
 #endif
 	using Blackboard;
 

@@ -48,7 +48,6 @@ namespace DXToolKit.ECS.Manager {
 #endif
 	using Attributes;
 	using Interface;
-	using System;
 	using Utils;
 
 #if (!FULLDOTNET && !PORTABLE && !METRO) && !CLIENTPROFILE

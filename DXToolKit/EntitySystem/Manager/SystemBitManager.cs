@@ -41,7 +41,6 @@ namespace DXToolKit.ECS.Manager {
 	using global::System.Collections.Generic;
 	using System;
 #if !XBOX && !WINDOWS_PHONE && !PORTABLE
-	using global::System.Numerics;
 #endif
 #if XBOX || WINDOWS_PHONE || PORTABLE || FORCEINT32
 	using BigInteger = global::System.Int32;

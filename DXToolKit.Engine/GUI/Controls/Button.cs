@@ -1,5 +1,4 @@
 ﻿using System;
-using DXToolKit.Engine;
 using DXToolKit.GUI;
 using SharpDX;
 using SharpDX.DirectWrite;
@@ -60,7 +59,7 @@ namespace DXToolKit.Engine {
 					textOffset.X += 0.5F;
 					textOffset.Y += 1.0F;
 				} else {
-					tools.Background.Rectangle(tools.Brighten(drawParameters.Brightness, 1));
+					tools.Background.Rectangle(tools.Brighten(drawParameters.Brightness));
 					tools.Background.BevelBorder(false, drawParameters.Brightness);
 				}
 			} else {
