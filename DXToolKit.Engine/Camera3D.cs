@@ -111,7 +111,7 @@ namespace DXToolKit.Engine {
 	/// Class used to calculate a Projection and View matrix
 	/// </summary>
 	public class Camera3D : DXCamera {
-		private const float ROTATION_SLOWDOWN_FACTOR = 12.0F;
+		private const float ROTATION_SLOWDOWN_FACTOR = 24.0F;
 		private const float TARGET_LERP_SPEED_FACTOR = 10.0F;
 		private const float TARGET_ZOOM_SPEED_FACTOR = 20.0F;
 
@@ -130,7 +130,12 @@ namespace DXToolKit.Engine {
 		/// </summary>
 		private float m_moveSpeed = 10.0F;
 
-		/// <summary>
+		public float MoveSpeed {
+			get => m_moveSpeed;
+			set => m_moveSpeed = value;
+		}
+
+		/// <summary>	
 		/// Rotation sensitivity in degrees per pixel mouse has moved
 		/// </summary>
 		private float m_mouseSensitivity = 0.1F;

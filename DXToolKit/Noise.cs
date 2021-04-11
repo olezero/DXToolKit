@@ -8,7 +8,7 @@ namespace DXToolKit {
 	public class Noise {
 		#region Private Fields
 
-		private SimplexNoise m_noiseGenerator;
+		private OpenSimplexNoise m_noiseGenerator;
 		private int m_octaves = 12;
 		private float m_frequency = 1.0f;
 		private float m_lacunarity = 2.0f;
@@ -69,12 +69,11 @@ namespace DXToolKit {
 			get { return m_seed; }
 			set {
 				m_seed = value;
-				m_noiseGenerator = new SimplexNoise(value);
+				m_noiseGenerator = new OpenSimplexNoise(value);
 			}
 		}
 
 		#endregion Public Properties
-
 
 		#region Public Constructors
 
@@ -82,7 +81,7 @@ namespace DXToolKit {
 		/// Creates a new instance of the noise generator
 		/// </summary>
 		public Noise() {
-			m_noiseGenerator = new SimplexNoise();
+			m_noiseGenerator = new OpenSimplexNoise();
 			UpdateWeights();
 		}
 
@@ -91,12 +90,11 @@ namespace DXToolKit {
 		/// </summary>
 		/// <param name="seed">The seed to use for the noise generator</param>
 		public Noise(int seed) {
-			m_noiseGenerator = new SimplexNoise(seed);
+			m_noiseGenerator = new OpenSimplexNoise(seed);
 			UpdateWeights();
 		}
 
 		#endregion Public Constructors
-
 
 		#region Public Methods
 
@@ -314,7 +312,6 @@ namespace DXToolKit {
 		}
 
 		#endregion Public Methods
-
 
 		#region Private Methods
 

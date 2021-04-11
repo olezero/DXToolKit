@@ -215,6 +215,16 @@ namespace DXToolKit {
 			}
 		}
 
+		public Vector3 ForwardVector => -m_rotationMatrix.Forward;
+
+		public Matrix RotationMatrix {
+			get => m_rotationMatrix;
+			set {
+				m_rotationMatrix = value;
+				m_hasViewChanged = true;
+			}
+		}
+
 		/// <summary>
 		/// Gets the view matrix of the camera
 		/// </summary>

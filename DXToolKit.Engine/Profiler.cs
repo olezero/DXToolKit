@@ -4,6 +4,8 @@ using System.Diagnostics;
 
 namespace DXToolKit.Engine {
 	public static class Profiler {
+		public static int AverageTimeStepCount = 100;
+		
 		private class ProfilingJob {
 			private bool m_isRunning;
 			private Stopwatch m_stopwatch;
@@ -15,7 +17,7 @@ namespace DXToolKit.Engine {
 			public ProfilingJob() {
 				m_isRunning = false;
 				m_stopwatch = new Stopwatch();
-				m_times = new long[16];
+				m_times = new long[AverageTimeStepCount];
 			}
 
 			public void Start() {

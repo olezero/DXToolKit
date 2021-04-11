@@ -7,12 +7,12 @@ namespace DXToolKit {
 	/// </summary>
 	/// <typeparam name="T">Data type the buffer should hold</typeparam>
 	public class StructuredBuffer<T> : ArrayBuffer<T> where T : struct {
-		private UnorderedAccessView m_unorderedAccessView;
+		private UnorderedAccessView m_uav;
 
 		/// <summary>
 		/// Gets a reference to the UAV
 		/// </summary>
-		public UnorderedAccessView unorderedAccessView => m_unorderedAccessView;
+		public UnorderedAccessView UAV => m_uav;
 
 		/// <summary>
 		/// Creates a new structured buffer, and initializes it with input data
@@ -60,8 +60,8 @@ namespace DXToolKit {
 		}
 
 		private void CreateUAV() {
-			m_unorderedAccessView?.Dispose();
-			m_unorderedAccessView = new UnorderedAccessView(m_device, Buffer);
+			m_uav?.Dispose();
+			m_uav = new UnorderedAccessView(m_device, Buffer);
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace DXToolKit {
 		/// </summary>
 		protected override void OnDispose() {
 			base.OnDispose();
-			m_unorderedAccessView?.Dispose();
+			m_uav?.Dispose();
 		}
 	}
 }

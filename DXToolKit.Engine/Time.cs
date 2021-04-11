@@ -13,7 +13,7 @@ namespace DXToolKit.Engine {
 		internal static extern uint timeEndPeriod(uint period);
 
 		private class FrameCounter {
-			private readonly double[] m_frameTimes = new double[25];
+			private readonly double[] m_frameTimes = new double[32];
 			private int m_currentFrame;
 			public double AverageFPS => 1.0 / (m_frameTimes.Sum() / m_frameTimes.Length);
 			private bool m_first = true;

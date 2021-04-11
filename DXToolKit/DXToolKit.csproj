@@ -158,6 +158,7 @@
     <Compile Include="Octree\IOctreePoint.cs" />
     <Compile Include="Octree\Octree.cs" />
     <Compile Include="Octree\WorldToScreenParams.cs" />
+    <Compile Include="OpenSimplexNoise.cs" />
     <Compile Include="PrimitiveFactory.cs" />
     <Compile Include="PrimitiveRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
