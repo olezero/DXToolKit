@@ -72,6 +72,7 @@
         <Compile Include="GUIShineTest.cs" />
         <Compile Include="GUISketch.cs" />
         <Compile Include="GUITestingSketch.cs" />
+        <Compile Include="NoiseSketch.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="QuadtreeTesting.cs" />

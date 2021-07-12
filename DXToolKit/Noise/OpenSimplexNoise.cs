@@ -33,7 +33,7 @@ using System;
 using System.Runtime.CompilerServices;
 
 namespace DXToolKit {
-	public class OpenSimplexNoise {
+	public class OpenSimplexNoise : ISimplex {
 		private const double STRETCH_2D = -0.211324865405187; //(1/Math.sqrt(2+1)-1)/2;
 		private const double STRETCH_3D = -1.0 / 6.0; //(1/Math.sqrt(3+1)-1)/3;
 		private const double STRETCH_4D = -0.138196601125011; //(1/Math.sqrt(4+1)-1)/4;
@@ -234,7 +234,8 @@ namespace DXToolKit {
 		}
 
 		public OpenSimplexNoise()
-			: this(DateTime.Now.Ticks) { }
+			: this(DateTime.Now.Ticks) {
+		}
 
 		public OpenSimplexNoise(long seed) {
 			perm = new byte[256];
