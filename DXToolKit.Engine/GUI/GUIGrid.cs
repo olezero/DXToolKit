@@ -48,6 +48,22 @@ namespace DXToolKit.Engine {
 		public int RowCount => m_grid.Count;
 
 		/// <summary>
+		/// Gets or sets a value indicating if rows should be sized to parent element height divided by row count
+		/// If disabled, each row will be sized to the largest child element height
+		/// Usefull when generating a grid on a element which has an unknown total height, but child elements should be stacked on top of each other
+		/// Default: true
+		/// </summary>
+		public bool DynamicRowHeight { get; set; } = true;
+
+		/// <summary>
+		/// Gets or sets a value indicating if child elements should automatically be resized to fit the row height.
+		/// Depending on if DynamicRowHeight is set, child elements will be set to the largest element in the row, or to the rows height
+		/// Default: true
+		/// </summary>
+		public bool AutoResizeElementHeigth { get; set; } = true;
+
+
+		/// <summary>
 		/// Gets or sets a value indicating if GUI grid is allowed to resize parent so that all elements will be positioned within a whole number.
 		/// This does require all padding to be set to a whole number aswell
 		/// </summary>
@@ -123,7 +139,7 @@ namespace DXToolKit.Engine {
 				Height = baseElement.Height,
 				// Position defaults to 0 since this is the base grid, and we are working with local positioning
 				X = 0,
-				Y = 0,
+				Y = 0
 			};
 
 			// Organize all elements
@@ -169,10 +185,13 @@ namespace DXToolKit.Engine {
 			var rowHeight = targetHeight / m_grid.Count;
 			var spanWidth = targetWidth / COLUMN_COUNT;
 
+			// Set row height to 0 if dynamic height is disabled, this will make each row the same height as the tallest sub element
+			if (DynamicRowHeight == false) rowHeight = 0;
 			if (AllowParentResize) {
 				rowHeight = (float) Math.Ceiling(rowHeight);
 				spanWidth = (float) Math.Ceiling(spanWidth);
 			}
+
 
 			var yOffset = targetY;
 			var xOffset = targetX;
@@ -181,6 +200,13 @@ namespace DXToolKit.Engine {
 			var newHeight = 0.0F;
 
 			foreach (var gridrow in m_grid) {
+				if (DynamicRowHeight == false) {
+					// Scan for the highest child element, and set row height to that
+					foreach (var column in gridrow) {
+						rowHeight = Mathf.Max(column.Element.Height, rowHeight);
+					}
+				}
+
 				foreach (var column in gridrow) {
 					var columnSpan = column.ColumnSpan;
 					var el = column.Element;
@@ -189,9 +215,12 @@ namespace DXToolKit.Engine {
 					el.Width = spanWidth * columnSpan;
 					el.X = xOffset;
 
-					el.Height = rowHeight;
-					el.Y = yOffset;
+					// Resize element height if requested
+					if (AutoResizeElementHeigth) {
+						el.Height = rowHeight;
+					}
 
+					el.Y = yOffset;
 
 					if (xOffset + el.Width > newWidth) {
 						newWidth = xOffset + el.Width;
@@ -219,10 +248,9 @@ namespace DXToolKit.Engine {
 				xOffset = targetX;
 			}
 
-			if (AllowParentResize) {
-				m_baseElement.Height = newHeight + m_gridPadding.Bottom;
-				m_baseElement.Width = newWidth + m_gridPadding.Right;
-			}
+			if (!AllowParentResize) return;
+			m_baseElement.Height = newHeight + m_gridPadding.Bottom;
+			m_baseElement.Width = newWidth + m_gridPadding.Right;
 		}
 
 		private void OrganizeElements() {
@@ -230,9 +258,7 @@ namespace DXToolKit.Engine {
 			m_oncreate?.Invoke(this);
 
 			// if current row has any elements add it
-			if (m_currentrow.Count > 0) {
-				AddRow();
-			}
+			if (m_currentrow.Count > 0) AddRow();
 
 			foreach (var gridrow in m_grid) {
 				foreach (var column in gridrow) {
