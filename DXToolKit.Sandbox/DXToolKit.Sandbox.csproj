@@ -69,6 +69,7 @@
         <Compile Include="FrameRateTest.cs" />
         <Compile Include="FPS_Sketch.cs" />
         <Compile Include="GUIGlowTest.cs" />
+        <Compile Include="GUIGridSketch.cs" />
         <Compile Include="GUIShineTest.cs" />
         <Compile Include="GUISketch.cs" />
         <Compile Include="GUITestingSketch.cs" />
